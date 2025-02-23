@@ -7,7 +7,9 @@ import {
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import type { QueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
-import { LayoutGrid, ListTodo, Calendar as CalendarIcon } from "lucide-react";
+import { List } from "lucide-react";
+import { CgBoard } from "react-icons/cg";
+import { CiCalendar } from "react-icons/ci";
 import { useTranslation } from "react-i18next";
 
 const TanStackRouterDevtools =
@@ -42,9 +44,13 @@ function RootComponent() {
     const { t } = useTranslation();
 
     const views = [
-        { id: "/", label: t("navigation.board"), icon: LayoutGrid },
-        { id: "/timeline", label: t("navigation.timeline"), icon: ListTodo },
-        { id: "/calendar", label: t("navigation.calendar"), icon: CalendarIcon }
+        { id: "/", label: t("navigation.board"), icon: CgBoard },
+        {
+            id: "/timeline",
+            label: t("navigation.timeline"),
+            icon: List
+        },
+        { id: "/calendar", label: t("navigation.calendar"), icon: CiCalendar }
     ];
 
     return (
