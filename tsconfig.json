@@ -8,6 +8,7 @@
         "lib": ["DOM", "DOM.Iterable", "ES2022"],
         "skipLibCheck": true,
         "baseUrl": ".",
+        "module": "ESNext",
         "paths": {
             "@/*": ["./src/*"]
         }
