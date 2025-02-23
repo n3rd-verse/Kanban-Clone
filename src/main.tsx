@@ -3,8 +3,7 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { routeTree } from "./routeTree.gen";
-import "./styles.css";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import "./index.css";
 
 const queryClient = new QueryClient();
 
@@ -34,7 +33,6 @@ if (!rootElement.innerHTML) {
     const root = ReactDOM.createRoot(rootElement);
     root.render(
         <QueryClientProvider client={queryClient}>
-            <ReactQueryDevtools initialIsOpen={false} />
             <RouterProvider router={router} />
         </QueryClientProvider>
     );

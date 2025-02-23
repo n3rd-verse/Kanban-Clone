@@ -19,7 +19,6 @@ export function KanbanBoard() {
     if (isLoading) {
         return (
             <div className="min-h-screen">
-                <div className="h-16" />
                 <main className="p-6">
                     <div className="gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
                         {["new", "in_progress", "urgent", "completed"].map(
@@ -47,7 +46,6 @@ export function KanbanBoard() {
 
     return (
         <div className="min-h-screen">
-            <div className="h-16" />
             <main className="p-6">
                 <div className="gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
                     {(

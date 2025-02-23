@@ -11,7 +11,9 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as TimelineImport } from './routes/timeline'
 import { Route as PostsImport } from './routes/posts'
+import { Route as CalendarImport } from './routes/calendar'
 import { Route as LayoutImport } from './routes/_layout'
 import { Route as IndexImport } from './routes/index'
 import { Route as PostsIndexImport } from './routes/posts.index'
@@ -22,9 +24,21 @@ import { Route as LayoutLayout2LayoutAImport } from './routes/_layout/_layout-2/
 
 // Create/Update Routes
 
+const TimelineRoute = TimelineImport.update({
+  id: '/timeline',
+  path: '/timeline',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const PostsRoute = PostsImport.update({
   id: '/posts',
   path: '/posts',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const CalendarRoute = CalendarImport.update({
+  id: '/calendar',
+  path: '/calendar',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -86,11 +100,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutImport
       parentRoute: typeof rootRoute
     }
+    '/calendar': {
+      id: '/calendar'
+      path: '/calendar'
+      fullPath: '/calendar'
+      preLoaderRoute: typeof CalendarImport
+      parentRoute: typeof rootRoute
+    }
     '/posts': {
       id: '/posts'
       path: '/posts'
       fullPath: '/posts'
       preLoaderRoute: typeof PostsImport
+      parentRoute: typeof rootRoute
+    }
+    '/timeline': {
+      id: '/timeline'
+      path: '/timeline'
+      fullPath: '/timeline'
+      preLoaderRoute: typeof TimelineImport
       parentRoute: typeof rootRoute
     }
     '/_layout/_layout-2': {
@@ -173,7 +201,9 @@ const PostsRouteWithChildren = PostsRoute._addFileChildren(PostsRouteChildren)
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof LayoutLayout2RouteWithChildren
+  '/calendar': typeof CalendarRoute
   '/posts': typeof PostsRouteWithChildren
+  '/timeline': typeof TimelineRoute
   '/posts/$postId': typeof PostsPostIdRoute
   '/posts/': typeof PostsIndexRoute
   '/layout-a': typeof LayoutLayout2LayoutARoute
@@ -183,6 +213,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof LayoutLayout2RouteWithChildren
+  '/calendar': typeof CalendarRoute
+  '/timeline': typeof TimelineRoute
   '/posts/$postId': typeof PostsPostIdRoute
   '/posts': typeof PostsIndexRoute
   '/layout-a': typeof LayoutLayout2LayoutARoute
@@ -193,7 +225,9 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/_layout': typeof LayoutRouteWithChildren
+  '/calendar': typeof CalendarRoute
   '/posts': typeof PostsRouteWithChildren
+  '/timeline': typeof TimelineRoute
   '/_layout/_layout-2': typeof LayoutLayout2RouteWithChildren
   '/posts/$postId': typeof PostsPostIdRoute
   '/posts/': typeof PostsIndexRoute
@@ -206,18 +240,30 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | ''
+    | '/calendar'
     | '/posts'
+    | '/timeline'
     | '/posts/$postId'
     | '/posts/'
     | '/layout-a'
     | '/layout-b'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '' | '/posts/$postId' | '/posts' | '/layout-a' | '/layout-b'
+  to:
+    | '/'
+    | ''
+    | '/calendar'
+    | '/timeline'
+    | '/posts/$postId'
+    | '/posts'
+    | '/layout-a'
+    | '/layout-b'
   id:
     | '__root__'
     | '/'
     | '/_layout'
+    | '/calendar'
     | '/posts'
+    | '/timeline'
     | '/_layout/_layout-2'
     | '/posts/$postId'
     | '/posts/'
@@ -229,13 +275,17 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LayoutRoute: typeof LayoutRouteWithChildren
+  CalendarRoute: typeof CalendarRoute
   PostsRoute: typeof PostsRouteWithChildren
+  TimelineRoute: typeof TimelineRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LayoutRoute: LayoutRouteWithChildren,
+  CalendarRoute: CalendarRoute,
   PostsRoute: PostsRouteWithChildren,
+  TimelineRoute: TimelineRoute,
 }
 
 export const routeTree = rootRoute
@@ -250,7 +300,9 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/_layout",
-        "/posts"
+        "/calendar",
+        "/posts",
+        "/timeline"
       ]
     },
     "/": {
@@ -262,12 +314,18 @@ export const routeTree = rootRoute
         "/_layout/_layout-2"
       ]
     },
+    "/calendar": {
+      "filePath": "calendar.tsx"
+    },
     "/posts": {
       "filePath": "posts.tsx",
       "children": [
         "/posts/$postId",
         "/posts/"
       ]
+    },
+    "/timeline": {
+      "filePath": "timeline.tsx"
     },
     "/_layout/_layout-2": {
       "filePath": "_layout/_layout-2.tsx",
