@@ -36,11 +36,12 @@ const resources = {
 
 i18n.use(initReactI18next).init({
     resources,
-    lng: "ko", // 기본 언어
-    fallbackLng: "en", // 번역이 없을 경우 영어로
+    lng: "ko",
+    fallbackLng: "en",
     interpolation: {
         escapeValue: false
-    }
+    },
+    debug: true
 });
 
 export default i18n;
