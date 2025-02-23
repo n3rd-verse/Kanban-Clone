@@ -4,6 +4,7 @@ import { TaskCard } from "./TaskCard";
 import { useTranslation } from "react-i18next";
 import { useTasks } from "@/hooks/api/useTasks";
 import { ColumnSkeleton } from "./KanbanBoardSkeleton";
+import { cn } from "@/lib/utils";
 
 const statusColors = {
     new: "text-[#3b82f6] bg-blue-50",
@@ -13,8 +14,8 @@ const statusColors = {
 };
 
 export function KanbanBoard() {
-    const { tasks, isLoading, toggleTaskComplete } = useTasks();
     const { t } = useTranslation();
+    const { tasks, isLoading, toggleTaskComplete } = useTasks();
 
     if (isLoading) {
         return (
@@ -46,16 +47,17 @@ export function KanbanBoard() {
 
     return (
         <div className="min-h-screen">
-            <main className="p-6">
-                <div className="gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-                    {(
-                        ["new", "in_progress", "urgent", "completed"] as const
-                    ).map((status) => (
+            <div className="gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+                {(["new", "in_progress", "urgent", "completed"] as const).map(
+                    (status) => (
                         <div key={status} className="flex flex-col gap-4">
                             <div className="flex justify-between items-center">
                                 <div className="flex items-center gap-2">
                                     <span
-                                        className={`px-3 py-1 text-sm rounded-lg font-medium ${statusColors[status]}`}
+                                        className={cn(
+                                            "px-3 py-1 text-sm rounded-lg font-medium",
+                                            statusColors[status]
+                                        )}
                                     >
                                         {t(`status.${status}`)}
                                     </span>
@@ -74,9 +76,9 @@ export function KanbanBoard() {
                                 ))}
                             </div>
                         </div>
-                    ))}
-                </div>
-            </main>
+                    )
+                )}
+            </div>
         </div>
     );
 }

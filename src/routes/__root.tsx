@@ -38,8 +38,8 @@ function RootComponent() {
 
     return (
         <div className="min-h-screen">
-            <main className="p-6">
-                <div className="flex gap-8 mb-6 border-gray-200 border-b">
+            <main>
+                <div className="flex gap-8 px-4 border-gray-200 border-b">
                     {views.map((view) => {
                         const Icon = view.icon;
                         return (
@@ -47,12 +47,14 @@ function RootComponent() {
                                 key={view.id}
                                 to={view.id}
                                 className={cn(
-                                    "px-1 py-4 flex items-center gap-2 text-gray-500 relative transition-colors",
+                                    "py-4 flex items-center gap-2 text-gray-500 relative transition-colors",
                                     "hover:text-[#3b82f6]"
                                 )}
                                 activeProps={{
-                                    className:
-                                        "text-[#3b82f6] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-[#3b82f6]"
+                                    className: cn(
+                                        "text-[#3b82f6]",
+                                        "after:absolute after:bottom-[-1px] after:left-0 after:right-0 after:h-[2px] after:bg-[#3b82f6]"
+                                    )
                                 }}
                                 activeOptions={{ exact: view.id === "/" }}
                             >
@@ -62,7 +64,9 @@ function RootComponent() {
                         );
                     })}
                 </div>
-                <Outlet />
+                <div className="p-6">
+                    <Outlet />
+                </div>
             </main>
             <ReactQueryDevtools buttonPosition="top-right" />
             <TanStackRouterDevtools position="bottom-right" />
