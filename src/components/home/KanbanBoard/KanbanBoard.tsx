@@ -2,7 +2,8 @@ import * as React from "react";
 import type { Task } from "@/types/task";
 import { TaskCard } from "./TaskCard";
 import { useTranslation } from "react-i18next";
-import { useTasks } from "@/hooks/api/useTasks";
+import { useTasksQuery } from "@/hooks/api/useTasksQuery";
+import { useTaskMutation } from "@/hooks/api/useTaskMutation";
 import { ColumnSkeleton } from "./KanbanBoardSkeleton";
 import { cn } from "@/lib/utils";
 
@@ -15,20 +16,19 @@ const statusColors = {
 
 export function KanbanBoard() {
     const { t } = useTranslation();
-    const { tasks, isLoading, toggleTaskComplete } = useTasks();
+    const { data: tasks = [], isLoading } = useTasksQuery();
+    const { mutate: toggleTaskComplete } = useTaskMutation();
 
     if (isLoading) {
         return (
             <div className="min-h-screen">
-                <main className="p-6">
-                    <div className="gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-                        {["new", "in_progress", "urgent", "completed"].map(
-                            (status) => (
-                                <ColumnSkeleton key={status} />
-                            )
-                        )}
-                    </div>
-                </main>
+                <div className="gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+                    {["new", "in_progress", "urgent", "completed"].map(
+                        (status) => (
+                            <ColumnSkeleton key={status} />
+                        )
+                    )}
+                </div>
             </div>
         );
     }
