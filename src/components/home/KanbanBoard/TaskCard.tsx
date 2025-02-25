@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { format } from "date-fns";
 import { CardDeleteButton } from "./CardDeleteButton";
+import { useDeleteTaskMutation } from "@/hooks/api/useDeleteTaskMutation";
 
 interface TaskCardProps {
     task: Task;
@@ -10,11 +11,13 @@ interface TaskCardProps {
 }
 
 export function TaskCard({ task, onComplete }: TaskCardProps) {
+    const { mutate: deleteTask } = useDeleteTaskMutation();
+
     const dateColorClass =
         task.status === "urgent" ? "text-[#ea384c]" : "text-gray-400";
 
     const handleDelete = () => {
-        console.log("Delete task:", task.id);
+        deleteTask(task.id);
     };
 
     return (

@@ -1,4 +1,3 @@
-import * as React from "react";
 import type { Task } from "@/types/task";
 import { TaskCard } from "./TaskCard";
 import { useTranslation } from "react-i18next";

@@ -17,3 +17,9 @@ export async function toggleTaskStatus(
     await new Promise((resolve) => setTimeout(resolve, 500));
     return { ...task, completed: !task.completed };
 }
+
+export async function deleteTask(taskId: string): Promise<string> {
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    return taskId;
+}
