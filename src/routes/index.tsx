@@ -12,7 +12,6 @@ export const Route = createFileRoute("/")({
     loader: async () => {
         const statuses = ["new", "in_progress", "urgent", "completed"] as const;
 
-        // Ensure data for each status column
         await Promise.all(
             statuses.map((status) =>
                 queryClient.ensureInfiniteQueryData({

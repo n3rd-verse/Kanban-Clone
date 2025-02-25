@@ -7,13 +7,20 @@ export function useInfiniteTasks(filters: TaskFilters = {}) {
     return useInfiniteQuery({
         queryKey: queryKeys.tasks.infinite(filters),
         queryFn: async ({ pageParam = 0 }) => {
-            return fetchTasks({
-                ...filters,
-                page: pageParam,
-                limit: 20
-            });
+            try {
+                return await fetchTasks({
+                    ...filters,
+                    page: pageParam,
+                    limit: 20
+                });
+            } catch (error: any) {
+                throw new Error(`Failed to fetch tasks: ${error.message}`);
+            }
         },
         initialPageParam: 0,
-        getNextPageParam: (lastPage) => lastPage.nextPage
+        getNextPageParam: (lastPage) => lastPage.nextPage,
+        staleTime: 6000,
+        retry: 2,
+        retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000)
     });
 }

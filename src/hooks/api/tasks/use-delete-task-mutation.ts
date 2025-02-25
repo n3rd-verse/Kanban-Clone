@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import { deleteTask } from "@/services/tasks";
-import type { Task, TasksResponse, TaskStatus } from "@/types/task";
+import type { TasksResponse, TaskStatus } from "@/types/task";
 import { useToast } from "@/components/ui/use-toast";
 
 export function useDeleteTaskMutation() {
