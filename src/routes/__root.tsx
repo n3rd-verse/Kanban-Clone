@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { CgBoard } from "react-icons/cg";
 import { CiCalendar, CiViewTimeline } from "react-icons/ci";
 import { useTranslation } from "react-i18next";
+import { Toaster } from "@/components/ui/toaster";
 
 const TanStackRouterDevtools =
     process.env.NODE_ENV === "production"
@@ -91,6 +92,7 @@ function RootComponent() {
                     <Outlet />
                 </div>
             </main>
+            <Toaster />
             <ReactQueryDevtools buttonPosition="top-right" />
             <TanStackRouterDevtools position="bottom-right" />
         </div>
