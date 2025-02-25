@@ -19,7 +19,22 @@ const router = createRouter({
     // Since we're using React Query, we don't want loader calls to ever be stale
     // This will ensure that the loader is always called when the route is preloaded or visited
     defaultPreloadStaleTime: 0,
-    scrollRestoration: true
+    scrollRestoration: true,
+    defaultErrorComponent: ({ error }) => {
+        return (
+            <div className="flex flex-col justify-center items-center h-screen">
+                <h1 className="font-bold text-2xl">Error</h1>
+                <p className="text-gray-500">{error.message}</p>
+            </div>
+        );
+    },
+    defaultNotFoundComponent: () => {
+        return (
+            <div className="flex flex-col justify-center items-center h-screen">
+                <h1 className="font-bold text-2xl">Not Found</h1>
+            </div>
+        );
+    }
 });
 
 // Register things for typesafety
