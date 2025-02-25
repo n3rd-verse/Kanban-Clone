@@ -86,7 +86,7 @@ export function KanbanBoard() {
                             </div>
                             <div
                                 ref={columnRefs[status]}
-                                className="flex-1 overflow-auto"
+                                className="flex-1 overflow-auto scrollbar-hide hover:scrollbar-default"
                                 style={{ height: "calc(100vh - 200px)" }}
                             >
                                 <div

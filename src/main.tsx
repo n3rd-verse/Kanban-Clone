@@ -1,13 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "@/lib/query-config";
 import { routeTree } from "./routeTree.gen";
 import "./index.css";
 import "@/i18n";
 import { scan } from "react-scan";
-
-const queryClient = new QueryClient();
 
 // Set up a Router instance
 const router = createRouter({

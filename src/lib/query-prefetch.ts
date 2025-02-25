@@ -1,51 +1,55 @@
 import { queryClient } from "./query-config";
 import { queryKeys } from "./query-keys";
-import type { TaskFilters } from "@/types/task";
+import type { TaskFilters, TasksResponse, TaskStatus } from "@/types/task";
 import { fetchTasks } from "@/services/tasks";
 
-export const prefetchStrategies = {
+export const queryStrategies = {
     tasks: {
-        all: async () => {
-            await queryClient.prefetchQuery({
-                queryKey: queryKeys.tasks.all(),
-                queryFn: fetchTasks
-            });
+        prefetch: {
+            all: async () => {
+                await queryClient.prefetchQuery({
+                    queryKey: queryKeys.tasks.all(),
+                    queryFn: () => fetchTasks()
+                });
+            },
+
+            list: async (filters: TaskFilters) => {
+                await queryClient.prefetchQuery({
+                    queryKey: queryKeys.tasks.list(filters),
+                    queryFn: () => fetchTasks(filters)
+                });
+            }
         },
 
-        list: async (filters: TaskFilters) => {
-            await queryClient.prefetchQuery({
-                queryKey: queryKeys.tasks.list(filters),
-                queryFn: () => fetchTasksList(filters)
-            });
+        ensure: {
+            infinite: async (status: TaskStatus) => {
+                return queryClient.ensureInfiniteQueryData({
+                    queryKey: queryKeys.tasks.infinite({ status: [status] }),
+                    queryFn: ({ pageParam = 0 }) =>
+                        fetchTasks({
+                            status: [status],
+                            page: pageParam,
+                            limit: 20
+                        }),
+                    initialPageParam: 0,
+                    getNextPageParam: (lastPage: TasksResponse) =>
+                        lastPage.nextPage
+                });
+            }
         },
 
-        detail: async (id: string) => {
-            await queryClient.prefetchQuery({
-                queryKey: queryKeys.tasks.detail(id),
-                queryFn: () => fetchTaskDetail(id)
-            });
-        }
-    }
-};
+        invalidate: {
+            all: async () => {
+                await queryClient.invalidateQueries({
+                    queryKey: queryKeys.tasks.root
+                });
+            },
 
-export const invalidationStrategies = {
-    tasks: {
-        all: async () => {
-            await queryClient.invalidateQueries({
-                queryKey: queryKeys.tasks.root
-            });
-        },
-
-        detail: async (id: string) => {
-            await queryClient.invalidateQueries({
-                queryKey: queryKeys.tasks.detail(id)
-            });
-        },
-
-        list: async (filters?: TaskFilters) => {
-            await queryClient.invalidateQueries({
-                queryKey: queryKeys.tasks.list(filters ?? {})
-            });
+            list: async (filters?: TaskFilters) => {
+                await queryClient.invalidateQueries({
+                    queryKey: queryKeys.tasks.list(filters ?? {})
+                });
+            }
         }
     }
 };

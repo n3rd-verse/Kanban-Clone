@@ -7,8 +7,7 @@ export const taskTransformers = {
         assignee: Array.isArray(dto.assignee) ? dto.assignee : [dto.assignee],
         date: new Date(dto.date).toISOString(),
         status: dto.status,
-        // Add computed properties
-        isOverdue: new Date(dto.date) < new Date()
+        completed: dto.completed
     }),
 
     toDTO: (task: Partial<Task>): Partial<TaskDTO> => ({

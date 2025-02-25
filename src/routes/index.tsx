@@ -1,15 +1,34 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { prefetchStrategies } from "@/lib/query-prefetch";
-import { KanbanBoard } from "@/components/home/KanbanBoard/KanbanBoard";
 import { queryClient } from "@/lib/query-config";
-import { tasksQueryOptions } from "@/hooks/api/tasks/task-query-options";
+import { queryKeys } from "@/lib/query-keys";
+import { fetchTasks } from "@/services/tasks";
+import { KanbanBoard } from "@/components/home/KanbanBoard/KanbanBoard";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ColumnSkeleton } from "@/components/home/KanbanBoard/KanbanBoardSkeleton";
 import { Suspense } from "react";
+import { TasksResponse } from "@/types/task";
 
 export const Route = createFileRoute("/")({
     loader: async () => {
-        await prefetchStrategies.tasks.all();
+        const statuses = ["new", "in_progress", "urgent", "completed"] as const;
+
+        // Ensure data for each status column
+        await Promise.all(
+            statuses.map((status) =>
+                queryClient.ensureInfiniteQueryData({
+                    queryKey: queryKeys.tasks.infinite({ status: [status] }),
+                    queryFn: ({ pageParam = 0 }) =>
+                        fetchTasks({
+                            status: [status],
+                            page: pageParam,
+                            limit: 20
+                        }),
+                    initialPageParam: 0,
+                    getNextPageParam: (lastPage: TasksResponse) =>
+                        lastPage.nextPage
+                })
+            )
+        );
     },
     component: () => (
         <ErrorBoundary fallback={<div>Error loading tasks</div>}>
