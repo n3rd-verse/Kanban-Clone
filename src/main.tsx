@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { routeTree } from "./routeTree.gen";
 import "./index.css";
 import "@/i18n";
+import { scan } from "react-scan";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,10 @@ declare module "@tanstack/react-router" {
         router: typeof router;
     }
 }
+
+scan({
+    enabled: true
+});
 
 const rootElement = document.getElementById("app")!;
 
