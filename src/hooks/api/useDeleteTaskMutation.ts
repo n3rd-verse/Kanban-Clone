@@ -8,23 +8,13 @@ export function useDeleteTaskMutation() {
 
     return useMutation({
         mutationFn: deleteTask,
-        onMutate: async (taskId) => {
-            const previousTasks = queryClient.getQueryData<Task[]>(
-                queryKeys.tasks.all()
-            );
-
+        onSuccess: (deletedTaskId) => {
             queryClient.setQueryData<Task[]>(
                 queryKeys.tasks.all(),
-                (old = []) => old.filter((task) => task.id !== taskId)
+                (old = []) => old.filter((task) => task.id !== deletedTaskId)
             );
 
-            return { previousTasks };
-        },
-        onError: (_, __, context) => {
-            queryClient.setQueryData(
-                queryKeys.tasks.all(),
-                context?.previousTasks
-            );
+                description: "The task has been successfully deleted."
         }
     });
 }

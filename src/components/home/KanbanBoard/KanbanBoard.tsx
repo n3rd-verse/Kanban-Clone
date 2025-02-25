@@ -15,7 +15,7 @@ const statusColors = {
 
 export function KanbanBoard() {
     const { t } = useTranslation();
-    const { data: tasks = [], isLoading } = useTasksQuery();
+    const { data: tasks, isLoading, error } = useTasksQuery();
     const { mutate: toggleTaskComplete } = useTaskMutation();
 
     if (isLoading) {
@@ -32,8 +32,22 @@ export function KanbanBoard() {
         );
     }
 
+    if (error) {
+        return (
+            <div className="min-h-screen">
+                <div className="gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+                    {["new", "in_progress", "urgent", "completed"].map(
+                        (status) => (
+                            <ColumnSkeleton key={status} />
+                        )
+                    )}
+                </div>
+            </div>
+        );
+    }
+
     // 상태별로 태스크 그룹화
-    const groupedTasks = tasks.reduce(
+    const groupedTasks = tasks?.reduce(
         (acc, task) => {
             if (!acc[task.status]) {
                 acc[task.status] = [];
@@ -61,12 +75,12 @@ export function KanbanBoard() {
                                         {t(`status.${status}`)}
                                     </span>
                                     <span className="text-gray-500 text-sm">
-                                        {groupedTasks[status]?.length || 0}
+                                        {groupedTasks?.[status]?.length || 0}
                                     </span>
                                 </div>
                             </div>
                             <div className="space-y-4">
-                                {groupedTasks[status]?.map((task) => (
+                                {groupedTasks?.[status]?.map((task) => (
                                     <TaskCard
                                         key={task.id}
                                         task={task}
