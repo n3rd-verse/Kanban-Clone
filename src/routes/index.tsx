@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { prefetchStrategies } from "@/lib/query-prefetch";
 import { KanbanBoard } from "@/components/home/KanbanBoard/KanbanBoard";
 import { queryClient } from "@/lib/query-config";
 import { tasksQueryOptions } from "@/hooks/api/tasks/task-query-options";
@@ -8,7 +9,7 @@ import { Suspense } from "react";
 
 export const Route = createFileRoute("/")({
     loader: async () => {
-        await queryClient.ensureQueryData(tasksQueryOptions);
+        await prefetchStrategies.tasks.all();
     },
     component: () => (
         <ErrorBoundary fallback={<div>Error loading tasks</div>}>

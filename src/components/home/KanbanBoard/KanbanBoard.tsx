@@ -1,11 +1,11 @@
 import type { Task } from "@/types/task";
 import { TaskCard } from "./TaskCard";
 import { useTranslation } from "react-i18next";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { tasksQueryOptions } from "@/hooks/api/tasks/task-query-options";
-import { useTaskMutation } from "@/hooks/api/tasks/use-task-mutation";
-import { ColumnSkeleton } from "./KanbanBoardSkeleton";
-import { cn } from "@/lib/utils";
+import { useInfiniteTasks } from "@/hooks/api/tasks/use-infinite-tasks";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { useRef } from "react";
+import { taskTransformers } from "@/lib/transformers/task.transformer";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 const statusColors = {
     new: "text-[#3b82f6] bg-blue-50",
@@ -16,19 +16,53 @@ const statusColors = {
 
 export function KanbanBoard() {
     const { t } = useTranslation();
-    const { data: tasks } = useSuspenseQuery(tasksQueryOptions);
-    const { mutate: toggleTaskComplete } = useTaskMutation();
 
-    const groupedTasks = tasks.reduce(
-        (acc, task) => {
-            if (!acc[task.status]) {
-                acc[task.status] = [];
-            }
-            acc[task.status].push(task);
-            return acc;
-        },
-        {} as Record<string, Task[]>
-    );
+    // Create a virtualizer for each status column
+    const columnRefs = {
+        new: useRef<HTMLDivElement>(null),
+        in_progress: useRef<HTMLDivElement>(null),
+        urgent: useRef<HTMLDivElement>(null),
+        completed: useRef<HTMLDivElement>(null)
+    };
+
+    const queries = {
+        new: useInfiniteTasks({ status: ["new"] }),
+        in_progress: useInfiniteTasks({ status: ["in_progress"] }),
+        urgent: useInfiniteTasks({ status: ["urgent"] }),
+        completed: useInfiniteTasks({ status: ["completed"] })
+    };
+
+    const virtualizers = {
+        new: useVirtualizer({
+            count: queries.new.data?.pages.flatMap((p) => p.tasks).length ?? 0,
+            getScrollElement: () => columnRefs.new.current,
+            estimateSize: () => 100,
+            overscan: 5
+        }),
+        in_progress: useVirtualizer({
+            count:
+                queries.in_progress.data?.pages.flatMap((p) => p.tasks)
+                    .length ?? 0,
+            getScrollElement: () => columnRefs.in_progress.current,
+            estimateSize: () => 100,
+            overscan: 5
+        }),
+        urgent: useVirtualizer({
+            count:
+                queries.urgent.data?.pages.flatMap((p) => p.tasks).length ?? 0,
+            getScrollElement: () => columnRefs.urgent.current,
+            estimateSize: () => 100,
+            overscan: 5
+        }),
+        completed: useVirtualizer({
+            count:
+                queries.completed.data?.pages.flatMap((p) => p.tasks).length ??
+                0,
+            getScrollElement: () => columnRefs.completed.current,
+            estimateSize: () => 100,
+            overscan: 5
+        })
+    };
 
     return (
         <div className="min-h-screen">
@@ -36,29 +70,65 @@ export function KanbanBoard() {
                 {(["new", "in_progress", "urgent", "completed"] as const).map(
                     (status) => (
                         <div key={status} className="flex flex-col gap-4">
-                            <div className="flex justify-between items-center">
-                                <div className="flex items-center gap-2">
-                                    <span
-                                        className={cn(
-                                            "px-3 py-1 text-sm rounded-lg font-medium",
-                                            statusColors[status]
-                                        )}
-                                    >
-                                        {t(`status.${status}`)}
-                                    </span>
-                                    <span className="text-gray-500 text-sm">
-                                        {groupedTasks[status]?.length || 0}
-                                    </span>
-                                </div>
+                            <div
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg ${statusColors[status]}`}
+                            >
+                                <h3 className="font-medium">
+                                    {t(`status.${status}`)}
+                                </h3>
+                                <span className="text-sm">
+                                    (
+                                    {queries[status].data?.pages.flatMap(
+                                        (p) => p.tasks
+                                    ).length ?? 0}
+                                    )
+                                </span>
                             </div>
-                            <div className="space-y-4">
-                                {groupedTasks[status]?.map((task) => (
-                                    <TaskCard
-                                        key={task.id}
-                                        task={task}
-                                        onComplete={toggleTaskComplete}
-                                    />
-                                ))}
+                            <div
+                                ref={columnRefs[status]}
+                                className="flex-1 overflow-auto"
+                                style={{ height: "calc(100vh - 200px)" }}
+                            >
+                                <div
+                                    style={{
+                                        height: `${virtualizers[status].getTotalSize()}px`,
+                                        position: "relative"
+                                    }}
+                                >
+                                    {virtualizers[status]
+                                        .getVirtualItems()
+                                        .map((virtualItem) => {
+                                            const task = queries[
+                                                status
+                                            ].data?.pages.flatMap(
+                                                (p) => p.tasks
+                                            )[virtualItem.index];
+                                            if (!task) return null;
+
+                                            return (
+                                                <div
+                                                    key={task.id}
+                                                    style={{
+                                                        position: "absolute",
+                                                        top: 0,
+                                                        left: 0,
+                                                        width: "100%",
+                                                        height: `${virtualItem.size}px`,
+                                                        transform: `translateY(${virtualItem.start}px)`
+                                                    }}
+                                                >
+                                                    <TaskCard
+                                                        task={taskTransformers.fromDTO(
+                                                            task
+                                                        )}
+                                                    />
+                                                </div>
+                                            );
+                                        })}
+                                </div>
+                                {queries[status].isFetchingNextPage && (
+                                    <LoadingSpinner className="mt-4" />
+                                )}
                             </div>
                         </div>
                     )
