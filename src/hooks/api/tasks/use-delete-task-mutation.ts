@@ -15,7 +15,6 @@ export function useDeleteTaskMutation() {
                 queryKeys.tasks.all(),
                 (old = []) => old.filter((task) => task.id !== deletedTaskId)
             );
-
             toast({
                 title: "Task deleted",
                 description: "The task has been successfully deleted."

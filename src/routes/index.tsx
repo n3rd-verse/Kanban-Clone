@@ -1,47 +1,32 @@
-// import { useEffect } from "react";
-import {
-    createFileRoute
-    // ErrorComponent,
-    // ErrorComponentProps,
-    // useRouter
-} from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { KanbanBoard } from "@/components/home/KanbanBoard/KanbanBoard";
 import { queryClient } from "@/lib/query-config";
-import { queryKeys } from "@/lib/query-keys";
-import { fetchTasks } from "@/services/tasks";
-// import { useQueryErrorResetBoundary } from "@tanstack/react-query";
-// import { Button } from "@/components/ui/button";
+import { tasksQueryOptions } from "@/hooks/api/tasks/task-query-options";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ColumnSkeleton } from "@/components/home/KanbanBoard/KanbanBoardSkeleton";
+import { Suspense } from "react";
 
 export const Route = createFileRoute("/")({
     loader: async () => {
-        await queryClient.ensureQueryData({
-            queryKey: queryKeys.tasks.all(),
-            queryFn: fetchTasks
-        });
+        await queryClient.ensureQueryData(tasksQueryOptions);
     },
-    // errorComponent: IndexErrorComponent,
-    component: () => <KanbanBoard />
+    component: () => (
+        <ErrorBoundary fallback={<div>Error loading tasks</div>}>
+            <Suspense
+                fallback={
+                    <div className="min-h-screen">
+                        <div className="gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+                            {["new", "in_progress", "urgent", "completed"].map(
+                                (status) => (
+                                    <ColumnSkeleton key={status} />
+                                )
+                            )}
+                        </div>
+                    </div>
+                }
+            >
+                <KanbanBoard />
+            </Suspense>
+        </ErrorBoundary>
+    )
 });
-
-// export function IndexErrorComponent({ error }: ErrorComponentProps) {
-//     const router = useRouter();
-
-//     const queryErrorResetBoundary = useQueryErrorResetBoundary();
-
-//     useEffect(() => {
-//         queryErrorResetBoundary.reset();
-//     }, [queryErrorResetBoundary]);
-
-//     return (
-//         <div>
-//             <Button
-//                 onClick={() => {
-//                     router.invalidate();
-//                 }}
-//             >
-//                 retry
-//             </Button>
-//             <ErrorComponent error={error} />
-//         </div>
-//     );
-// }

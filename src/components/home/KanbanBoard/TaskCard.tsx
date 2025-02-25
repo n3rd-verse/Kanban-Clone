@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { format } from "date-fns";
 import { CardDeleteButton } from "./CardDeleteButton";
-import { useDeleteTaskMutation } from "@/hooks/api/useDeleteTaskMutation";
+import { useDeleteTaskMutation } from "@/hooks/api/tasks/use-delete-task-mutation";
 
 interface TaskCardProps {
     task: Task;
