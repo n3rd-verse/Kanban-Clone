@@ -11,7 +11,7 @@ export function useInfiniteTasks(filters: TaskFilters = {}) {
                 return await fetchTasks({
                     ...filters,
                     page: pageParam,
-                    limit: 20
+                    limit: 30
                 });
             } catch (error: any) {
                 throw new Error(`Failed to fetch tasks: ${error.message}`);

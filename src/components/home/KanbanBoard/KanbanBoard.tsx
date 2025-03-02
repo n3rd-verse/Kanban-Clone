@@ -3,7 +3,7 @@ import { TaskCard } from "./TaskCard";
 import { useTranslation } from "react-i18next";
 import { useInfiniteTasks } from "@/hooks/api/tasks/use-infinite-tasks";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { useRef } from "react";
+import { useRef, useCallback, useEffect } from "react";
 import { taskTransformers } from "@/lib/transformers/task.transformer";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { QueryErrorBoundary } from "@/components/ErrorBoundary";
@@ -21,6 +21,7 @@ const statusColors = {
 function TaskColumn({ status }: { status: TaskStatus }) {
     const { t } = useTranslation();
     const columnRef = useRef<HTMLDivElement>(null);
+    const loadMoreRef = useRef<HTMLDivElement>(null);
     const { data, isFetchingNextPage, hasNextPage, fetchNextPage } =
         useInfiniteTasks({
             status: [status]
@@ -31,27 +32,46 @@ function TaskColumn({ status }: { status: TaskStatus }) {
     const virtualizer = useVirtualizer({
         count: tasks.length,
         getScrollElement: () => columnRef.current,
-        estimateSize: () => 100,
-        overscan: 5
+        estimateSize: () => 180,
+        overscan: 10,
+        paddingStart: 16,
+        paddingEnd: 16,
+        measureElement: (element) => {
+            if (!element) return 0;
+            const rect = element.getBoundingClientRect();
+            return rect.height;
+        }
     });
 
-    // Handle infinite scroll
-    const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-        const target = e.target as HTMLDivElement;
-        if (
-            !isFetchingNextPage &&
-            hasNextPage &&
-            target.scrollHeight - target.scrollTop <= target.clientHeight * 1.5
-        ) {
-            fetchNextPage();
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (
+                    entries[0].isIntersecting &&
+                    hasNextPage &&
+                    !isFetchingNextPage
+                ) {
+                    fetchNextPage();
+                }
+            },
+            {
+                rootMargin: "200px",
+                threshold: 0.1
+            }
+        );
+
+        if (loadMoreRef.current) {
+            observer.observe(loadMoreRef.current);
         }
-    };
+
+        return () => observer.disconnect();
+    }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2 h-full">
             <div className="flex justify-between items-center">
                 <div
-                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg ${statusColors[status]}`}
+                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg ${statusColors[status]}`}
                 >
                     <h3 className="font-medium">{t(`status.${status}`)}</h3>
                     <span className="text-sm">({tasks.length})</span>
@@ -59,14 +79,16 @@ function TaskColumn({ status }: { status: TaskStatus }) {
             </div>
             <div
                 ref={columnRef}
-                className="flex-1 px-1 overflow-auto scrollbar-hide hover:scrollbar-default"
-                style={{ height: "calc(100vh - 200px)" }}
-                onScroll={handleScroll}
+                className="flex-1 px-2 overflow-x-hidden overflow-y-auto"
+                style={{
+                    height: "calc(100vh - 200px)",
+                    position: "relative"
+                }}
             >
                 <div
+                    className="relative w-full"
                     style={{
-                        height: `${virtualizer.getTotalSize()}px`,
-                        position: "relative"
+                        height: `${virtualizer.getTotalSize()}px`
                     }}
                 >
                     {virtualizer.getVirtualItems().map((virtualItem) => {
@@ -76,14 +98,12 @@ function TaskColumn({ status }: { status: TaskStatus }) {
                         return (
                             <div
                                 key={task.id}
+                                data-index={virtualItem.index}
+                                className="left-0 absolute w-full"
                                 style={{
-                                    position: "absolute",
-                                    top: 0,
-                                    left: 0,
-                                    width: "100%",
-                                    height: `${virtualItem.size}px`,
-                                    transform: `translateY(${virtualItem.start}px)`,
-                                    padding: "6px 0" // Add padding between cards
+                                    top: `${virtualItem.start}px`,
+                                    height: "auto",
+                                    padding: "8px 0"
                                 }}
                             >
                                 <TaskCard
@@ -93,6 +113,7 @@ function TaskColumn({ status }: { status: TaskStatus }) {
                         );
                     })}
                 </div>
+                <div ref={loadMoreRef} className="h-5" />
                 {isFetchingNextPage && <LoadingSpinner className="mt-4" />}
             </div>
         </div>
@@ -103,9 +124,9 @@ export function KanbanBoard() {
     const statuses = ["new", "in_progress", "urgent", "completed"] as const;
 
     return (
-        <div className="flex flex-col gap-6 lg:grid lg:grid-cols-5">
+        <div className="flex flex-col gap-2 lg:grid lg:grid-cols-5">
             <div className="flex-1 lg:col-span-4">
-                <div className="gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+                <div className="gap-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
                     <QueryErrorBoundary key={statuses[0]}>
                         <Suspense
                             fallback={

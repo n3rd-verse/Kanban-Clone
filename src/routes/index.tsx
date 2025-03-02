@@ -20,7 +20,7 @@ export const Route = createFileRoute("/")({
                         fetchTasks({
                             status: [status],
                             page: pageParam,
-                            limit: 20
+                            limit: 30
                         }),
                     initialPageParam: 0,
                     getNextPageParam: (lastPage: TasksResponse) =>
