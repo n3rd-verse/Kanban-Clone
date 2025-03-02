@@ -6,12 +6,17 @@ export function useResponsiveLayout() {
     const { width } = useWindowSize();
 
     const maxVisibleTasks = useMemo(() => {
-        if (width < COLUMN_SIZES.MOBILE_BREAKPOINT)
-            return COLUMN_SIZES.MOBILE_MAX_TASKS;
-        if (width < COLUMN_SIZES.DESKTOP_BREAKPOINT)
-            return COLUMN_SIZES.TABLET_MAX_TASKS;
-        return COLUMN_SIZES.DESKTOP_MAX_TASKS;
+        if (width >= COLUMN_SIZES.DESKTOP_BREAKPOINT) {
+            return 10; // 데스크톱은 기존대로
+        } else if (width >= COLUMN_SIZES.TABLET_BREAKPOINT) {
+            return 4; // 태블릿은 5에서 4로 감소
+        } else {
+            return 3; // 모바일은 4에서 3으로 감소
+        }
     }, [width]);
 
-    return { width, maxVisibleTasks };
+    return {
+        width,
+        maxVisibleTasks
+    };
 }

@@ -129,7 +129,7 @@ export function TaskColumn({
                 style={{
                     ...columnStyle,
                     height: isDesktop ? "auto" : columnStyle.height,
-                    minHeight: isDesktop ? "auto" : "calc(100vh - 200px)"
+                    minHeight: isDesktop ? "auto" : "60vh"
                 }}
             >
                 <VirtualizedTaskList

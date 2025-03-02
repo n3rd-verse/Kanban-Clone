@@ -35,7 +35,8 @@ export function useVirtualizedTasks({
                     : `${Math.min(
                           maxVisibleTasks * COLUMN_SIZES.BASE_TASK_HEIGHT +
                               COLUMN_SIZES.COLUMN_PADDING,
-                          COLUMN_SIZES.MAX_TABLET_HEIGHT
+                          // 화면 높이의 60%로 제한하여 아래 컬럼이 보이도록 함
+                          window.innerHeight * 0.6
                       )}px`,
             position: "relative" as const
         }),
