@@ -25,9 +25,9 @@ const resources = {
                 calendar: "Calendar"
             },
             status: {
-                new: "New",
+                new: "Requested",
                 in_progress: "In Progress",
-                urgent: "Urgent",
+                urgent: "Overdue",
                 completed: "Completed"
             }
         }
@@ -36,7 +36,7 @@ const resources = {
 
 i18n.use(initReactI18next).init({
     resources,
-    lng: "ko",
+    lng: "en",
     fallbackLng: "en",
     interpolation: {
         escapeValue: false
