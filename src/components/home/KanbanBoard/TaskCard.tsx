@@ -5,11 +5,10 @@ import { format } from "date-fns";
 import { CardDeleteButton } from "./CardDeleteButton";
 import { useDeleteTaskMutation } from "@/hooks/api/tasks/use-delete-task-mutation";
 import { useTaskMutation } from "@/hooks/api/tasks/use-task-mutation";
-import React from "react";
+import React, { useState } from "react";
 import { useWindowSize } from "@/hooks/design/use-window-size";
 import { COLUMN_SIZES } from "./constants";
 import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface TaskCardProps {
     task: Task;
@@ -21,6 +20,7 @@ export function TaskCard({ task, className }: TaskCardProps) {
     const { mutate: toggleTask } = useTaskMutation();
     const { width } = useWindowSize();
     const isDesktop = width >= COLUMN_SIZES.DESKTOP_BREAKPOINT;
+    const [isHovered, setIsHovered] = useState(false);
 
     const dateColorClass =
         task.status === "urgent" ? "text-[#ea384c]" : "text-gray-400";
@@ -38,12 +38,21 @@ export function TaskCard({ task, className }: TaskCardProps) {
             className={cn(
                 "p-4 hover:shadow-md transition-shadow",
                 "break-words h-full",
+                "group relative",
                 className
             )}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
         >
             <div className="flex flex-col h-full">
                 <div className="flex justify-between items-start gap-4">
-                    <div className="flex-1 min-w-0">
+                    <div
+                        className={cn(
+                            "flex-1 min-w-0",
+                            isDesktop && isHovered ? "pr-8" : "pr-0",
+                            "transition-all duration-200"
+                        )}
+                    >
                         <h3 className="mb-2 font-medium break-words">
                             {task.title}
                         </h3>
@@ -65,15 +74,19 @@ export function TaskCard({ task, className }: TaskCardProps) {
                         </div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                        <div
-                            className={
-                                isDesktop
-                                    ? "opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                                    : "opacity-100"
-                            }
-                        >
-                            <CardDeleteButton onClick={handleDelete} />
-                        </div>
+                        {(!isDesktop || (isDesktop && isHovered)) && (
+                            <div
+                                className={cn(
+                                    isDesktop && [
+                                        "opacity-0 group-hover:opacity-100",
+                                        "transition-all duration-200",
+                                        "scale-90 group-hover:scale-100"
+                                    ]
+                                )}
+                            >
+                                <CardDeleteButton onClick={handleDelete} />
+                            </div>
+                        )}
                         <Checkbox
                             checked={
                                 task.status === "completed"
