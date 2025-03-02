@@ -3,12 +3,12 @@ import { queryClient } from "@/lib/query-config";
 import { queryKeys } from "@/lib/query-keys";
 import { fetchTasks } from "@/services/tasks";
 import { fetchSchedules } from "@/services/schedules";
-import { KanbanBoard } from "@/components/home/KanbanBoard/KanbanBoard";
+import { KanbanBoard } from "@/components/KanbanBoard/KanbanBoard";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { ColumnSkeleton } from "@/components/home/KanbanBoard/KanbanBoardSkeleton";
+import { ColumnSkeleton } from "@/components/KanbanBoard/KanbanBoardSkeleton";
 import { Suspense } from "react";
 import { TasksResponse } from "@/types/task";
-import { ScheduleColumnSkeleton } from "@/components/home/KanbanBoard/KanbanBoardSkeleton";
+import { ScheduleColumnSkeleton } from "@/components/KanbanBoard/KanbanBoardSkeleton";
 
 export const Route = createFileRoute("/")({
     loader: async () => {

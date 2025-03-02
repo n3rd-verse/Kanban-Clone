@@ -2,7 +2,7 @@ import { RefObject, useEffect, useMemo } from "react";
 import { useInfiniteTasks } from "@/hooks/api/tasks/use-infinite-tasks";
 import { useColumnVirtualizer } from "@/hooks/virtualizer/core/use-column-virtualizer";
 import { TaskStatus } from "@/types/task";
-import { COLUMN_SIZES } from "@/components/home/KanbanBoard/constants";
+import { COLUMN_SIZES } from "@/components/KanbanBoard/constants";
 
 interface UseVirtualizedTasksProps {
     status: TaskStatus;
