@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Timeline } from "@/components/timeline/Timeline";
 
 export const Route = createFileRoute("/timeline")({
-    component: RouteComponent
+    component: TimelineComponent
 });
 
-function RouteComponent() {
-    return <div>Timeline View (Coming Soon)</div>;
+function TimelineComponent() {
+    return <Timeline />;
 }
