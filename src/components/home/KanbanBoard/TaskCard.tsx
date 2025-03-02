@@ -33,14 +33,20 @@ export function TaskCard({ task, className }: TaskCardProps) {
         toggleTask(task.id);
     };
 
+    // const handleClick = () => {
+    // console.log("Task clicked:", task);
+    // };
+
     return (
         <Card
             className={cn(
                 "p-4 hover:shadow-md transition-shadow",
                 "break-words h-full",
                 "group relative",
+                "cursor-pointer",
                 className
             )}
+            // onClick={handleClick}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
