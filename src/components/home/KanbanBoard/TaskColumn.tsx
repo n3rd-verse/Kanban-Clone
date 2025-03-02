@@ -5,7 +5,9 @@ import { useColumnVirtualizer, useVirtualizedTasks } from "@/hooks/virtualizer";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { TaskCard } from "./TaskCard";
 import { taskTransformers } from "@/lib/transformers/task.transformer";
-import { STATUS_CONFIG } from "./constants";
+import { COLUMN_SIZES, STATUS_CONFIG } from "./constants";
+import { useWindowSize } from "@/hooks/design/use-window-size";
+import { cn } from "@/lib/utils";
 
 interface TaskColumnProps {
     status: TaskStatus;
@@ -37,15 +39,20 @@ function ColumnHeader({
 
 function VirtualizedTaskList({
     tasks,
-    virtualizer
+    virtualizer,
+    isDesktop
 }: {
     tasks: TaskDTO[];
     virtualizer: ReturnType<typeof useColumnVirtualizer>;
+    isDesktop: boolean;
 }) {
     return (
         <div
             className="relative w-full"
-            style={{ height: `${virtualizer.getTotalSize()}px` }}
+            style={{
+                height: isDesktop ? "auto" : `${virtualizer.getTotalSize()}px`,
+                position: isDesktop ? "static" : "relative"
+            }}
         >
             {virtualizer.getVirtualItems().map((virtualItem) => {
                 const task = tasks[virtualItem.index];
@@ -55,14 +62,25 @@ function VirtualizedTaskList({
                     <div
                         key={task.id}
                         data-index={virtualItem.index}
-                        className="left-0 absolute w-full"
+                        className={cn(
+                            "w-full",
+                            isDesktop ? "relative mb-4" : "absolute left-0"
+                        )}
                         style={{
-                            top: `${virtualItem.start}px`,
+                            ...(isDesktop
+                                ? {}
+                                : {
+                                      top: `${virtualItem.start}px`,
+                                      padding: "6px 0"
+                                  }),
                             height: "auto",
-                            padding: "8px 0"
+                            minHeight: "100px"
                         }}
                     >
-                        <TaskCard task={taskTransformers.fromDTO(task)} />
+                        <TaskCard
+                            task={taskTransformers.fromDTO(task)}
+                            className="h-full break-words"
+                        />
                     </div>
                 );
             })}
@@ -79,6 +97,8 @@ export function TaskColumn({
     const loadMoreRef = useRef<HTMLDivElement>(
         null
     ) as RefObject<HTMLDivElement>;
+    const { width: windowWidth } = useWindowSize();
+    const isDesktop = windowWidth >= COLUMN_SIZES.DESKTOP_BREAKPOINT;
 
     const {
         tasks,
@@ -99,10 +119,24 @@ export function TaskColumn({
             <ColumnHeader status={status} count={tasks.length} />
             <div
                 ref={columnRef}
-                className={`px-2 overflow-x-hidden ${scrollbarClass}`}
-                style={columnStyle}
+                className={cn(
+                    "px-2",
+                    isDesktop
+                        ? "overflow-visible"
+                        : "overflow-y-auto overflow-x-hidden",
+                    scrollbarClass
+                )}
+                style={{
+                    ...columnStyle,
+                    height: isDesktop ? "auto" : columnStyle.height,
+                    minHeight: isDesktop ? "auto" : "calc(100vh - 200px)"
+                }}
             >
-                <VirtualizedTaskList tasks={tasks} virtualizer={virtualizer} />
+                <VirtualizedTaskList
+                    tasks={tasks}
+                    virtualizer={virtualizer}
+                    isDesktop={isDesktop}
+                />
                 <div ref={loadMoreRef} className="h-5" />
                 {isFetchingNextPage && <LoadingSpinner className="mt-4" />}
             </div>

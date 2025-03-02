@@ -8,16 +8,15 @@ import { useTaskMutation } from "@/hooks/api/tasks/use-task-mutation";
 import React from "react";
 import { useWindowSize } from "@/hooks/design/use-window-size";
 import { COLUMN_SIZES } from "./constants";
+import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface TaskCardProps {
     task: Task;
-    onComplete?: (taskId: string) => void;
+    className?: string;
 }
 
-export const TaskCard = React.memo(function TaskCard({
-    task,
-    onComplete
-}: TaskCardProps) {
+export function TaskCard({ task, className }: TaskCardProps) {
     const { mutate: deleteTask } = useDeleteTaskMutation();
     const { mutate: toggleTask } = useTaskMutation();
     const { width } = useWindowSize();
@@ -35,11 +34,19 @@ export const TaskCard = React.memo(function TaskCard({
     };
 
     return (
-        <Card className="group hover:shadow-lg p-4 min-h-[140px] transition-shadow duration-200">
+        <Card
+            className={cn(
+                "p-4 hover:shadow-md transition-shadow",
+                "break-words h-full",
+                className
+            )}
+        >
             <div className="flex flex-col h-full">
                 <div className="flex justify-between items-start gap-4">
                     <div className="flex-1 min-w-0">
-                        <h3 className="mb-1 font-medium">{task.title}</h3>
+                        <h3 className="mb-2 font-medium break-words">
+                            {task.title}
+                        </h3>
                         <div className="flex items-center gap-2 mt-1 overflow-hidden">
                             <div className="flex flex-shrink-0 items-center gap-1 min-w-0">
                                 {task.assignee.map((assignee, index) => (
@@ -85,4 +92,4 @@ export const TaskCard = React.memo(function TaskCard({
             </div>
         </Card>
     );
-});
+}
