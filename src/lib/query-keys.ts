@@ -15,5 +15,9 @@ export const queryKeys = {
         root: ["users"] as const,
         all: () => [...queryKeys.users.root] as const,
         detail: (id: string) => [...queryKeys.users.root, "detail", id] as const
+    },
+    schedules: {
+        all: () => ["schedules"] as const,
+        detail: (id: string) => ["schedules", id] as const
     }
 } as const;

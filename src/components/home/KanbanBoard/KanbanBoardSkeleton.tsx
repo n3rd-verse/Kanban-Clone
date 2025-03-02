@@ -29,3 +29,24 @@ export const ColumnSkeleton = () => (
         </div>
     </div>
 );
+
+export const ScheduleColumnSkeleton = () => (
+    <div className="pt-6 md:pt-0 md:pl-6 border-gray-200 border-t md:border-t-0 md:border-l">
+        <div className="space-y-8">
+            {[1, 2, 3].map((i) => (
+                <div key={i} className="space-y-4">
+                    <Skeleton className="w-32 h-6" />
+                    <div className="space-y-4">
+                        {[1, 2].map((j) => (
+                            <Card key={j} className="space-y-3 p-4">
+                                <Skeleton className="w-24 h-4" />
+                                <Skeleton className="w-48 h-4" />
+                                <Skeleton className="w-32 h-3" />
+                            </Card>
+                        ))}
+                    </div>
+                </div>
+            ))}
+        </div>
+    </div>
+);

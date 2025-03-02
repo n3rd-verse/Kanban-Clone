@@ -1,13 +1,6 @@
-import { useMemo } from "react";
-import { mockScheduleDays } from "@/mocks/mockData";
+import { useSchedules } from "@/hooks/api/schedules/use-schedules";
 
 export function useScheduleGroups() {
-    return useMemo(() => {
-        return mockScheduleDays.map((dayInfo) => ({
-            ...dayInfo,
-            schedules: dayInfo.schedules.sort((a, b) =>
-                a.startTime.localeCompare(b.startTime)
-            )
-        }));
-    }, []);
+    const { data: scheduleGroups = [] } = useSchedules();
+    return scheduleGroups;
 }

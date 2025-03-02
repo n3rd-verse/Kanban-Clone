@@ -2,8 +2,21 @@ import { useScheduleGroups } from "@/hooks/schedule/use-schedule-groups";
 import { ScheduleCard } from "./ScheduleCard";
 import { DateHeader } from "./DateHeader";
 import type { ScheduleDay } from "@/types/schedule";
+import { ScheduleColumnSkeleton } from "./KanbanBoardSkeleton";
+import { Suspense } from "react";
+import { QueryErrorBoundary } from "@/components/ErrorBoundary";
 
 export function ScheduleColumn() {
+    return (
+        <QueryErrorBoundary>
+            <Suspense fallback={<ScheduleColumnSkeleton />}>
+                <ScheduleColumnContent />
+            </Suspense>
+        </QueryErrorBoundary>
+    );
+}
+
+function ScheduleColumnContent() {
     const scheduleGroups = useScheduleGroups();
 
     return (

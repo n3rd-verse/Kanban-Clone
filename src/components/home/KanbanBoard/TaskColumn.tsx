@@ -8,6 +8,7 @@ import { taskTransformers } from "@/lib/transformers/task.transformer";
 import { COLUMN_SIZES, STATUS_CONFIG } from "./constants";
 import { useWindowSize } from "@/hooks/design/use-window-size";
 import { cn } from "@/lib/utils";
+import { ColumnSkeleton } from "./KanbanBoardSkeleton";
 
 interface TaskColumnProps {
     status: TaskStatus;
@@ -105,7 +106,10 @@ export function TaskColumn({
         virtualizer,
         columnStyle,
         scrollbarClass,
-        isFetchingNextPage
+        isFetchingNextPage,
+        isLoading,
+        isError,
+        error
     } = useVirtualizedTasks({
         status,
         columnRef,
@@ -113,6 +117,18 @@ export function TaskColumn({
         maxVisibleTasks,
         width
     });
+
+    if (isLoading) {
+        return <ColumnSkeleton />;
+    }
+
+    if (isError) {
+        return (
+            <div className="p-4 text-red-500">
+                Error: {error?.message || "Failed to load tasks"}
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col gap-2">

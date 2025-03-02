@@ -6,7 +6,7 @@ let tasks = [...mockTasks]; // Mutable copy for simulating database
 export async function fetchTasks(
     filters?: TaskFilters
 ): Promise<TasksResponse> {
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     let filteredTasks = [...tasks];
 
