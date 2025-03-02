@@ -9,7 +9,7 @@ interface BoardColumnsProps {
     width: number;
 }
 
-export function BoardColumns({ maxVisibleTasks, width }: BoardColumnsProps) {
+export function TaskColumns({ maxVisibleTasks, width }: BoardColumnsProps) {
     return (
         <div className="content-start gap-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
             {STATUS_CONFIG.map(({ id }) => (

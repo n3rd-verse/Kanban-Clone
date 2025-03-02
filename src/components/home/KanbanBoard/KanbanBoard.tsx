@@ -1,4 +1,4 @@
-import { BoardColumns } from "./BoardColumns";
+import { TaskColumns } from "./BoardColumns";
 import { ScheduleColumn } from "./ScheduleColumn";
 import { useResponsiveLayout } from "@/hooks/design/use-responsive-layout";
 
@@ -9,7 +9,7 @@ export function KanbanBoard() {
         <div className="min-h-screen">
             <div className="gap-2 grid xl:grid-cols-5">
                 <div className="col-span-full xl:col-span-4">
-                    <BoardColumns
+                    <TaskColumns
                         maxVisibleTasks={maxVisibleTasks}
                         width={width}
                     />

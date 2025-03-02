@@ -19,17 +19,10 @@ export function useVirtualizedTasks({
     maxVisibleTasks,
     width
 }: UseVirtualizedTasksProps) {
-    const {
-        data,
-        isFetchingNextPage,
-        hasNextPage,
-        fetchNextPage,
-        isLoading,
-        isError,
-        error
-    } = useInfiniteTasks({
-        status: [status]
-    });
+    const { data, isFetchingNextPage, hasNextPage, fetchNextPage, error } =
+        useInfiniteTasks({
+            status: [status]
+        });
 
     const tasks = data?.pages.flatMap((p) => p.tasks) ?? [];
     const virtualizer = useColumnVirtualizer({ tasks, columnRef });
@@ -79,8 +72,6 @@ export function useVirtualizedTasks({
         columnStyle,
         scrollbarClass,
         isFetchingNextPage,
-        isLoading,
-        isError,
         error
     };
 }

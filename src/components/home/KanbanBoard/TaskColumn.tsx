@@ -8,7 +8,6 @@ import { taskTransformers } from "@/lib/transformers/task.transformer";
 import { COLUMN_SIZES, STATUS_CONFIG } from "./constants";
 import { useWindowSize } from "@/hooks/design/use-window-size";
 import { cn } from "@/lib/utils";
-import { ColumnSkeleton } from "./KanbanBoardSkeleton";
 
 interface TaskColumnProps {
     status: TaskStatus;

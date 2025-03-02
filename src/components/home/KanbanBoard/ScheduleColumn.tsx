@@ -7,16 +7,6 @@ import { Suspense } from "react";
 import { QueryErrorBoundary } from "@/components/ErrorBoundary";
 
 export function ScheduleColumn() {
-    return (
-        <QueryErrorBoundary>
-            <Suspense fallback={<ScheduleColumnSkeleton />}>
-                <ScheduleColumnContent />
-            </Suspense>
-        </QueryErrorBoundary>
-    );
-}
-
-function ScheduleColumnContent() {
     const scheduleGroups = useScheduleGroups();
 
     return (

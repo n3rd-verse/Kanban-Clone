@@ -6,7 +6,8 @@
         "dev": "vite --port 3000",
         "build": "vite build && tsc --noEmit",
         "serve": "vite preview",
-        "start": "vite"
+        "start": "vite",
+        "typecheck": "tsc --noEmit"
     },
     "dependencies": {
         "@tanstack/react-query": "^5.66.0",
