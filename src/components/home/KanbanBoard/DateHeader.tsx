@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo } from "react";
 import { format, isToday, isYesterday } from "date-fns";
 import { Calendar } from "lucide-react";
 
@@ -8,26 +8,30 @@ interface DateHeaderProps {
 
 export const DateHeader = memo(function DateHeader({ date }: DateHeaderProps) {
     const day = format(date, "d");
-    const weekday = format(date, "EEE");
+    const weekday = format(date, "EEE").toUpperCase();
     const month = format(date, "MMM");
     const year = format(date, "yyyy");
 
     let suffix = "";
     if (isToday(date)) {
-        suffix = "· Today";
+        suffix = "· today";
     } else if (isYesterday(date)) {
-        suffix = "· Yesterday";
+        suffix = "· yesterday";
     }
 
     return (
-        <div className="flex items-center gap-2 mb-6">
-            <Calendar size={20} className="text-gray-600" />
-            <h2 className="font-semibold text-xl">
-                {day}
-                <span className="ml-2 font-normal text-gray-500">
-                    {weekday} · {month} · {year} {suffix}
-                </span>
-            </h2>
+        <div className="flex items-center mb-6">
+            <div className="flex items-center gap-4">
+                <span className="font-medium text-3xl">{day}</span>
+                <div className="flex flex-col">
+                    <span className="text-gray-500">
+                        {weekday} · {month} · {year}
+                    </span>
+                    {suffix && (
+                        <span className="text-gray-500 text-sm">{suffix}</span>
+                    )}
+                </div>
+            </div>
         </div>
     );
 });
