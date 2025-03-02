@@ -58,7 +58,7 @@ function DateHeader({ date }: { date: Date }) {
 
 export function ScheduleColumn() {
     return (
-        <div className="pl-6 border-gray-200 border-l min-h-screen">
+        <div className="pt-6 md:pt-0 md:pl-6 border-gray-200 border-t md:border-t-0 md:border-l">
             {mockScheduleDays.map((dayInfo) => (
                 <div key={dayInfo.id} className="mb-8">
                     <DateHeader date={dayInfo.date} />

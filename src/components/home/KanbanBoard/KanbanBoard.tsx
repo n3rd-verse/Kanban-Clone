@@ -103,9 +103,9 @@ export function KanbanBoard() {
     const statuses = ["new", "in_progress", "urgent", "completed"] as const;
 
     return (
-        <div className="flex gap-6 min-h-screen">
-            <div className="flex-1">
-                <div className="gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+        <div className="flex flex-col gap-6 sm:grid sm:grid-cols-5">
+            <div className="flex-1 sm:col-span-4">
+                <div className="gap-4 grid grid-cols-1 sm:grid-cols-4">
                     {statuses.map((status) => (
                         <QueryErrorBoundary key={status}>
                             <Suspense
@@ -121,7 +121,7 @@ export function KanbanBoard() {
                     ))}
                 </div>
             </div>
-            <div className="w-[400px]">
+            <div className="sm:col-span-1 w-full">
                 <ScheduleColumn />
             </div>
         </div>
