@@ -107,8 +107,6 @@ export function TaskColumn({
         columnStyle,
         scrollbarClass,
         isFetchingNextPage,
-        isLoading,
-        isError,
         error
     } = useVirtualizedTasks({
         status,
@@ -118,11 +116,7 @@ export function TaskColumn({
         width
     });
 
-    if (isLoading) {
-        return <ColumnSkeleton />;
-    }
-
-    if (isError) {
+    if (error) {
         return (
             <div className="p-4 text-red-500">
                 Error: {error?.message || "Failed to load tasks"}

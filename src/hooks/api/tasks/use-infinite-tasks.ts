@@ -1,10 +1,10 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import { fetchTasks } from "@/services/tasks";
 import type { TaskFilters } from "@/types/task";
 
 export function useInfiniteTasks(filters: TaskFilters = {}) {
-    return useInfiniteQuery({
+    return useSuspenseInfiniteQuery({
         queryKey: queryKeys.tasks.infinite(filters),
         queryFn: async ({ pageParam = 0 }) => {
             try {

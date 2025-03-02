@@ -1,9 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import { fetchSchedules } from "@/services/schedules";
 
 export function useSchedules() {
-    return useQuery({
+    return useSuspenseQuery({
         queryKey: queryKeys.schedules.all(),
         queryFn: fetchSchedules,
         select: (data) => {
