@@ -6,6 +6,8 @@ import { CardDeleteButton } from "./CardDeleteButton";
 import { useDeleteTaskMutation } from "@/hooks/api/tasks/use-delete-task-mutation";
 import { useTaskMutation } from "@/hooks/api/tasks/use-task-mutation";
 import React from "react";
+import { useWindowSize } from "@/hooks/design/use-window-size";
+import { COLUMN_SIZES } from "./constants";
 
 interface TaskCardProps {
     task: Task;
@@ -18,6 +20,8 @@ export const TaskCard = React.memo(function TaskCard({
 }: TaskCardProps) {
     const { mutate: deleteTask } = useDeleteTaskMutation();
     const { mutate: toggleTask } = useTaskMutation();
+    const { width } = useWindowSize();
+    const isDesktop = width >= COLUMN_SIZES.DESKTOP_BREAKPOINT;
 
     const dateColorClass =
         task.status === "urgent" ? "text-[#ea384c]" : "text-gray-400";
@@ -54,7 +58,13 @@ export const TaskCard = React.memo(function TaskCard({
                         </div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <div
+                            className={
+                                isDesktop
+                                    ? "opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                                    : "opacity-100"
+                            }
+                        >
                             <CardDeleteButton onClick={handleDelete} />
                         </div>
                         <Checkbox
