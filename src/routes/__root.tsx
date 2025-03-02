@@ -53,7 +53,7 @@ function RootComponent() {
     return (
         <div className="min-h-screen">
             <main>
-                <div className="flex gap-8 px-4 border-gray-200 border-b">
+                <div className="flex gap-8 px-8 py-4 border-gray-200 border-b">
                     {views.map((view) => {
                         const Icon = view.icon;
                         return (
@@ -61,7 +61,7 @@ function RootComponent() {
                                 key={view.id}
                                 to={view.id}
                                 className={cn(
-                                    "py-4 flex items-center gap-2 text-gray-500 relative transition-colors",
+                                    "flex items-center gap-2 text-gray-500 relative transition-colors",
                                     "hover:text-[#3b82f6]"
                                 )}
                                 activeProps={{

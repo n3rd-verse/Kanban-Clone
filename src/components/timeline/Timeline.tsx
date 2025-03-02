@@ -8,13 +8,13 @@ export function Timeline() {
     const { width } = useResponsiveLayout();
 
     return (
-        <div className="bg-white p-6 min-h-screen">
+        <div className="min-h-screen">
             <div className="mb-8">
                 <h2 className="font-semibold text-2xl">
                     {format(new Date(), "MMMM yyyy")}
                 </h2>
             </div>
-            <div className="relative mb-8">
+            <div className="relative">
                 <div className="top-[50%] right-0 left-0 absolute h-[2px]">
                     <div className="relative w-full">
                         <div className="absolute inset-0 bg-red-500" />
