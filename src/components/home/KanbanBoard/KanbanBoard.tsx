@@ -9,6 +9,7 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { QueryErrorBoundary } from "@/components/ErrorBoundary";
 import { Suspense } from "react";
 import { ColumnSkeleton } from "./KanbanBoardSkeleton";
+import { ScheduleColumn } from "../ScheduleColumn/ScheduleColumn";
 
 const statusColors = {
     new: "text-[#3b82f6] bg-blue-50",
@@ -102,21 +103,26 @@ export function KanbanBoard() {
     const statuses = ["new", "in_progress", "urgent", "completed"] as const;
 
     return (
-        <div className="min-h-screen">
-            <div className="gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-                {statuses.map((status) => (
-                    <QueryErrorBoundary key={status}>
-                        <Suspense
-                            fallback={
-                                <div className="animate-pulse">
-                                    <ColumnSkeleton />
-                                </div>
-                            }
-                        >
-                            <TaskColumn status={status} />
-                        </Suspense>
-                    </QueryErrorBoundary>
-                ))}
+        <div className="flex gap-6 min-h-screen">
+            <div className="flex-1">
+                <div className="gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+                    {statuses.map((status) => (
+                        <QueryErrorBoundary key={status}>
+                            <Suspense
+                                fallback={
+                                    <div className="animate-pulse">
+                                        <ColumnSkeleton />
+                                    </div>
+                                }
+                            >
+                                <TaskColumn status={status} />
+                            </Suspense>
+                        </QueryErrorBoundary>
+                    ))}
+                </div>
+            </div>
+            <div className="w-[400px]">
+                <ScheduleColumn />
             </div>
         </div>
     );

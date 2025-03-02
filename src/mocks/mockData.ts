@@ -1,4 +1,5 @@
 import type { Task } from "@/types/task";
+import type { ScheduleDay } from "@/types/schedule";
 
 export const mockTasks: Task[] = [
     {
@@ -49,5 +50,66 @@ export const mockTasks: Task[] = [
         assignee: ["Seokmin Lee", "Heemang Lee"],
         date: "2024-02-03",
         status: "completed"
+    }
+];
+
+export const mockScheduleDays: ScheduleDay[] = [
+    {
+        id: "date-1",
+        date: new Date(2024, 0, 31), // 31 JAN
+        schedules: [
+            {
+                id: "1",
+                title: "Daily Scrum",
+                startTime: "9:00 AM",
+                endTime: "9:30 AM",
+                type: "daily"
+            },
+            {
+                id: "2",
+                title: "OfficeMail Desktop Calendar Kickoff Meeting",
+                startTime: "10:00 AM",
+                endTime: "11:00 AM",
+                type: "meeting",
+                location: "Jiran 37"
+            }
+        ]
+    },
+    {
+        id: "date-2",
+        date: new Date(2024, 1, 10), // 10 FRI (Yesterday)
+        schedules: [
+            {
+                id: "3",
+                title: "OfficeMail AI Marketing Meeting",
+                startTime: "10:00 AM",
+                endTime: "11:00 AM",
+                type: "meeting",
+                location:
+                    "FASTFIVE 7F 704, Hakdong-ro 45-gil 3, Gangam-gu Seoul"
+            }
+        ]
+    },
+    {
+        id: "date-3",
+        date: new Date(2024, 1, 11), // 11 SAT (Today)
+        schedules: [
+            {
+                id: "1",
+                title: "Daily Scrum",
+                startTime: "9:00 AM",
+                endTime: "9:30 AM",
+                type: "daily"
+            },
+            {
+                id: "3",
+                title: "OfficeMail AI Marketing Meeting",
+                startTime: "10:00 AM",
+                endTime: "11:00 AM",
+                type: "meeting",
+                location:
+                    "FASTFIVE 7F 704, Hakdong-ro 45-gil 3, Gangam-gu Seoul"
+            }
+        ]
     }
 ];
