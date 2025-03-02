@@ -61,14 +61,10 @@ function RootComponent() {
                                 key={view.id}
                                 to={view.id}
                                 className={cn(
-                                    "flex items-center gap-2 text-gray-500 relative transition-colors",
-                                    "hover:text-[#3b82f6]"
+                                    "flex items-center gap-2 text-gray-500 relative transition-colors font-medium"
                                 )}
                                 activeProps={{
-                                    className: cn(
-                                        "text-[#3b82f6]",
-                                        "after:absolute after:bottom-[-1px] after:left-0 after:right-0 after:h-[2px] after:bg-[#3b82f6]"
-                                    )
+                                    className: "!text-[#3b82f6]"
                                 }}
                                 activeOptions={{ exact: view.id === "/" }}
                             >
