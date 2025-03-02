@@ -1,6 +1,7 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { RefObject } from "react";
 import { TaskDTO } from "@/types/task";
+import { VIRTUALIZATION_CONFIG } from "@/components/home/KanbanBoard/constants";
 
 interface UseColumnVirtualizerProps {
     tasks: TaskDTO[];
@@ -14,10 +15,10 @@ export function useColumnVirtualizer({
     return useVirtualizer({
         count: tasks.length,
         getScrollElement: () => columnRef.current,
-        estimateSize: () => 180,
-        overscan: 10,
-        paddingStart: 16,
-        paddingEnd: 16,
+        estimateSize: () => VIRTUALIZATION_CONFIG.ESTIMATED_SIZE,
+        overscan: VIRTUALIZATION_CONFIG.OVERSCAN,
+        paddingStart: VIRTUALIZATION_CONFIG.PADDING_START,
+        paddingEnd: VIRTUALIZATION_CONFIG.PADDING_END,
         measureElement: (element) => {
             if (!element) return 0;
             return element.getBoundingClientRect().height;

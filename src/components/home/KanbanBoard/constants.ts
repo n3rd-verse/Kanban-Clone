@@ -22,6 +22,15 @@ export const BOARD_LAYOUT = {
     SCHEDULE_SPAN: 1
 } as const;
 
+export const VIRTUALIZATION_CONFIG = {
+    OVERSCAN: 10,
+    ESTIMATED_SIZE: 180,
+    PADDING_START: 16,
+    PADDING_END: 16,
+    INTERSECTION_MARGIN: "200px",
+    INTERSECTION_THRESHOLD: 0.1
+} as const;
+
 export type TaskStatusConfig = {
     id: TaskStatus;
     label: string;
@@ -29,16 +38,20 @@ export type TaskStatusConfig = {
 };
 
 export const STATUS_CONFIG: TaskStatusConfig[] = [
-    { id: "new", label: "status.new", color: "text-[#3b82f6] bg-blue-50" },
+    { id: "new", label: "status.new", color: "text-[#3b82f6] bg-blue-100/50" },
     {
         id: "in_progress",
         label: "status.in_progress",
-        color: "text-[#fbbf24] bg-amber-50"
+        color: "text-[#fbbf24] bg-yellow-100/50"
     },
-    { id: "urgent", label: "status.urgent", color: "text-[#ef4444] bg-red-50" },
+    {
+        id: "urgent",
+        label: "status.urgent",
+        color: "text-[#ef4444] bg-red-100/50"
+    },
     {
         id: "completed",
         label: "status.completed",
-        color: "text-[#22c55e] bg-green-50"
+        color: "text-[#22c55e] bg-green-100/50"
     }
 ];
