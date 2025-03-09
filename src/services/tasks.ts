@@ -1,12 +1,21 @@
-import { mockTasks } from "@/mocks/mockData";
 import type { Task, TaskFilters, TasksResponse } from "@/types/task";
 
-let tasks = [...mockTasks]; // Mutable copy for simulating database
+let tasks: Task[];
+
+export async function openTask(taskId:string) : Promise<void> {
+    return await window.OMNative.openTask(taskId);
+}
 
 export async function fetchTasks(
     filters?: TaskFilters
 ): Promise<TasksResponse> {
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    const json = await new Promise<string>((resolve) => {
+        window.OMNative.getTasks((json) => {
+            resolve(json);
+        });
+    })
+
+    tasks = JSON.parse(json);
 
     let filteredTasks = [...tasks];
 
@@ -30,24 +39,35 @@ export async function fetchTasks(
     };
 }
 
-export async function toggleTaskStatus(taskId: string): Promise<Task> {
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
+export async function toggleTaskStatus(taskId: string): Promise<void> {
     const taskIndex = tasks.findIndex((t) => t.id === taskId);
     if (taskIndex === -1) throw new Error("Task not found");
 
-    tasks[taskIndex] = {
-        ...tasks[taskIndex],
-        completed: !tasks[taskIndex].completed
-    };
-    return tasks[taskIndex];
+    const success = await new Promise((resolve) => {
+        if (tasks[taskIndex].status == "completed") {
+            window.OMNative.clearTask(taskId, (success) => {
+                resolve(success);
+            });
+        } else {
+            window.OMNative.completeTask(taskId, (success) => {
+                resolve(success);
+            });
+        }
+    })
+    
+    if (!success) throw new Error("Failed to completed task");
 }
 
 export async function deleteTask(taskId: string): Promise<string> {
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    const success = await new Promise((resolve) => {
+        window.OMNative.deleteTask(taskId, (success) => {
+            resolve(success);
+        });
+    })
 
     const taskIndex = tasks.findIndex((t) => t.id === taskId);
     if (taskIndex === -1) throw new Error("Task not found");
+    if (!success) throw new Error("Failed to delete task");
 
     tasks = tasks.filter((t) => t.id !== taskId);
     return taskId;

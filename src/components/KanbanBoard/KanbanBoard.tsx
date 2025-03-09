@@ -4,7 +4,7 @@ import { useResponsiveLayout } from "@/hooks/design/use-responsive-layout";
 
 export function KanbanBoard() {
     const { width, maxVisibleTasks } = useResponsiveLayout();
-
+    
     return (
         <div className="min-h-screen">
             <div className="gap-2 grid xl:grid-cols-5">

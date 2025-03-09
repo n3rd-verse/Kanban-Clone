@@ -7,6 +7,8 @@ import { routeTree } from "./routeTree.gen";
 import "./index.css";
 import "@/i18n";
 import { scan } from "react-scan";
+import { queryKeys } from "./lib/query-keys";
+import i18n from "@/i18n";
 
 // Set up a Router instance
 const router = createRouter({
@@ -43,6 +45,7 @@ declare module "@tanstack/react-router" {
     }
 }
 
+
 scan({
     enabled: true
 });
@@ -57,3 +60,15 @@ if (!rootElement.innerHTML) {
         </QueryClientProvider>
     );
 }
+
+window.refreshTasks = async () => {
+    await queryClient.refetchQueries({ queryKey: queryKeys.tasks.all() });
+};
+
+window.refreshSchedules = async () => {
+    await queryClient.refetchQueries({ queryKey: queryKeys.schedules.all() });
+};
+
+window.changeLanguage = (lang: string) => {
+    i18n.changeLanguage(lang);
+};

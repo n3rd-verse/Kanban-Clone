@@ -74,7 +74,6 @@ function VirtualizedTaskList({
                                       padding: "6px 0"
                                   }),
                             height: "auto",
-                            minHeight: "100px"
                         }}
                     >
                         <TaskCard
@@ -98,7 +97,7 @@ export function TaskColumn({
         null
     ) as RefObject<HTMLDivElement>;
     const { width: windowWidth } = useWindowSize();
-    const isDesktop = windowWidth >= COLUMN_SIZES.DESKTOP_BREAKPOINT;
+    const isDesktop = true//windowWidth >= COLUMN_SIZES.DESKTOP_BREAKPOINT;
 
     const {
         tasks,
@@ -129,7 +128,7 @@ export function TaskColumn({
             <div
                 ref={columnRef}
                 className={cn(
-                    "px-2",
+                    "px-0",
                     isDesktop
                         ? "overflow-visible"
                         : "overflow-y-auto overflow-x-hidden",

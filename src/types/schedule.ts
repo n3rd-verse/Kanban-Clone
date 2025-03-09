@@ -3,12 +3,14 @@ export interface Schedule {
     title: string;
     startTime: string;
     endTime: string;
-    type: "daily" | "meeting";
+    attendees: string[];
+    type: "past" | "future";
     location?: string;
 }
 
 export interface ScheduleDay {
-    id: string;
-    date: Date;
+    id:string;
+    date: string;
+    type: "past" | "future";
     schedules: Schedule[];
 }
