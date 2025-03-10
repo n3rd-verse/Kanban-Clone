@@ -4,18 +4,18 @@ export interface Task {
     id: string;
     title: string;
     assignee: string[];
-    date: string;
+    date?: string;
     status: TaskStatus;
-    completed?: boolean;
+    allowEdit?: boolean;
 }
 
 export interface TaskDTO {
     id: string;
     title: string;
     assignee: string | string[];
-    date: string;
+    date?: string;
     status: TaskStatus;
-    completed?: boolean;
+    allowEdit?: boolean;
 }
 
 export interface TaskFilters {

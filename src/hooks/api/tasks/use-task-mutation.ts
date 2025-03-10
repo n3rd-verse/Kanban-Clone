@@ -53,7 +53,7 @@ export function useTaskMutation() {
             // 4. Immediately update UI with what we expect the result to be
             const updatedTask = {
                 ...taskToUpdate,
-                completed: !taskToUpdate.completed
+                allowEdit: !taskToUpdate.allowEdit
             };
 
             for (const status of statuses) {
@@ -94,7 +94,7 @@ export function useTaskMutation() {
         onSuccess: (updatedTask) => {
             toast({
                 title: "Success",
-                description: `Task ${updatedTask.completed ? "completed" : "uncompleted"}`
+                description: `Task completed`
             });
         }
     });

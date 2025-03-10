@@ -9,6 +9,7 @@ import React, { useState } from "react";
 import { useWindowSize } from "@/hooks/design/use-window-size";
 import { COLUMN_SIZES } from "./constants";
 import { cn } from "@/lib/utils";
+import { useOpenTaskMutation } from "@/hooks/api/tasks/use-open-task-mutation";
 
 interface TaskCardProps {
     task: Task;
@@ -19,8 +20,10 @@ export function TaskCard({ task, className }: TaskCardProps) {
     const { mutate: deleteTask } = useDeleteTaskMutation();
     const { mutate: toggleTask } = useTaskMutation();
     const { width } = useWindowSize();
+    const { mutate: openTask } = useOpenTaskMutation();
     const isDesktop = width >= COLUMN_SIZES.DESKTOP_BREAKPOINT;
     const [isHovered, setIsHovered] = useState(false);
+    const [startPos, setStartPos] = useState({ x: 0, y: 0 });
 
     const dateColorClass =
         task.status === "urgent" ? "text-[#ea384c]" : "text-gray-400";
@@ -33,9 +36,23 @@ export function TaskCard({ task, className }: TaskCardProps) {
         toggleTask(task.id);
     };
 
-    // const handleClick = () => {
-    // console.log("Task clicked:", task);
-    // };
+    const handleMouseDown = (e: React.MouseEvent) => {
+        setStartPos({ x: e.clientX, y: e.clientY });
+    };
+
+    const handleClick = (e: React.MouseEvent) => {
+        const diffX = Math.abs(e.clientX - startPos.x);
+        const diffY = Math.abs(e.clientY - startPos.y);
+        const threshold = 5;
+        
+        if (diffX > threshold || diffY > threshold) {
+          // 드래그로 간주하고 클릭 이벤트 무시
+          return;
+        }
+        
+        // 드래그가 아닌 경우 openTask 함수 호출
+        openTask(task.id);
+      };
 
     return (
         <Card
@@ -46,20 +63,18 @@ export function TaskCard({ task, className }: TaskCardProps) {
                 "cursor-pointer",
                 className
             )}
-            // onClick={handleClick}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
+            onClick={(e) => {
+                handleClick(e);
+            }}
+            onMouseDown={handleMouseDown}
         >
             <div className="flex flex-col h-full">
-                <div className="flex justify-between items-start gap-4">
-                    <div
-                        className={cn(
-                            "flex-1 min-w-0",
-                            isDesktop && isHovered ? "pr-8" : "pr-0",
-                            "transition-all duration-200"
-                        )}
-                    >
-                        <h3 className="mb-2 font-medium break-words">
+                <div className="flex justify-between items-center">
+                    {/* 타이틀과 담당자 영역 - 고정된 너비 유지 */}
+                    <div className="flex-1 min-w-0">
+                        <h3 className="mb-1 font-medium break-words">
                             {task.title}
                         </h3>
                         <div className="flex items-center gap-2 mt-1 overflow-hidden">
@@ -79,35 +94,29 @@ export function TaskCard({ task, className }: TaskCardProps) {
                             </div>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                        {(!isDesktop || (isDesktop && isHovered)) && (
-                            <div
-                                className={cn(
-                                    isDesktop && [
-                                        "opacity-0 group-hover:opacity-100",
-                                        "transition-all duration-200",
-                                        "scale-90 group-hover:scale-100"
-                                    ]
-                                )}
-                            >
+                    
+                    {/* 버튼 영역 - 오른쪽 끝/가운데 정렬 */}
+                    <div className="flex items-center gap-2 shrink-0 ml-2">
+                        {(!isDesktop || (isDesktop)) && (
+                            <div className="flex items-center">
                                 <CardDeleteButton onClick={handleDelete} />
                             </div>
                         )}
-                        <Checkbox
-                            checked={
-                                task.status === "completed"
-                                    ? true
-                                    : task.completed
-                            }
-                            onCheckedChange={handleComplete}
-                            className="w-5 h-5"
-                            disabled={task.status === "completed"}
-                        />
+                        <div className="flex items-center" onClick={(e) => e.stopPropagation()}>
+                            <Checkbox
+                                checked={task.status === "completed"}
+                                onCheckedChange={handleComplete}
+                                className="w-5 h-5"
+                                disabled={task.allowEdit}
+                            />
+                        </div>
                     </div>
                 </div>
-                <div className={`text-sm ${dateColorClass} mt-auto pt-2`}>
-                    {format(new Date(task.date), "MMM dd, yyyy")}
-                </div>
+                {task.date && (
+                    <div className={`text-sm ${dateColorClass} mt-auto pt-2`}>
+                        {format(new Date(task.date), "MMM dd, yyyy")}
+                    </div>
+                )}
             </div>
         </Card>
     );

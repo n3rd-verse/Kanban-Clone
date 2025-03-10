@@ -41,35 +41,40 @@ export const mockTasks: Task[] = [
 export const mockScheduleDays: ScheduleDay[] = [
     {
         id: "date-1",
-        date: new Date(2024, 0, 31), // 31 JAN
+        date: "2024-01-31", // 31 JAN
+        type: "past",
         schedules: [
             {
                 id: "1",
-                title: "Daily Scrum",
-                startTime: "9:00 AM",
+                title: "Daiaaaly Scaaarum",
+                startTime: "",
                 endTime: "9:30 AM",
-                type: "daily"
+                type: "past",
+                attendees: ["Seokmin Lee", "Heemang Lee"]
             },
             {
                 id: "2",
                 title: "OfficeMail Desktop Calendar Kickoff Meeting",
                 startTime: "10:00 AM",
                 endTime: "11:00 AM",
-                type: "meeting",
+                type: "past",
+                attendees: [],
                 location: "Jiran 37"
             }
         ]
     },
     {
         id: "date-2",
-        date: new Date(2024, 1, 10), // 10 FRI (Yesterday)
+        date: "2024-02-01", // 10 FRI (Yesterday)
+        type: "future",
         schedules: [
             {
                 id: "3",
                 title: "OfficeMail AI Marketing Meeting",
                 startTime: "10:00 AM",
                 endTime: "11:00 AM",
-                type: "meeting",
+                type: "future",
+                attendees: [],
                 location:
                     "FASTFIVE 7F 704, Hakdong-ro 45-gil 3, Gangam-gu Seoul"
             }
@@ -77,21 +82,24 @@ export const mockScheduleDays: ScheduleDay[] = [
     },
     {
         id: "date-3",
-        date: new Date(2024, 1, 11), // 11 SAT (Today)
+        date: "2024-02-01", // 11 SAT (Today)
+        type: "future",
         schedules: [
             {
                 id: "1",
                 title: "Daily Scrum",
                 startTime: "9:00 AM",
                 endTime: "9:30 AM",
-                type: "daily"
+                type: "future",
+                attendees: [],
             },
             {
                 id: "3",
                 title: "OfficeMail AI Marketing Meeting",
                 startTime: "10:00 AM",
                 endTime: "11:00 AM",
-                type: "meeting",
+                type: "future",
+                attendees: [],
                 location:
                     "FASTFIVE 7F 704, Hakdong-ro 45-gil 3, Gangam-gu Seoul"
             }
