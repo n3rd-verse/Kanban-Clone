@@ -10,7 +10,7 @@ export function ScheduleColumn() {
     const scheduleGroups = useScheduleGroups();
 
     return (
-        <div className="ml-4 pl-6 border-gray-200 border-l">
+        <div className="ml-8 pl-4 border-gray-200 border-l">
             {scheduleGroups.map((dayInfo) => (
                 <ScheduleGroup key={dayInfo.id} dayInfo={dayInfo} />
             ))}

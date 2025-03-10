@@ -7,14 +7,14 @@ export function KanbanBoard() {
 
     return (
         <div className="min-h-screen">
-            <div className="gap-2.5 grid grid-cols-5">
-                <div className="col-span-4">
+            <div className="grid grid-cols-[minmax(0,959fr)_minmax(0,377fr)]">
+                <div>
                     <TaskColumns
                         maxVisibleTasks={maxVisibleTasks}
                         width={width}
                     />
                 </div>
-                <div className="col-span-1 w-full">
+                <div>
                     <ScheduleColumn />
                 </div>
             </div>
