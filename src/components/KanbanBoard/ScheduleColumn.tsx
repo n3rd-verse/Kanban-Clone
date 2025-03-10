@@ -21,7 +21,7 @@ interface ScheduleGroupProps {
 
 function ScheduleGroup({ dayInfo }: ScheduleGroupProps) {
     return (
-        <div className="mb-2.5 pl-4 max-w-[281px]">
+        <div className="mb-4 pl-4 max-w-[281px]">
             <DateHeader date={new Date(dayInfo.date)} type={dayInfo.type} />
             <div className="space-y-2.5">
                 {dayInfo.schedules.map((schedule) => (

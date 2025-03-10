@@ -44,15 +44,15 @@ export function TaskCard({ task, className }: TaskCardProps) {
         const diffX = Math.abs(e.clientX - startPos.x);
         const diffY = Math.abs(e.clientY - startPos.y);
         const threshold = 5;
-        
+
         if (diffX > threshold || diffY > threshold) {
-          // 드래그로 간주하고 클릭 이벤트 무시
-          return;
+            // 드래그로 간주하고 클릭 이벤트 무시
+            return;
         }
-        
+
         // 드래그가 아닌 경우 openTask 함수 호출
         openTask(task.id);
-      };
+    };
 
     return (
         <Card
@@ -94,15 +94,18 @@ export function TaskCard({ task, className }: TaskCardProps) {
                             </div>
                         </div>
                     </div>
-                    
+
                     {/* 버튼 영역 - 오른쪽 끝/가운데 정렬 */}
-                    <div className="flex items-center gap-2 shrink-0 ml-2">
-                        {(!isDesktop || (isDesktop)) && (
+                    <div className="flex items-center gap-2 ml-2 shrink-0">
+                        {(!isDesktop || isDesktop) && (
                             <div className="flex items-center">
                                 <CardDeleteButton onClick={handleDelete} />
                             </div>
                         )}
-                        <div className="flex items-center" onClick={(e) => e.stopPropagation()}>
+                        <div
+                            className="flex items-center"
+                            onClick={(e) => e.stopPropagation()}
+                        >
                             <Checkbox
                                 checked={task.status === "completed"}
                                 onCheckedChange={handleComplete}

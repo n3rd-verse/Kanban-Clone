@@ -62,7 +62,7 @@ function VirtualizedTaskList({
                     <div
                         key={task.id}
                         data-index={virtualItem.index}
-                        className="relative mb-2.5 w-full"
+                        className="relative mb-2 w-full"
                         style={{
                             height: "auto"
                         }}
