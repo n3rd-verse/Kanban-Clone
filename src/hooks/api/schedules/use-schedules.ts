@@ -10,9 +10,7 @@ export function useSchedules() {
             // 시작 시간 기준으로 정렬
             return data.map((dayInfo) => ({
                 ...dayInfo,
-                schedules: dayInfo.schedules.sort((a, b) =>
-                    a.startTime.localeCompare(b.startTime)
-                )
+                schedules: dayInfo.schedules
             }));
         }
     });

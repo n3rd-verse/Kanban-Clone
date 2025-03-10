@@ -31,7 +31,7 @@ export const ColumnSkeleton = () => (
 );
 
 export const ScheduleColumnSkeleton = () => (
-    <div className="pt-6 md:pt-0 md:pl-6 border-gray-200 border-t md:border-t-0 md:border-l">
+    <div className="ml-4 pt-6 md:pt-0 md:pl-6 border-gray-200 border-t md:border-t-0 md:border-l">
         <div className="space-y-8">
             {[1, 2, 3].map((i) => (
                 <div key={i} className="space-y-4">

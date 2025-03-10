@@ -50,8 +50,8 @@ function VirtualizedTaskList({
         <div
             className="relative w-full"
             style={{
-                height: isDesktop ? "auto" : `${virtualizer.getTotalSize()}px`,
-                position: isDesktop ? "static" : "relative"
+                height: "auto",
+                position: "static"
             }}
         >
             {virtualizer.getVirtualItems().map((virtualItem) => {
@@ -62,19 +62,9 @@ function VirtualizedTaskList({
                     <div
                         key={task.id}
                         data-index={virtualItem.index}
-                        className={cn(
-                            "w-full",
-                            isDesktop ? "relative mb-4" : "absolute left-0"
-                        )}
+                        className="relative mb-2 w-full"
                         style={{
-                            ...(isDesktop
-                                ? {}
-                                : {
-                                      top: `${virtualItem.start}px`,
-                                      padding: "6px 0"
-                                  }),
-                            height: "auto",
-                            minHeight: "100px"
+                            height: "auto"
                         }}
                     >
                         <TaskCard
@@ -97,8 +87,8 @@ export function TaskColumn({
     const loadMoreRef = useRef<HTMLDivElement>(
         null
     ) as RefObject<HTMLDivElement>;
-    const { width: windowWidth } = useWindowSize();
-    const isDesktop = windowWidth >= COLUMN_SIZES.DESKTOP_BREAKPOINT;
+    // 윈도우 크기에 관계없이 항상 데스크탑 뷰 사용
+    const isDesktop = true;
 
     const {
         tasks,
@@ -124,21 +114,14 @@ export function TaskColumn({
     }
 
     return (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2.5">
             <ColumnHeader status={status} count={tasks.length} />
             <div
                 ref={columnRef}
-                className={cn(
-                    "px-2",
-                    isDesktop
-                        ? "overflow-visible"
-                        : "overflow-y-auto overflow-x-hidden",
-                    scrollbarClass
-                )}
+                className="px-0 overflow-visible"
                 style={{
-                    ...columnStyle,
-                    height: isDesktop ? "auto" : columnStyle.height,
-                    minHeight: isDesktop ? "auto" : "60vh"
+                    height: "auto",
+                    minHeight: "auto"
                 }}
             >
                 <VirtualizedTaskList
