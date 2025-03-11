@@ -1,6 +1,5 @@
 import { memo } from "react";
 import { format, isToday, isYesterday } from "date-fns";
-import { Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface DateHeaderProps {
@@ -28,9 +27,9 @@ export const DateHeader = memo(function DateHeader({
     }
 
     return (
-        <div className={cn("flex items-center mb-2", opacity)}>
+        <div className={cn("flex items-center mb-1.5", opacity)}>
             <div className="flex items-center gap-4">
-                <span className="font-medium text-3xl">{day}</span>
+                <span className="font-medium text-2xl">{day}</span>
                 <div className="flex flex-col">
                     <span className="text-gray-500">
                         {weekday} · {month} · {year}
