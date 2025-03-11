@@ -1,4 +1,4 @@
-import { Suspense, memo, useMemo } from "react";
+import { Suspense } from "react";
 import { QueryErrorBoundary } from "@/components/ErrorBoundary";
 import { TaskColumn } from "./TaskColumn";
 import { STATUS_CONFIG } from "./constants";
@@ -9,26 +9,20 @@ interface BoardColumnsProps {
     width: number;
 }
 
-function TaskColumnsComponent({ maxVisibleTasks, width }: BoardColumnsProps) {
-    // Memoize the columns rendering to prevent unnecessary re-renders
-    const columns = useMemo(() => {
-        return STATUS_CONFIG.map(({ id }) => (
-            <QueryErrorBoundary key={id}>
-                <Suspense fallback={<ColumnSkeleton />}>
-                    <TaskColumn
-                        status={id}
-                        maxVisibleTasks={maxVisibleTasks}
-                        width={width}
-                    />
-                </Suspense>
-            </QueryErrorBoundary>
-        ));
-    }, [maxVisibleTasks, width]);
+export function TaskColumns({ maxVisibleTasks, width }: BoardColumnsProps) {
+    const columns = STATUS_CONFIG.map(({ id }) => (
+        <QueryErrorBoundary key={id}>
+            <Suspense fallback={<ColumnSkeleton />}>
+                <TaskColumn
+                    status={id}
+                    maxVisibleTasks={maxVisibleTasks}
+                    width={width}
+                />
+            </Suspense>
+        </QueryErrorBoundary>
+    ));
 
     return (
         <div className="content-start gap-2.5 grid grid-cols-4">{columns}</div>
     );
 }
-
-// Use React.memo to prevent unnecessary re-renders
-export const TaskColumns = memo(TaskColumnsComponent);

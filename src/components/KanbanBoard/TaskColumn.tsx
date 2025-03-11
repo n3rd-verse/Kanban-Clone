@@ -51,28 +51,26 @@ function VirtualizedTaskListComponent({
     virtualizer: ReturnType<typeof useColumnVirtualizer>;
     isDesktop: boolean;
 }) {
-    const virtualItems = useMemo(() => {
-        return virtualizer.getVirtualItems().map((virtualItem) => {
-            const task = tasks[virtualItem.index];
-            if (!task) return null;
+    const virtualItems = virtualizer.getVirtualItems().map((virtualItem) => {
+        const task = tasks[virtualItem.index];
+        if (!task) return null;
 
-            return (
-                <div
-                    key={task.id}
-                    data-index={virtualItem.index}
-                    className="relative mb-2 w-full"
-                    style={{
-                        height: "auto"
-                    }}
-                >
-                    <TaskCard
-                        task={taskTransformers.fromDTO(task)}
-                        className="h-full break-words"
-                    />
-                </div>
-            );
-        });
-    }, [virtualizer, tasks, isDesktop]);
+        return (
+            <div
+                key={task.id}
+                data-index={virtualItem.index}
+                className="relative mb-2 w-full"
+                style={{
+                    height: "auto"
+                }}
+            >
+                <TaskCard
+                    task={taskTransformers.fromDTO(task)}
+                    className="h-full break-words"
+                />
+            </div>
+        );
+    });
 
     return (
         <div
@@ -147,4 +145,4 @@ function TaskColumnComponent({
     );
 }
 
-export const TaskColumn = memo(TaskColumnComponent);
+export const TaskColumn = TaskColumnComponent;
