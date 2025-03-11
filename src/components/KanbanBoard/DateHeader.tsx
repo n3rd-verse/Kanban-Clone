@@ -8,7 +8,10 @@ interface DateHeaderProps {
     type: "past" | "future";
 }
 
-export const DateHeader = memo(function DateHeader({ date, type }: DateHeaderProps) {
+export const DateHeader = memo(function DateHeader({
+    date,
+    type
+}: DateHeaderProps) {
     const day = format(date, "d");
     const weekday = format(date, "EEE").toUpperCase();
     const month = format(date, "MMM");
@@ -16,19 +19,16 @@ export const DateHeader = memo(function DateHeader({ date, type }: DateHeaderPro
     const opacity = type === "past" ? "opacity-50" : "";
 
     let suffix = "";
-    let suffixColor = ""
+    let suffixColor = "";
     if (isToday(date)) {
         suffix = "· today";
-        suffixColor = "text-blue-500"
+        suffixColor = "text-blue-500";
     } else if (isYesterday(date)) {
         suffix = "· yesterday";
     }
 
     return (
-        <div className={cn(
-            "flex items-center mb-6",
-            opacity,
-        )}>
+        <div className={cn("flex items-center mb-2", opacity)}>
             <div className="flex items-center gap-4">
                 <span className="font-medium text-3xl">{day}</span>
                 <div className="flex flex-col">
@@ -36,7 +36,11 @@ export const DateHeader = memo(function DateHeader({ date, type }: DateHeaderPro
                         {weekday} · {month} · {year}
                     </span>
                     {suffix && (
-                        <span className={cn("text-gray-500 text-sm", suffixColor)}>{suffix}</span>
+                        <span
+                            className={cn("text-gray-500 text-sm", suffixColor)}
+                        >
+                            {suffix}
+                        </span>
                     )}
                 </div>
             </div>

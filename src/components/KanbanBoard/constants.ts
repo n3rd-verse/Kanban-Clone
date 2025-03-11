@@ -38,20 +38,20 @@ export type TaskStatusConfig = {
 };
 
 export const STATUS_CONFIG: TaskStatusConfig[] = [
-    { id: "new", label: "status.new", color: "text-[#3b82f6] bg-blue-100/50" },
+    { id: "new", label: "Requested", color: "text-[#3b82f6] bg-blue-100/50" },
     {
         id: "in_progress",
-        label: "status.in_progress",
+        label: "In progress",
         color: "text-[#fbbf24] bg-yellow-100/50"
     },
     {
         id: "urgent",
-        label: "status.urgent",
+        label: "Overdue",
         color: "text-[#ef4444] bg-red-100/50"
     },
     {
         id: "completed",
-        label: "status.completed",
+        label: "Completed",
         color: "text-[#22c55e] bg-green-100/50"
     }
 ];

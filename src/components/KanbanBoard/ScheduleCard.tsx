@@ -19,7 +19,7 @@ export const ScheduleCard = memo(function ScheduleCard({
     const showDay = schedule.startTime != null || schedule.endTime != null;
     const { mutate: openSchedule } = useOpenScheduleMutation();
     const [startPos, setStartPos] = useState({ x: 0, y: 0 });
-    
+
     // const handleClick = () => {
     //     console.log("Schedule clicked:", schedule);
     // };
@@ -32,14 +32,13 @@ export const ScheduleCard = memo(function ScheduleCard({
         const diffX = Math.abs(e.clientX - startPos.x);
         const diffY = Math.abs(e.clientY - startPos.y);
         const threshold = 5;
-        
-        if (diffX > threshold || diffY > threshold) {
-          return;
-        }
-        
-        openSchedule(schedule.id)
-    };
 
+        if (diffX > threshold || diffY > threshold) {
+            return;
+        }
+
+        openSchedule(schedule.id);
+    };
 
     return (
         <Card
@@ -48,7 +47,7 @@ export const ScheduleCard = memo(function ScheduleCard({
                 `break-words h-full ${borderColor}`,
                 "group relative",
                 opacity,
-                "cursor-pointer",
+                "cursor-pointer"
             )}
             onClick={(e) => {
                 handleClick(e);
@@ -57,13 +56,13 @@ export const ScheduleCard = memo(function ScheduleCard({
         >
             {showDay && (
                 <div className="flex items-center gap-2 mb-1 text-gray-600 text-sm">
-                <Clock size={14} />
-                <span>
-                    {schedule.startTime} → {schedule.endTime}
-                </span>
-            </div>
+                    <Clock size={14} />
+                    <span>
+                        {schedule.startTime} → {schedule.endTime}
+                    </span>
+                </div>
             )}
-            
+
             <h3 className="mb-2 font-medium">{schedule.title}</h3>
             <div className="flex items-center gap-2 mb-1 overflow-hidden">
                 <div className="flex flex-shrink-0 items-center gap-1 min-w-0">

@@ -11,7 +11,7 @@ interface BoardColumnsProps {
 
 export function TaskColumns({ maxVisibleTasks, width }: BoardColumnsProps) {
     return (
-        <div className="content-start gap-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
+        <div className="content-start gap-2.5 grid grid-cols-4">
             {STATUS_CONFIG.map(({ id }) => (
                 <QueryErrorBoundary key={id}>
                     <Suspense fallback={<ColumnSkeleton />}>
