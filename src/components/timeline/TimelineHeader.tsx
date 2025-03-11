@@ -11,8 +11,8 @@ function TimelineHeaderComponent({ date, width }: TimelineHeaderProps) {
     const dateInfo = useMemo(() => {
         const isCurrentDay = isToday(date);
         const isWeekendDay = isWeekend(date);
-        const fullDayOfWeek = format(date, "EEEE"); // "Sunday", "Monday" etc.
-        const dayOfWeek = fullDayOfWeek[0]; // "S", "M" etc.
+        const fullDayOfWeek = format(date, "EEEE");
+        const dayOfWeek = fullDayOfWeek[0];
         const isSunday = fullDayOfWeek === "Sunday";
         const isSaturday = fullDayOfWeek === "Saturday";
         const dayNumber = format(date, "d");

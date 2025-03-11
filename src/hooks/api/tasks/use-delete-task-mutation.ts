@@ -18,7 +18,6 @@ export function useDeleteTaskMutation() {
     return useMutation({
         mutationFn: deleteTask,
         onSuccess: (deletedTaskId) => {
-            // Update all status columns
             statuses.forEach((status) => {
                 queryClient.setQueryData<{
                     pages: TasksResponse[];

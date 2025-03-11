@@ -15,7 +15,6 @@ export const Route = createFileRoute("/")({
         const statuses = ["new", "in_progress", "urgent", "completed"] as const;
 
         await Promise.all([
-            // Tasks 데이터 로드
             Promise.all(
                 statuses.map((status) =>
                     queryClient.ensureInfiniteQueryData({
@@ -34,7 +33,6 @@ export const Route = createFileRoute("/")({
                     })
                 )
             ),
-            // Schedules 데이터 로드
             queryClient.ensureQueryData({
                 queryKey: queryKeys.schedules.all(),
                 queryFn: fetchSchedules
