@@ -77,12 +77,37 @@ export function TaskCard({ task, className }: TaskCardProps) {
             onMouseDown={handleMouseDown}
         >
             <div className="flex flex-col h-full">
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between">
                     {/* 타이틀과 담당자 영역 - 고정된 너비 유지 */}
                     <div className="flex-1 min-w-0">
-                        <h3 className="mb-1 font-medium break-words">
-                            {task.title}
-                        </h3>
+                        <div className="flex items-center">
+                            <h3 className="mb-1 font-medium break-words">
+                                {task.title}
+                            </h3>
+
+                            {/* 버튼 영역 - 타이틀과 세로 중앙 정렬 */}
+                            <div className="flex items-center gap-2 ml-2 shrink-0">
+                                {(!isDesktop || isDesktop) && (
+                                    <div className="flex items-center">
+                                        <CardDeleteButton
+                                            onClick={handleDelete}
+                                        />
+                                    </div>
+                                )}
+                                <div
+                                    className="flex items-center"
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    <Checkbox
+                                        checked={task.status === "completed"}
+                                        onCheckedChange={handleComplete}
+                                        className="w-5 h-5"
+                                        disabled={task.allowEdit}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
                         <div className="flex items-center gap-2 mt-1 overflow-hidden">
                             <div className="flex flex-shrink-0 items-center gap-1 min-w-0">
                                 {task.assignee.map((assignee, index) => (
@@ -101,27 +126,6 @@ export function TaskCard({ task, className }: TaskCardProps) {
                         </div>
                     </div>
 
-
-                    {/* 버튼 영역 - 오른쪽 끝/가운데 정렬 */}
-                    <div className="flex items-center gap-2 ml-2 shrink-0">
-                        {(!isDesktop || isDesktop) && (
-                            <div className="flex items-center">
-                                <CardDeleteButton onClick={handleDelete} />
-                            </div>
-                        )}
-
-                        <div
-                            className="flex items-center"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <Checkbox
-                                checked={task.status === "completed"}
-                                onCheckedChange={handleComplete}
-                                className="w-5 h-5"
-                                disabled={task.allowEdit}
-                            />
-                        </div>
-                    </div>
                 </div>
                 {task.date && (
                     <div className={`text-sm ${dateColorClass} mt-auto pt-2`}>

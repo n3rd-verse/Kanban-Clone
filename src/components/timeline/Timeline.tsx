@@ -1,59 +1,106 @@
-import { format, isWeekend } from "date-fns";
-import { ko } from "date-fns/locale";
-import { TimelineHeader } from "./TimelineHeader";
-import { useResponsiveLayout } from "@/hooks/design/use-responsive-layout";
-import { cn } from "@/lib/utils";
+import { useRef, useState, useEffect, useCallback } from "react";
+// import { useResponsiveLayout } from "@/hooks/design/use-responsive-layout";
+import {
+    useTimelineContainer,
+    useTimelineScroll,
+    useTimelineDays
+} from "@/hooks/timeline";
+import { TimelineControls } from "./TimelineControls";
+import { TimelineHeaderRow } from "./TimelineHeaderRow";
+import { TimelineGrid } from "./TimelineGrid";
+import { useTranslation } from "react-i18next";
 
 export function Timeline() {
-    const { width } = useResponsiveLayout();
+    // const { width } = useResponsiveLayout();
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const { t } = useTranslation();
+
+    const [currentDate, setCurrentDate] = useState(() => new Date());
+
+    const { days, dates, monthName, year } = useTimelineDays({
+        year: currentDate.getFullYear(),
+        month: currentDate.getMonth()
+    });
+
+    const { dayColumnWidth } = useTimelineContainer({
+        scrollContainerRef,
+        targetDaysToShow: 14
+    });
+
+    const { scrollLeft, scrollRight } = useTimelineScroll({
+        scrollContainerRef,
+        dayColumnWidth
+    });
+
+    const minContainerWidth = days.length * dayColumnWidth;
+
+    const goToPreviousMonth = useCallback(() => {
+        setCurrentDate((prevDate) => {
+            const newDate = new Date(prevDate);
+            newDate.setMonth(prevDate.getMonth() - 1);
+            return newDate;
+        });
+    }, []);
+
+    const goToNextMonth = useCallback(() => {
+        setCurrentDate((prevDate) => {
+            const newDate = new Date(prevDate);
+            newDate.setMonth(prevDate.getMonth() + 1);
+            return newDate;
+        });
+    }, []);
+
+    useEffect(() => {
+        if (scrollContainerRef.current) {
+            scrollContainerRef.current.scrollLeft = 0;
+        }
+    }, [currentDate.getMonth(), currentDate.getFullYear()]);
 
     return (
         <div className="min-h-screen">
-            <div className="mb-8">
-                <h2 className="font-semibold text-2xl">
-                    {format(new Date(), "MMMM yyyy")}
-                </h2>
-            </div>
-            <div className="relative">
-                <div className="top-[50%] right-0 left-0 absolute h-[2px]">
-                    <div className="relative w-full">
-                        <div className="absolute inset-0 bg-red-500" />
-                    </div>
-                </div>
-                <div className="flex">
-                    {[
-                        9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22
-                    ].map((day) => (
-                        <TimelineHeader
-                            key={day}
-                            date={new Date(2024, 1, day)}
-                        />
-                    ))}
-                </div>
-            </div>
-            {/* 보드 영역 */}
-            <div className="flex flex-col gap-0">
-                {[1, 2, 3, 4].map((row) => (
-                    <div key={row} className="flex">
-                        {[
-                            9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-                            22
-                        ].map((day) => {
-                            const date = new Date(2024, 1, day);
-                            const isWeekendDay = isWeekend(date);
+            <div className="flex justify-between items-center mb-4">
+                <TimelineControls
+                    scrollLeft={scrollLeft}
+                    scrollRight={scrollRight}
+                    currentDate={currentDate}
+                />
 
-                            return (
-                                <div
-                                    key={day}
-                                    className={cn(
-                                        "flex-1 h-[150px]",
-                                        isWeekendDay && "bg-[#F7F7F7]"
-                                    )}
-                                />
-                            );
-                        })}
-                    </div>
-                ))}
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={goToPreviousMonth}
+                        className="bg-white hover:bg-gray-100 px-3 py-1 border rounded-md text-sm"
+                    >
+                        {t("timeline.previousMonth")}
+                    </button>
+                    <button
+                        onClick={goToNextMonth}
+                        className="bg-white hover:bg-gray-100 px-3 py-1 border rounded-md text-sm"
+                    >
+                        {t("timeline.nextMonth")}
+                    </button>
+                </div>
+            </div>
+
+            <div
+                ref={scrollContainerRef}
+                className="overflow-x-auto scrollbar-hide"
+                style={{
+                    WebkitOverflowScrolling: "touch",
+                    scrollSnapType: "x mandatory"
+                }}
+            >
+                <div style={{ minWidth: `${minContainerWidth}px` }}>
+                    <TimelineHeaderRow
+                        dates={dates}
+                        dayColumnWidth={dayColumnWidth}
+                    />
+
+                    <TimelineGrid
+                        dates={dates}
+                        dayColumnWidth={dayColumnWidth}
+                        rowCount={4}
+                    />
+                </div>
             </div>
         </div>
     );

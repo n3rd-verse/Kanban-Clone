@@ -30,7 +30,6 @@ export interface TaskFilters {
     page?: number;
 }
 
-// API response type for paginated data
 export interface TasksResponse {
     tasks: TaskDTO[];
     total: number;

@@ -1,4 +1,4 @@
-import { useRef, RefObject } from "react";
+import { useRef, RefObject, memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { TaskDTO, TaskStatus } from "@/types/task";
 import { useColumnVirtualizer, useVirtualizedTasks } from "@/hooks/virtualizer";
@@ -6,8 +6,8 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { TaskCard } from "./TaskCard";
 import { taskTransformers } from "@/lib/transformers/task.transformer";
 import { COLUMN_SIZES, STATUS_CONFIG } from "./constants";
-import { useWindowSize } from "@/hooks/design/use-window-size";
-import { cn } from "@/lib/utils";
+// import { useWindowSize } from "@/hooks/design/use-window-size";
+// import { cn } from "@/lib/utils";
 
 interface TaskColumnProps {
     status: TaskStatus;
@@ -15,7 +15,7 @@ interface TaskColumnProps {
     width: number;
 }
 
-function ColumnHeader({
+function ColumnHeaderComponent({
     status,
     count
 }: {
@@ -23,7 +23,10 @@ function ColumnHeader({
     count: number;
 }) {
     const { t } = useTranslation();
-    const statusConfig = STATUS_CONFIG.find((config) => config.id === status);
+    const statusConfig = useMemo(
+        () => STATUS_CONFIG.find((config) => config.id === status),
+        [status]
+    );
 
     return (
         <div className="flex justify-between items-center">
@@ -37,7 +40,9 @@ function ColumnHeader({
     );
 }
 
-function VirtualizedTaskList({
+const ColumnHeader = memo(ColumnHeaderComponent);
+
+function VirtualizedTaskListComponent({
     tasks,
     virtualizer,
     isDesktop
@@ -46,6 +51,27 @@ function VirtualizedTaskList({
     virtualizer: ReturnType<typeof useColumnVirtualizer>;
     isDesktop: boolean;
 }) {
+    const virtualItems = virtualizer.getVirtualItems().map((virtualItem) => {
+        const task = tasks[virtualItem.index];
+        if (!task) return null;
+
+        return (
+            <div
+                key={task.id}
+                data-index={virtualItem.index}
+                className="relative mb-2 w-full"
+                style={{
+                    height: "auto"
+                }}
+            >
+                <TaskCard
+                    task={taskTransformers.fromDTO(task)}
+                    className="h-full break-words"
+                />
+            </div>
+        );
+    });
+
     return (
         <div
             className="relative w-full"
@@ -54,31 +80,14 @@ function VirtualizedTaskList({
                 position: "static"
             }}
         >
-            {virtualizer.getVirtualItems().map((virtualItem) => {
-                const task = tasks[virtualItem.index];
-                if (!task) return null;
-
-                return (
-                    <div
-                        key={task.id}
-                        data-index={virtualItem.index}
-                        className="relative mb-2 w-full"
-                        style={{
-                            height: "auto"
-                        }}
-                    >
-                        <TaskCard
-                            task={taskTransformers.fromDTO(task)}
-                            className="h-full break-words"
-                        />
-                    </div>
-                );
-            })}
+            {virtualItems}
         </div>
     );
 }
 
-export function TaskColumn({
+const VirtualizedTaskList = memo(VirtualizedTaskListComponent);
+
+function TaskColumnComponent({
     status,
     maxVisibleTasks = 10,
     width
@@ -135,3 +144,5 @@ export function TaskColumn({
         </div>
     );
 }
+
+export const TaskColumn = TaskColumnComponent;

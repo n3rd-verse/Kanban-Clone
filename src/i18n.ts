@@ -15,6 +15,10 @@ const resources = {
                 urgent: "지연",
                 completed: "완료"
             },
+            timeline: {
+                previousMonth: "이전 달",
+                nextMonth: "다음 달"
+			},
             task: {
                 deleteConfirmation: "이 작업을 삭제하시겠습니까?"
             }
@@ -33,6 +37,10 @@ const resources = {
                 urgent: "Overdue",
                 completed: "Completed"
             },
+            timeline: {
+                previousMonth: "Previous Month",
+                nextMonth: "Next Month"
+			},
             task: {
                 deleteConfirmation: "Are you sure you want to delete this task?"
             }
