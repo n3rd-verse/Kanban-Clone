@@ -8,10 +8,12 @@ import {
 import { TimelineControls } from "./TimelineControls";
 import { TimelineHeaderRow } from "./TimelineHeaderRow";
 import { TimelineGrid } from "./TimelineGrid";
+import { useTranslation } from "react-i18next";
 
 export function Timeline() {
     // const { width } = useResponsiveLayout();
     const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const { t } = useTranslation();
 
     const [currentDate, setCurrentDate] = useState(() => new Date());
 
@@ -68,13 +70,13 @@ export function Timeline() {
                         onClick={goToPreviousMonth}
                         className="bg-white hover:bg-gray-100 px-3 py-1 border rounded-md text-sm"
                     >
-                        Previous Month
+                        {t("timeline.previousMonth")}
                     </button>
                     <button
                         onClick={goToNextMonth}
                         className="bg-white hover:bg-gray-100 px-3 py-1 border rounded-md text-sm"
                     >
-                        Next Month
+                        {t("timeline.nextMonth")}
                     </button>
                 </div>
             </div>

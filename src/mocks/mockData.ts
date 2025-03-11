@@ -30,7 +30,6 @@ const generateTasksForStatus = (
     }));
 };
 
-// 각 상태별로 50개씩 태스크 생성
 export const mockTasks: Task[] = [
     // Requested (New) 컬럼
     {

@@ -14,6 +14,10 @@ const resources = {
                 in_progress: "진행",
                 urgent: "지연",
                 completed: "완료"
+            },
+            timeline: {
+                previousMonth: "이전 달",
+                nextMonth: "다음 달"
             }
         }
     },
@@ -29,6 +33,10 @@ const resources = {
                 in_progress: "In Progress",
                 urgent: "Overdue",
                 completed: "Completed"
+            },
+            timeline: {
+                previousMonth: "Previous Month",
+                nextMonth: "Next Month"
             }
         }
     }
