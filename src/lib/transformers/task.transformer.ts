@@ -8,8 +8,7 @@ export const taskTransformers = {
         date: dto.date ? new Date(dto.date).toISOString() : undefined,
         status: dto.status,
         allowEdit: dto.allowEdit,
-        aiTopic: dto.aiTopic,
-        aiSummary: dto.aiSummary
+        ai: dto.ai
     }),
 
     toDTO: (task: Partial<Task>): Partial<TaskDTO> => ({
@@ -19,8 +18,7 @@ export const taskTransformers = {
         date: task.date,
         status: task.status,
         allowEdit: task.allowEdit,
-        aiTopic: task.aiTopic,
-        aiSummary: task.aiSummary
+        ai: task.ai
     }),
 
     transformFilters: (filters: TaskFilters) => ({
