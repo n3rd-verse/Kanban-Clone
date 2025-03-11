@@ -1,6 +1,5 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
-import { ko } from "date-fns/locale";
 
 interface TimelineControlsProps {
     scrollLeft: () => void;
@@ -13,12 +12,12 @@ export function TimelineControls({
     scrollRight,
     currentDate = new Date()
 }: TimelineControlsProps) {
+    const formattedDate = format(currentDate, "MMMM yyyy");
+
     return (
         <div className="flex justify-between items-center">
-            <h2 className="font-semibold text-2xl">
-                {format(currentDate, "yyyy년 MMMM", { locale: ko })}
-            </h2>
-            <div className="flex items-center gap-2">
+            <h2 className="font-semibold text-2xl">{formattedDate}</h2>
+            <div className="flex items-center gap-2 ml-4">
                 <button
                     onClick={scrollLeft}
                     className="bg-white hover:bg-gray-100 p-2 border rounded-full"
