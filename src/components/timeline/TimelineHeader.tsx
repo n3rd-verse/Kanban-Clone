@@ -3,9 +3,10 @@ import { cn } from "@/lib/utils";
 
 interface TimelineHeaderProps {
     date: Date;
+    width?: number;
 }
 
-export function TimelineHeader({ date }: TimelineHeaderProps) {
+export function TimelineHeader({ date, width }: TimelineHeaderProps) {
     const isCurrentDay = isToday(date);
     const isWeekendDay = isWeekend(date);
     const fullDayOfWeek = format(date, "EEEE"); // "Sunday", "Monday" etc.
@@ -14,7 +15,14 @@ export function TimelineHeader({ date }: TimelineHeaderProps) {
     const isSaturday = fullDayOfWeek === "Saturday";
 
     return (
-        <div className="relative flex-1 text-center">
+        <div
+            className="relative text-center"
+            style={{
+                width: width ? `${width}px` : undefined,
+                minWidth: width ? `${width}px` : undefined,
+                scrollSnapAlign: "start"
+            }}
+        >
             <div className="flex flex-col items-center py-2">
                 <span
                     className={cn(
