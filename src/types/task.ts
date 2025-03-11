@@ -7,6 +7,8 @@ export interface Task {
     date?: string;
     status: TaskStatus;
     allowEdit?: boolean;
+    aiTopic?: string; // AI extracted topic
+    aiSummary?: string; // AI generated summary
 }
 
 export interface TaskDTO {
@@ -16,6 +18,8 @@ export interface TaskDTO {
     date?: string;
     status: TaskStatus;
     allowEdit?: boolean;
+    aiTopic?: string; // AI extracted topic
+    aiSummary?: string; // AI generated summary
 }
 
 export interface TaskFilters {

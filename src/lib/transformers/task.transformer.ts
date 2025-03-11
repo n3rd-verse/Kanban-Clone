@@ -7,7 +7,9 @@ export const taskTransformers = {
         assignee: Array.isArray(dto.assignee) ? dto.assignee : [dto.assignee],
         date: dto.date ? new Date(dto.date).toISOString() : undefined,
         status: dto.status,
-        allowEdit: dto.allowEdit
+        allowEdit: dto.allowEdit,
+        aiTopic: dto.aiTopic,
+        aiSummary: dto.aiSummary
     }),
 
     toDTO: (task: Partial<Task>): Partial<TaskDTO> => ({
@@ -16,7 +18,9 @@ export const taskTransformers = {
         assignee: task.assignee,
         date: task.date,
         status: task.status,
-        allowEdit: task.allowEdit
+        allowEdit: task.allowEdit,
+        aiTopic: task.aiTopic,
+        aiSummary: task.aiSummary
     }),
 
     transformFilters: (filters: TaskFilters) => ({

@@ -37,7 +37,10 @@ export const mockTasks: Task[] = [
         title: "Simply dummy text of the printing and typesetting industry.",
         assignee: ["김태호", "임지영"],
         date: new Date(2025, 1, 24).toISOString(),
-        status: "new"
+        status: "new",
+        aiTopic: "AI Topic",
+        aiSummary:
+            "AI summary, simply dummy text of the printing and typesetting industry."
     },
 
     // In Progress 컬럼
@@ -46,7 +49,10 @@ export const mockTasks: Task[] = [
         title: "Simply dummy text of the printing and typesetting industry.",
         assignee: ["김태호"],
         date: new Date(2025, 1, 24).toISOString(),
-        status: "in_progress"
+        status: "in_progress",
+        aiTopic: "AI Topic",
+        aiSummary:
+            "AI summary, simply dummy text of the printing and typesetting industry."
     },
 
     // Overdue (Urgent) 컬럼
@@ -55,21 +61,30 @@ export const mockTasks: Task[] = [
         title: "2025년 1월분 급여자료 회신 요청",
         assignee: ["예인세무회계"],
         date: new Date(2025, 1, 4).toISOString(),
-        status: "urgent"
+        status: "urgent",
+        aiTopic: "급여 자료",
+        aiSummary:
+            "2025년 1월분 급여자료 회신이 시급합니다. 빠른 확인 부탁드립니다."
     },
     {
         id: "urgent-2",
         title: "2025년 1월 입퇴사자 정보(인사/급여, 퇴직사유) 회신 요청",
         assignee: ["예인세무회계"],
         date: new Date(2025, 1, 4).toISOString(),
-        status: "urgent"
+        status: "urgent",
+        aiTopic: "인사 정보",
+        aiSummary:
+            "1월 입퇴사자 정보(인사/급여, 퇴직사유)가 필요합니다. 회신이 시급합니다."
     },
     {
         id: "urgent-3",
         title: "2025년 1월 일용근로소득, 사업소득, 기타소득 지급 여부 확인 요청",
         assignee: ["예인세무회계"],
         date: new Date(2025, 1, 4).toISOString(),
-        status: "urgent"
+        status: "urgent",
+        aiTopic: "소득 확인",
+        aiSummary:
+            "1월 일용근로소득, 사업소득, 기타소득 지급 여부 확인이 시급합니다."
     },
 
     // Completed 컬럼
@@ -78,14 +93,18 @@ export const mockTasks: Task[] = [
         title: "명함 정보 확인 요청",
         assignee: ["Juno Kwaan"],
         date: new Date(2025, 1, 1).toISOString(),
-        status: "completed"
+        status: "completed",
+        aiTopic: "명함 확인",
+        aiSummary: "명함 정보 확인이 완료되었습니다. 모든 정보가 정확합니다."
     },
     {
         id: "completed-2",
         title: "면접 가능 여부 확인 요청(오프라인 2/3 오후 2시)",
         assignee: ["Seokmin Lee", "Heemang Lee"],
         date: new Date(2025, 1, 1).toISOString(),
-        status: "completed"
+        status: "completed",
+        aiTopic: "입사 면접",
+        aiSummary: "오후 2시에 오프라인 면접으로 가능할까요?"
     }
 ];
 
