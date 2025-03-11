@@ -17,7 +17,6 @@ export const DateHeader = memo(function DateHeader({
     const year = format(date, "yyyy");
     const opacity = type === "past" ? "opacity-50" : "";
 
-    // Determine if it's today or yesterday
     let specialLabel = "";
     const isCurrentDay = isToday(date);
     const isPreviousDay = isYesterday(date);
