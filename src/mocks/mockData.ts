@@ -30,7 +30,6 @@ const generateTasksForStatus = (
     }));
 };
 
-// 각 상태별로 50개씩 태스크 생성
 export const mockTasks: Task[] = [
     // Requested (New) 컬럼
     {
@@ -93,7 +92,7 @@ export const mockTasks: Task[] = [
 export const mockScheduleDays: ScheduleDay[] = [
     {
         id: "date-1",
-        date: "2024-01-31", // 31 MON · Jan · 2024
+        date: "2024-01-31",
         type: "past",
         schedules: [
             {
@@ -108,7 +107,7 @@ export const mockScheduleDays: ScheduleDay[] = [
     },
     {
         id: "date-2",
-        date: "2024-02-10", // 10 FRI · Yesterday
+        date: "2025-03-10",
         type: "past",
         schedules: [
             {
@@ -132,7 +131,7 @@ export const mockScheduleDays: ScheduleDay[] = [
     },
     {
         id: "date-3",
-        date: "2024-02-11", // 11 SAT · Today
+        date: "2025-03-11",
         type: "future",
         schedules: [
             {

@@ -43,11 +43,14 @@ export const ScheduleCard = memo(function ScheduleCard({
     return (
         <Card
             className={cn(
-                "p-4 hover:shadow-md transition-shadow",
-                `break-words h-full ${borderColor}`,
+                "hover:shadow-md transition-shadow",
+                `break-words ${borderColor}`,
                 "group relative",
                 opacity,
-                "cursor-pointer"
+                "cursor-pointer",
+                !schedule.attendees.length && !schedule.location
+                    ? "h-[73px] py-3 px-4"
+                    : "p-4"
             )}
             onClick={(e) => {
                 handleClick(e);
@@ -56,14 +59,23 @@ export const ScheduleCard = memo(function ScheduleCard({
         >
             {showDay && (
                 <div className="flex items-center gap-2 mb-1 text-gray-600 text-sm">
-                    <Clock size={14} />
+                    {/* <Clock size={14} /> */}
                     <span>
                         {schedule.startTime} → {schedule.endTime}
                     </span>
                 </div>
             )}
 
-            <h3 className="mb-2 font-medium">{schedule.title}</h3>
+            <h3
+                className={cn(
+                    "font-medium",
+                    !schedule.attendees.length && !schedule.location
+                        ? "mb-0"
+                        : "mb-2"
+                )}
+            >
+                {schedule.title}
+            </h3>
             <div className="flex items-center gap-2 mb-1 overflow-hidden">
                 <div className="flex flex-shrink-0 items-center gap-1 min-w-0">
                     {schedule.attendees.map((assignee, index) => (
