@@ -10,7 +10,6 @@ import { useWindowSize } from "@/hooks/design/use-window-size";
 import { COLUMN_SIZES } from "./constants";
 import { cn } from "@/lib/utils";
 import { useOpenTaskMutation } from "@/hooks/api/tasks/use-open-task-mutation";
-import { AlertCircle } from "lucide-react";
 import {
     Popover,
     PopoverContent,
@@ -28,7 +27,7 @@ export function TaskCard({ task, className }: TaskCardProps) {
     const { width } = useWindowSize();
     const { mutate: openTask } = useOpenTaskMutation();
     const isDesktop = width >= COLUMN_SIZES.DESKTOP_BREAKPOINT;
-    const [isHovered, setIsHovered] = useState(false);
+    // const [isHovered, setIsHovered] = useState(false);
     const [startPos, setStartPos] = useState({ x: 0, y: 0 });
     const [showAiInfo, setShowAiInfo] = useState(false);
 
@@ -70,8 +69,8 @@ export function TaskCard({ task, className }: TaskCardProps) {
                 "cursor-pointer overflow-hidden",
                 className
             )}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
+            // onMouseEnter={() => setIsHovered(true)}
+            // onMouseLeave={() => setIsHovered(false)}
             onClick={(e) => {
                 handleClick(e);
             }}
@@ -133,22 +132,21 @@ export function TaskCard({ task, className }: TaskCardProps) {
                             </div>
                         )}
 
-                        {/* AI Topic Section */}
-                        {task.aiTopic && (
+                        {task.ai && (
                             <div className="flex justify-between items-center mt-3 w-full max-w-full text-sm">
                                 <div className="flex flex-1 items-center gap-1.5 min-w-0 max-w-[calc(100%-24px)]">
                                     <span className="flex-shrink-0 font-medium text-[#444] whitespace-nowrap">
-                                        AI Topic
+                                        {task.ai.topic}
                                     </span>
                                     <span className="flex-shrink-0 text-[#666] whitespace-nowrap">
                                         -
                                     </span>
                                     <span className="text-[#666] truncate">
-                                        {task.aiSummary}
+                                        {task.ai.summary}
                                     </span>
                                 </div>
 
-                                {task.aiSummary && (
+                                {task.ai.summary && (
                                     <Popover
                                         open={showAiInfo}
                                         onOpenChange={setShowAiInfo}
@@ -162,7 +160,11 @@ export function TaskCard({ task, className }: TaskCardProps) {
                                                     e.stopPropagation();
                                                 }}
                                             >
-                                                <AlertCircle className="w-4 h-4 text-amber-500" />
+                                                <div className="flex justify-center items-center bg-gray-500 rounded-full w-5 h-5 text-white">
+                                                    <span className="font-bold text-xs">
+                                                        !
+                                                    </span>
+                                                </div>
                                             </div>
                                         </PopoverTrigger>
                                         <PopoverContent
@@ -174,36 +176,46 @@ export function TaskCard({ task, className }: TaskCardProps) {
                                                     AI 정보:
                                                 </p>
                                                 <p className="mb-4">
-                                                    {task.aiSummary}
+                                                    {task.ai.summary}
                                                 </p>
 
-                                                {/* Additional information in popover */}
-                                                {task.id.includes("new") && (
-                                                    <div className="space-y-2 mt-2 pt-3 border-t">
-                                                        <div className="flex items-center gap-2 text-sm">
-                                                            <div className="flex justify-center items-center bg-gray-200 p-1 rounded-full">
-                                                                <span className="flex justify-center items-center w-4 h-4 text-gray-600">
-                                                                    ⏱️
-                                                                </span>
-                                                            </div>
-                                                            <div className="text-gray-700">
-                                                                Lecture Time:
-                                                                11:50 - 12:50
-                                                            </div>
+                                                {/* Display popupInfo data */}
+                                                {task.ai.popupInfo &&
+                                                    Object.keys(
+                                                        task.ai.popupInfo
+                                                    ).length > 0 && (
+                                                        <div className="space-y-2 mt-2 pt-3 border-t">
+                                                            {Object.entries(
+                                                                task.ai
+                                                                    .popupInfo
+                                                            ).map(
+                                                                ([
+                                                                    key,
+                                                                    value
+                                                                ]) => (
+                                                                    <div
+                                                                        key={
+                                                                            key
+                                                                        }
+                                                                        className="flex items-center gap-2 text-sm"
+                                                                    >
+                                                                        <div className="text-gray-700">
+                                                                            <span className="font-medium">
+                                                                                {
+                                                                                    key
+                                                                                }
+
+                                                                                :
+                                                                            </span>{" "}
+                                                                            {renderPopupInfoValue(
+                                                                                value
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                )
+                                                            )}
                                                         </div>
-                                                        <div className="flex items-center gap-2 text-sm">
-                                                            <div className="flex justify-center items-center bg-gray-200 p-1 rounded-full">
-                                                                <span className="flex justify-center items-center w-4 h-4 text-gray-600">
-                                                                    ⏱️
-                                                                </span>
-                                                            </div>
-                                                            <div className="text-gray-700">
-                                                                QA Session: 20
-                                                                minutes
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                )}
+                                                    )}
                                             </div>
                                         </PopoverContent>
                                     </Popover>
@@ -215,4 +227,36 @@ export function TaskCard({ task, className }: TaskCardProps) {
             </div>
         </Card>
     );
+}
+
+// 팝업 정보값 비효율적 렌더링...
+function renderPopupInfoValue(value: any): React.ReactNode {
+    if (typeof value === "string") {
+        return value;
+    }
+
+    if (value && typeof value === "object") {
+        if ("startTime" in value && "endTime" in value) {
+            return `${value.startTime} - ${value.endTime}`;
+        }
+        if ("duration" in value) {
+            return value.duration;
+        }
+        if ("date" in value && "time" in value) {
+            return `${value.date} ${value.time}`;
+        }
+        if ("date" in value) {
+            return value.date;
+        }
+        if ("name" in value && "department" in value) {
+            return `${value.name} (${value.department})`;
+        }
+        if ("location" in value) {
+            return value.location;
+        }
+
+        return Object.values(value).join(", ");
+    }
+
+    return String(value);
 }
