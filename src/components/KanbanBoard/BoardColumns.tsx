@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, memo, useMemo } from "react";
 import { QueryErrorBoundary } from "@/components/ErrorBoundary";
 import { TaskColumn } from "./TaskColumn";
 import { STATUS_CONFIG } from "./constants";
