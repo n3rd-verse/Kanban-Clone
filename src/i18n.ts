@@ -14,6 +14,9 @@ const resources = {
                 in_progress: "진행",
                 urgent: "지연",
                 completed: "완료"
+            },
+            task: {
+                deleteConfirmation: "이 작업을 삭제하시겠습니까?"
             }
         }
     },
@@ -29,6 +32,9 @@ const resources = {
                 in_progress: "In Progress",
                 urgent: "Overdue",
                 completed: "Completed"
+            },
+            task: {
+                deleteConfirmation: "Are you sure you want to delete this task?"
             }
         }
     }

@@ -10,6 +10,7 @@ import { useWindowSize } from "@/hooks/design/use-window-size";
 import { COLUMN_SIZES } from "./constants";
 import { cn } from "@/lib/utils";
 import { useOpenTaskMutation } from "@/hooks/api/tasks/use-open-task-mutation";
+import { useTranslation } from "react-i18next";
 
 interface TaskCardProps {
     task: Task;
@@ -24,12 +25,16 @@ export function TaskCard({ task, className }: TaskCardProps) {
     const isDesktop = width >= COLUMN_SIZES.DESKTOP_BREAKPOINT;
     const [isHovered, setIsHovered] = useState(false);
     const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+    const { t } = useTranslation();
 
     const dateColorClass =
         task.status === "urgent" ? "text-[#ea384c]" : "text-gray-400";
 
     const handleDelete = () => {
-        deleteTask(task.id);
+        let result = window.confirm(t("task.deleteConfirmation"));
+        if (result) {
+             deleteTask(task.id);
+        }
     };
 
     const handleComplete = () => {
