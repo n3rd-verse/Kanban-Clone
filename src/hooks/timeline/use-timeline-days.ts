@@ -28,7 +28,6 @@ export function useTimelineDays({
         return new Date(year, month + 1, 0).getDate();
     }, [year, month]);
 
-    // 날짜 숫자 배열 생성
     const days = useMemo(() => {
         return Array.from(
             { length: endDay - startDay + 1 },
@@ -36,17 +35,23 @@ export function useTimelineDays({
         );
     }, [startDay, endDay]);
 
-    // 날짜 객체 배열 생성
     const dates = useMemo(() => {
         return days.map((day) => new Date(year, month, day));
     }, [days, year, month]);
 
-    // 월 이름 (영어)
     const monthName = useMemo(() => {
-        return new Date(year, month, 1).toLocaleString("default", {
+        return new Date(year, month, 1).toLocaleString("en-US", {
             month: "long"
         });
     }, [year, month]);
 
-    return { days, dates, monthName, year };
+    return useMemo(
+        () => ({
+            days,
+            dates,
+            monthName,
+            year
+        }),
+        [days, dates, monthName, year]
+    );
 }

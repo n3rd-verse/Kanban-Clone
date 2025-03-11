@@ -1,14 +1,25 @@
 import { TimelineHeader } from "./TimelineHeader";
+import { memo, useMemo } from "react";
 
 interface TimelineHeaderRowProps {
     dates: Date[];
     dayColumnWidth: number;
 }
 
-export function TimelineHeaderRow({
+function TimelineHeaderRowComponent({
     dates,
     dayColumnWidth
 }: TimelineHeaderRowProps) {
+    const headers = useMemo(() => {
+        return dates.map((date) => (
+            <TimelineHeader
+                key={date.toISOString()}
+                date={date}
+                width={dayColumnWidth}
+            />
+        ));
+    }, [dates, dayColumnWidth]);
+
     return (
         <div className="relative">
             <div className="top-[50%] right-0 left-0 absolute h-[2px]">
@@ -16,15 +27,9 @@ export function TimelineHeaderRow({
                     <div className="absolute inset-0 bg-red-500" />
                 </div>
             </div>
-            <div className="flex">
-                {dates.map((date) => (
-                    <TimelineHeader
-                        key={date.toISOString()}
-                        date={date}
-                        width={dayColumnWidth}
-                    />
-                ))}
-            </div>
+            <div className="flex">{headers}</div>
         </div>
     );
 }
+
+export const TimelineHeaderRow = memo(TimelineHeaderRowComponent);
