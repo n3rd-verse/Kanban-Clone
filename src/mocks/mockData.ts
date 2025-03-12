@@ -55,12 +55,7 @@ export const mockTasks: Task[] = [
         title: "Simply dummy text of the printing and typesetting industry.",
         assignee: ["김태호"],
         date: new Date(2025, 1, 24).toISOString(),
-        status: "in_progress",
-        ai: {
-            topic: "AI Topic",
-            summary:
-                "AI summary, simply dummy text of the printing and typesetting industry."
-        }
+        status: "in_progress"
     },
 
     // Overdue (Urgent) 컬럼
@@ -69,40 +64,21 @@ export const mockTasks: Task[] = [
         title: "2025년 1월분 급여자료 회신 요청",
         assignee: ["예인세무회계"],
         date: new Date(2025, 1, 4).toISOString(),
-        status: "urgent",
-        ai: {
-            topic: "급여 자료",
-            summary:
-                "2025년 1월분 급여자료 회신이 시급합니다. 빠른 확인 부탁드립니다.",
-            popupInfo: {
-                "제출 마감일": { date: "2025-01-10" },
-                담당자: { name: "홍길동", department: "인사팀" }
-            }
-        }
+        status: "urgent"
     },
     {
         id: "urgent-2",
         title: "2025년 1월 입퇴사자 정보(인사/급여, 퇴직사유) 회신 요청",
         assignee: ["예인세무회계"],
         date: new Date(2025, 1, 4).toISOString(),
-        status: "urgent",
-        ai: {
-            topic: "인사 정보",
-            summary:
-                "1월 입퇴사자 정보(인사/급여, 퇴직사유)가 필요합니다. 회신이 시급합니다."
-        }
+        status: "urgent"
     },
     {
         id: "urgent-3",
         title: "2025년 1월 일용근로소득, 사업소득, 기타소득 지급 여부 확인 요청",
         assignee: ["예인세무회계"],
         date: new Date(2025, 1, 4).toISOString(),
-        status: "urgent",
-        ai: {
-            topic: "소득 확인",
-            summary:
-                "1월 일용근로소득, 사업소득, 기타소득 지급 여부 확인이 시급합니다."
-        }
+        status: "urgent"
     },
 
     // Completed 컬럼
@@ -111,11 +87,7 @@ export const mockTasks: Task[] = [
         title: "명함 정보 확인 요청",
         assignee: ["Juno Kwaan"],
         date: new Date(2025, 1, 1).toISOString(),
-        status: "completed",
-        ai: {
-            topic: "명함 확인",
-            summary: "명함 정보 확인이 완료되었습니다. 모든 정보가 정확합니다."
-        }
+        status: "completed"
     },
     {
         id: "completed-2",
