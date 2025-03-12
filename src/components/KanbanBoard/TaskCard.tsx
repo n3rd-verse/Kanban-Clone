@@ -124,7 +124,7 @@ export function TaskCard({ task, className }: TaskCardProps) {
                             </div>
                         </div>
 
-                        {task.date && (
+                        {task.date && task.status !== "completed" && (
                             <div
                                 className={`text-sm ${dateColorClass} mt-auto pt-2`}
                             >
@@ -134,16 +134,16 @@ export function TaskCard({ task, className }: TaskCardProps) {
 
                         {task.ai && (
                             <div className="flex justify-between items-center mt-3 w-full max-w-full text-sm">
-                                <div className="flex flex-1 items-center gap-1.5 min-w-0 max-w-[calc(100%-24px)]">
-                                    <span className="flex-shrink-0 font-medium text-[#444] whitespace-nowrap">
-                                        {task.ai.topic}
-                                    </span>
-                                    <span className="flex-shrink-0 text-[#666] whitespace-nowrap">
-                                        -
-                                    </span>
-                                    <span className="text-[#666] truncate">
-                                        {task.ai.summary}
-                                    </span>
+                                <div className="flex-1 min-w-0 max-w-[calc(100%-24px)]">
+                                    <div className="break-words">
+                                        <span className="font-medium text-[#444]">
+                                            {task.ai.topic}
+                                        </span>
+                                        <span className="text-[#666]"> - </span>
+                                        <span className="text-[#666]">
+                                            {task.ai.summary}
+                                        </span>
+                                    </div>
                                 </div>
 
                                 {task.ai.summary && (
@@ -153,7 +153,7 @@ export function TaskCard({ task, className }: TaskCardProps) {
                                     >
                                         <PopoverTrigger asChild>
                                             <div
-                                                className="flex-shrink-0 ml-1 cursor-pointer"
+                                                className="flex-shrink-0 self-center ml-1 cursor-pointer"
                                                 onClick={(
                                                     e: React.MouseEvent
                                                 ) => {
@@ -169,22 +169,15 @@ export function TaskCard({ task, className }: TaskCardProps) {
                                         </PopoverTrigger>
                                         <PopoverContent
                                             className="p-3 w-72"
-                                            side="top"
+                                            side="bottom"
                                         >
-                                            <div className="text-sm">
-                                                <p className="mb-2 font-medium">
-                                                    AI 정보:
-                                                </p>
-                                                <p className="mb-4">
-                                                    {task.ai.summary}
-                                                </p>
-
+                                            <div className="font-bold text-sm">
                                                 {/* Display popupInfo data */}
                                                 {task.ai.popupInfo &&
                                                     Object.keys(
                                                         task.ai.popupInfo
                                                     ).length > 0 && (
-                                                        <div className="space-y-2 mt-2 pt-3 border-t">
+                                                        <div className="space-y-2">
                                                             {Object.entries(
                                                                 task.ai
                                                                     .popupInfo
