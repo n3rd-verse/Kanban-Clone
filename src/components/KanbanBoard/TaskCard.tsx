@@ -10,6 +10,12 @@ import { useWindowSize } from "@/hooks/design/use-window-size";
 import { COLUMN_SIZES } from "./constants";
 import { cn } from "@/lib/utils";
 import { useOpenTaskMutation } from "@/hooks/api/tasks/use-open-task-mutation";
+import { AlertCircle } from "lucide-react";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger
+} from "@/components/ui/popover";
 
 interface TaskCardProps {
     task: Task;
@@ -22,8 +28,9 @@ export function TaskCard({ task, className }: TaskCardProps) {
     const { width } = useWindowSize();
     const { mutate: openTask } = useOpenTaskMutation();
     const isDesktop = width >= COLUMN_SIZES.DESKTOP_BREAKPOINT;
-    const [isHovered, setIsHovered] = useState(false);
+    // const [isHovered, setIsHovered] = useState(false);
     const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+    const [showAiInfo, setShowAiInfo] = useState(false);
 
     const dateColorClass =
         task.status === "urgent" ? "text-[#ea384c]" : "text-gray-400";
@@ -60,20 +67,20 @@ export function TaskCard({ task, className }: TaskCardProps) {
                 "p-4 hover:shadow-md transition-shadow",
                 "break-words h-full",
                 "group relative",
-                "cursor-pointer",
+                "cursor-pointer overflow-hidden",
                 className
             )}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
+            // onMouseEnter={() => setIsHovered(true)}
+            // onMouseLeave={() => setIsHovered(false)}
             onClick={(e) => {
                 handleClick(e);
             }}
             onMouseDown={handleMouseDown}
         >
-            <div className="flex flex-col h-full">
-                <div className="flex justify-between">
+            <div className="flex flex-col max-w-full h-full">
+                <div className="flex justify-between max-w-full">
                     {/* 타이틀과 담당자 영역 - 고정된 너비 유지 */}
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 max-w-full">
                         <div className="flex items-center">
                             <h3 className="mb-1 font-medium break-words">
                                 {task.title}
@@ -101,7 +108,6 @@ export function TaskCard({ task, className }: TaskCardProps) {
                                 </div>
                             </div>
                         </div>
-
                         <div className="flex items-center gap-2 mt-1 overflow-hidden">
                             <div className="flex flex-shrink-0 items-center gap-1 min-w-0">
                                 {task.assignee.map((assignee, index) => (
@@ -111,21 +117,156 @@ export function TaskCard({ task, className }: TaskCardProps) {
                                         </span>
                                         {index < task.assignee.length - 1 && (
                                             <span className="text-[#3362FF] text-sm">
-                                                ,
+                                                {" "}
                                             </span>
                                         )}
                                     </React.Fragment>
                                 ))}
                             </div>
                         </div>
+
+                        {task.date && (
+                            <div
+                                className={`text-sm ${dateColorClass} mt-auto pt-2`}
+                            >
+                                {format(new Date(task.date), "MMM dd, yyyy")}
+                            </div>
+                        )}
+
+                        {task.ai?.topic && (
+                            <div className="flex justify-between items-center mt-3 w-full max-w-full text-sm">
+                                <div className="flex flex-1 items-center gap-1.5 min-w-0 max-w-[calc(100%-24px)]">
+                                    <span className="flex-shrink-0 font-medium text-[#444] whitespace-nowrap">
+                                        {task.ai.topic}
+                                    </span>
+                                    <span className="flex-shrink-0 text-[#666] whitespace-nowrap">
+                                        -
+                                    </span>
+                                    <span className="text-[#666] truncate">
+                                        {task.ai.summary}
+                                    </span>
+                                </div>
+
+                                {task.ai.summary && (
+                                    <Popover
+                                        open={showAiInfo}
+                                        onOpenChange={setShowAiInfo}
+                                    >
+                                        <PopoverTrigger asChild>
+                                            <div
+                                                className="flex-shrink-0 ml-1 cursor-pointer"
+                                                onClick={(
+                                                    e: React.MouseEvent
+                                                ) => {
+                                                    e.stopPropagation();
+                                                }}
+                                            >
+                                                <AlertCircle className="w-4 h-4 text-amber-500" />
+                                            </div>
+                                        </PopoverTrigger>
+                                        <PopoverContent
+                                            className="p-3 w-72"
+                                            side="top"
+                                        >
+                                            <div className="text-sm">
+                                                <p className="mb-2 font-medium">
+                                                    AI 정보:
+                                                </p>
+                                                <p className="mb-4">
+                                                    {task.ai.summary}
+                                                </p>
+
+                                                {/* Display popupInfo data */}
+                                                {task.ai.popupInfo &&
+                                                    Object.keys(
+                                                        task.ai.popupInfo
+                                                    ).length > 0 && (
+                                                        <div className="space-y-2 mt-2 pt-3 border-t">
+                                                            {Object.entries(
+                                                                task.ai
+                                                                    .popupInfo
+                                                            ).map(
+                                                                ([
+                                                                    key,
+                                                                    value
+                                                                ]) => (
+                                                                    <div
+                                                                        key={
+                                                                            key
+                                                                        }
+                                                                        className="flex items-center gap-2 text-sm"
+                                                                    >
+                                                                        <div className="flex justify-center items-center bg-gray-200 p-1 rounded-full">
+                                                                            <span className="flex justify-center items-center w-4 h-4 text-gray-600">
+                                                                                {key.includes(
+                                                                                    "Time"
+                                                                                ) ||
+                                                                                key.includes(
+                                                                                    "일시"
+                                                                                )
+                                                                                    ? "⏱️"
+                                                                                    : "ℹ️"}
+                                                                            </span>
+                                                                        </div>
+                                                                        <div className="text-gray-700">
+                                                                            <span className="font-medium">
+                                                                                {
+                                                                                    key
+                                                                                }
+
+                                                                                :
+                                                                            </span>{" "}
+                                                                            {renderPopupInfoValue(
+                                                                                value
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    )}
+                                            </div>
+                                        </PopoverContent>
+                                    </Popover>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
-                {task.date && (
-                    <div className={`text-sm ${dateColorClass} mt-auto pt-2`}>
-                        {format(new Date(task.date), "MMM dd, yyyy")}
-                    </div>
-                )}
             </div>
         </Card>
     );
+}
+
+// Helper function to render different types of popupInfo values
+function renderPopupInfoValue(value: any): React.ReactNode {
+    if (typeof value === "string") {
+        return value;
+    }
+
+    if (value && typeof value === "object") {
+        if ("startTime" in value && "endTime" in value) {
+            return `${value.startTime} - ${value.endTime}`;
+        }
+        if ("duration" in value) {
+            return value.duration;
+        }
+        if ("date" in value && "time" in value) {
+            return `${value.date} ${value.time}`;
+        }
+        if ("date" in value) {
+            return value.date;
+        }
+        if ("name" in value && "department" in value) {
+            return `${value.name} (${value.department})`;
+        }
+        if ("location" in value) {
+            return value.location;
+        }
+
+        // Default rendering for other object formats
+        return Object.values(value).join(", ");
+    }
+
+    return String(value);
 }

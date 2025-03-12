@@ -37,7 +37,16 @@ export const mockTasks: Task[] = [
         title: "Simply dummy text of the printing and typesetting industry.",
         assignee: ["김태호", "임지영"],
         date: new Date(2025, 1, 24).toISOString(),
-        status: "new"
+        status: "new",
+        ai: {
+            topic: "AI Topic",
+            summary:
+                "AI summary, simply dummy text of the printing and typesetting industry.",
+            popupInfo: {
+                "Lecture Time": { startTime: "11:50", endTime: "12:50" },
+                "QA Session": { duration: "20 minutes" }
+            }
+        }
     },
 
     // In Progress 컬럼
@@ -46,7 +55,12 @@ export const mockTasks: Task[] = [
         title: "Simply dummy text of the printing and typesetting industry.",
         assignee: ["김태호"],
         date: new Date(2025, 1, 24).toISOString(),
-        status: "in_progress"
+        status: "in_progress",
+        ai: {
+            topic: "AI Topic",
+            summary:
+                "AI summary, simply dummy text of the printing and typesetting industry."
+        }
     },
 
     // Overdue (Urgent) 컬럼
@@ -55,21 +69,40 @@ export const mockTasks: Task[] = [
         title: "2025년 1월분 급여자료 회신 요청",
         assignee: ["예인세무회계"],
         date: new Date(2025, 1, 4).toISOString(),
-        status: "urgent"
+        status: "urgent",
+        ai: {
+            topic: "급여 자료",
+            summary:
+                "2025년 1월분 급여자료 회신이 시급합니다. 빠른 확인 부탁드립니다.",
+            popupInfo: {
+                "제출 마감일": { date: "2025-01-10" },
+                담당자: { name: "홍길동", department: "인사팀" }
+            }
+        }
     },
     {
         id: "urgent-2",
         title: "2025년 1월 입퇴사자 정보(인사/급여, 퇴직사유) 회신 요청",
         assignee: ["예인세무회계"],
         date: new Date(2025, 1, 4).toISOString(),
-        status: "urgent"
+        status: "urgent",
+        ai: {
+            topic: "인사 정보",
+            summary:
+                "1월 입퇴사자 정보(인사/급여, 퇴직사유)가 필요합니다. 회신이 시급합니다."
+        }
     },
     {
         id: "urgent-3",
         title: "2025년 1월 일용근로소득, 사업소득, 기타소득 지급 여부 확인 요청",
         assignee: ["예인세무회계"],
         date: new Date(2025, 1, 4).toISOString(),
-        status: "urgent"
+        status: "urgent",
+        ai: {
+            topic: "소득 확인",
+            summary:
+                "1월 일용근로소득, 사업소득, 기타소득 지급 여부 확인이 시급합니다."
+        }
     },
 
     // Completed 컬럼
@@ -78,14 +111,27 @@ export const mockTasks: Task[] = [
         title: "명함 정보 확인 요청",
         assignee: ["Juno Kwaan"],
         date: new Date(2025, 1, 1).toISOString(),
-        status: "completed"
+        status: "completed",
+        ai: {
+            topic: "명함 확인",
+            summary: "명함 정보 확인이 완료되었습니다. 모든 정보가 정확합니다."
+        }
     },
     {
         id: "completed-2",
         title: "면접 가능 여부 확인 요청(오프라인 2/3 오후 2시)",
         assignee: ["Seokmin Lee", "Heemang Lee"],
         date: new Date(2025, 1, 1).toISOString(),
-        status: "completed"
+        status: "completed",
+        ai: {
+            topic: "입사 면접",
+            summary: "오후 2시에 오프라인 면접으로 가능할까요?",
+            popupInfo: {
+                "면접 일시": { date: "2025-02-03", time: "14:00" },
+                "면접 장소": { location: "본사 3층 회의실" },
+                면접관: { name: "박지원", department: "개발팀" }
+            }
+        }
     }
 ];
 
