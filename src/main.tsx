@@ -57,11 +57,15 @@ if (!rootElement.innerHTML) {
 }
 
 window.refreshTasks = async () => {
-    await queryClient.refetchQueries({ queryKey: queryKeys.tasks.all() });
+    await queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all() });
+    // await queryClient.refetchQueries({ queryKey: queryKeys.tasks.all() });
 };
 
 window.refreshSchedules = async () => {
-    await queryClient.refetchQueries({ queryKey: queryKeys.schedules.all() });
+    await queryClient.invalidateQueries({
+        queryKey: queryKeys.schedules.all()
+    });
+    // await queryClient.refetchQueries({ queryKey: queryKeys.schedules.all() });
 };
 
 window.changeLanguage = (lang: string) => {

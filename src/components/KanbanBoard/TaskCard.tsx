@@ -10,7 +10,11 @@ import { useWindowSize } from "@/hooks/design/use-window-size";
 import { COLUMN_SIZES } from "./constants";
 import { cn } from "@/lib/utils";
 import { useOpenTaskMutation } from "@/hooks/api/tasks/use-open-task-mutation";
-import { useTranslation } from "react-i18next";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger
+} from "@/components/ui/popover";
 
 interface TaskCardProps {
     task: Task;
@@ -23,9 +27,9 @@ export function TaskCard({ task, className }: TaskCardProps) {
     const { width } = useWindowSize();
     const { mutate: openTask } = useOpenTaskMutation();
     const isDesktop = width >= COLUMN_SIZES.DESKTOP_BREAKPOINT;
-    const [isHovered, setIsHovered] = useState(false);
+    // const [isHovered, setIsHovered] = useState(false);
     const [startPos, setStartPos] = useState({ x: 0, y: 0 });
-    const { t } = useTranslation();
+    const [showAiInfo, setShowAiInfo] = useState(false);
 
     const dateColorClass =
         task.status === "urgent" ? "text-[#ea384c]" : "text-gray-400";
@@ -66,20 +70,20 @@ export function TaskCard({ task, className }: TaskCardProps) {
                 "p-4 hover:shadow-md transition-shadow",
                 "break-words h-full",
                 "group relative",
-                "cursor-pointer",
+                "cursor-pointer overflow-hidden",
                 className
             )}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
+            // onMouseEnter={() => setIsHovered(true)}
+            // onMouseLeave={() => setIsHovered(false)}
             onClick={(e) => {
                 handleClick(e);
             }}
             onMouseDown={handleMouseDown}
         >
-            <div className="flex flex-col h-full">
-                <div className="flex justify-between">
+            <div className="flex flex-col max-w-full h-full">
+                <div className="flex justify-between max-w-full">
                     {/* 타이틀과 담당자 영역 - 고정된 너비 유지 */}
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 max-w-full">
                         <div className="flex items-center">
                             <h3 className="mb-1 font-medium break-words">
                                 {task.title}
@@ -107,7 +111,6 @@ export function TaskCard({ task, className }: TaskCardProps) {
                                 </div>
                             </div>
                         </div>
-
                         <div className="flex items-center gap-2 mt-1 overflow-hidden">
                             <div className="flex flex-shrink-0 items-center gap-1 min-w-0">
                                 {task.assignee.map((assignee, index) => (
@@ -117,22 +120,141 @@ export function TaskCard({ task, className }: TaskCardProps) {
                                         </span>
                                         {index < task.assignee.length - 1 && (
                                             <span className="text-[#3362FF] text-sm">
-                                                ,
+                                                {" "}
                                             </span>
                                         )}
                                     </React.Fragment>
                                 ))}
                             </div>
                         </div>
+
+                        {task.date && task.status !== "completed" && (
+                            <div
+                                className={`text-sm ${dateColorClass} mt-auto pt-2`}
+                            >
+                                {format(new Date(task.date), "MMM dd, yyyy")}
+                            </div>
+                        )}
+
+                        {task.ai && (
+                            <div className="flex justify-between items-center mt-3 w-full max-w-full text-sm">
+                                <div className="flex-1 min-w-0 max-w-[calc(100%-24px)]">
+                                    <div className="break-words">
+                                        <span className="font-medium text-[#444]">
+                                            {task.ai.topic}
+                                        </span>
+                                        <span className="text-[#666]"> - </span>
+                                        <span className="text-[#666]">
+                                            {task.ai.summary}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {task.ai.summary && (
+                                    <Popover
+                                        open={showAiInfo}
+                                        onOpenChange={setShowAiInfo}
+                                    >
+                                        <PopoverTrigger asChild>
+                                            <div
+                                                className="flex-shrink-0 self-center ml-1 cursor-pointer"
+                                                onClick={(
+                                                    e: React.MouseEvent
+                                                ) => {
+                                                    e.stopPropagation();
+                                                }}
+                                            >
+                                                <div className="flex justify-center items-center bg-gray-500 rounded-full w-5 h-5 text-white">
+                                                    <span className="font-bold text-xs">
+                                                        !
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </PopoverTrigger>
+                                        <PopoverContent
+                                            className="p-3 w-72"
+                                            side="bottom"
+                                        >
+                                            <div className="font-bold text-sm">
+                                                {/* Display popupInfo data */}
+                                                {task.ai.popupInfo &&
+                                                    Object.keys(
+                                                        task.ai.popupInfo
+                                                    ).length > 0 && (
+                                                        <div className="space-y-2">
+                                                            {Object.entries(
+                                                                task.ai
+                                                                    .popupInfo
+                                                            ).map(
+                                                                ([
+                                                                    key,
+                                                                    value
+                                                                ]) => (
+                                                                    <div
+                                                                        key={
+                                                                            key
+                                                                        }
+                                                                        className="flex items-center gap-2 text-sm"
+                                                                    >
+                                                                        <div className="text-gray-700">
+                                                                            <span className="font-medium">
+                                                                                {
+                                                                                    key
+                                                                                }
+
+                                                                                :
+                                                                            </span>{" "}
+                                                                            {renderPopupInfoValue(
+                                                                                value
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                )
+                                                            )}
+                                                        </div>
+                                                    )}
+                                            </div>
+                                        </PopoverContent>
+                                    </Popover>
+                                )}
+                            </div>
+                        )}
                     </div>
 
                 </div>
-                {task.date && (
-                    <div className={`text-sm ${dateColorClass} mt-auto pt-2`}>
-                        {format(new Date(task.date), "MMM dd, yyyy")}
-                    </div>
-                )}
             </div>
         </Card>
     );
+}
+
+// 팝업 정보값 비효율적 렌더링...
+function renderPopupInfoValue(value: any): React.ReactNode {
+    if (typeof value === "string") {
+        return value;
+    }
+
+    if (value && typeof value === "object") {
+        if ("startTime" in value && "endTime" in value) {
+            return `${value.startTime} - ${value.endTime}`;
+        }
+        if ("duration" in value) {
+            return value.duration;
+        }
+        if ("date" in value && "time" in value) {
+            return `${value.date} ${value.time}`;
+        }
+        if ("date" in value) {
+            return value.date;
+        }
+        if ("name" in value && "department" in value) {
+            return `${value.name} (${value.department})`;
+        }
+        if ("location" in value) {
+            return value.location;
+        }
+
+        return Object.values(value).join(", ");
+    }
+
+    return String(value);
 }

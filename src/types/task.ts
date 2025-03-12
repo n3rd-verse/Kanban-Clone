@@ -7,6 +7,11 @@ export interface Task {
     date?: string;
     status: TaskStatus;
     allowEdit?: boolean;
+    ai?: {
+        topic?: string;
+        summary?: string;
+        popupInfo?: object;
+    };
 }
 
 export interface TaskDTO {
@@ -16,6 +21,11 @@ export interface TaskDTO {
     date?: string;
     status: TaskStatus;
     allowEdit?: boolean;
+    ai?: {
+        topic?: string;
+        summary?: string;
+        popupInfo?: object;
+    };
 }
 
 export interface TaskFilters {
