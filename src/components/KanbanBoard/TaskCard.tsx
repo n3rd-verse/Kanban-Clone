@@ -10,7 +10,6 @@ import { useWindowSize } from "@/hooks/design/use-window-size";
 import { COLUMN_SIZES } from "./constants";
 import { cn } from "@/lib/utils";
 import { useOpenTaskMutation } from "@/hooks/api/tasks/use-open-task-mutation";
-import { AlertCircle } from "lucide-react";
 import {
     Popover,
     PopoverContent,
@@ -133,7 +132,7 @@ export function TaskCard({ task, className }: TaskCardProps) {
                             </div>
                         )}
 
-                        {task.ai?.topic && (
+                        {task.ai && (
                             <div className="flex justify-between items-center mt-3 w-full max-w-full text-sm">
                                 <div className="flex flex-1 items-center gap-1.5 min-w-0 max-w-[calc(100%-24px)]">
                                     <span className="flex-shrink-0 font-medium text-[#444] whitespace-nowrap">
@@ -161,7 +160,11 @@ export function TaskCard({ task, className }: TaskCardProps) {
                                                     e.stopPropagation();
                                                 }}
                                             >
-                                                <AlertCircle className="w-4 h-4 text-amber-500" />
+                                                <div className="flex justify-center items-center bg-gray-500 rounded-full w-5 h-5 text-white">
+                                                    <span className="font-bold text-xs">
+                                                        !
+                                                    </span>
+                                                </div>
                                             </div>
                                         </PopoverTrigger>
                                         <PopoverContent
@@ -196,18 +199,6 @@ export function TaskCard({ task, className }: TaskCardProps) {
                                                                         }
                                                                         className="flex items-center gap-2 text-sm"
                                                                     >
-                                                                        <div className="flex justify-center items-center bg-gray-200 p-1 rounded-full">
-                                                                            <span className="flex justify-center items-center w-4 h-4 text-gray-600">
-                                                                                {key.includes(
-                                                                                    "Time"
-                                                                                ) ||
-                                                                                key.includes(
-                                                                                    "일시"
-                                                                                )
-                                                                                    ? "⏱️"
-                                                                                    : "ℹ️"}
-                                                                            </span>
-                                                                        </div>
                                                                         <div className="text-gray-700">
                                                                             <span className="font-medium">
                                                                                 {
@@ -238,7 +229,7 @@ export function TaskCard({ task, className }: TaskCardProps) {
     );
 }
 
-// Helper function to render different types of popupInfo values
+// 팝업 정보값 비효율적 렌더링...
 function renderPopupInfoValue(value: any): React.ReactNode {
     if (typeof value === "string") {
         return value;
@@ -264,7 +255,6 @@ function renderPopupInfoValue(value: any): React.ReactNode {
             return value.location;
         }
 
-        // Default rendering for other object formats
         return Object.values(value).join(", ");
     }
 
