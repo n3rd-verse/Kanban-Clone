@@ -4,11 +4,11 @@ import { queryKeys } from "@/lib/query-keys";
 import { fetchTasks } from "@/services/tasks";
 import { fetchSchedules } from "@/services/schedules";
 import { KanbanBoard } from "@/components/KanbanBoard/KanbanBoard";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { ColumnSkeleton } from "@/components/KanbanBoard/KanbanBoardSkeleton";
 import { Suspense } from "react";
 import { TasksResponse } from "@/types/task";
+import { ColumnSkeleton } from "@/components/KanbanBoard/KanbanBoardSkeleton";
 import { ScheduleColumnSkeleton } from "@/components/KanbanBoard/KanbanBoardSkeleton";
+import { RouteErrorComponent } from "@/components/ErrorComponent";
 
 export const Route = createFileRoute("/")({
     loader: async () => {
@@ -39,33 +39,32 @@ export const Route = createFileRoute("/")({
             })
         ]);
     },
+    errorComponent: RouteErrorComponent,
     component: () => (
-        <ErrorBoundary fallback={<div>Error loading tasks</div>}>
-            <Suspense
-                fallback={
-                    <div className="p-4 min-h-screen">
-                        <div className="flex xl:flex-row flex-col">
-                            <div className="flex-1">
-                                <div className="gap-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
-                                    {[
-                                        "new",
-                                        "in_progress",
-                                        "urgent",
-                                        "completed"
-                                    ].map((status) => (
-                                        <ColumnSkeleton key={status} />
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="xl:w-[400px]">
-                                <ScheduleColumnSkeleton />
+        <Suspense
+            fallback={
+                <div className="p-4 min-h-screen">
+                    <div className="flex xl:flex-row flex-col">
+                        <div className="flex-1">
+                            <div className="gap-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
+                                {[
+                                    "new",
+                                    "in_progress",
+                                    "urgent",
+                                    "completed"
+                                ].map((status) => (
+                                    <ColumnSkeleton key={status} />
+                                ))}
                             </div>
                         </div>
+                        <div className="xl:w-[400px]">
+                            <ScheduleColumnSkeleton />
+                        </div>
                     </div>
-                }
-            >
-                <KanbanBoard />
-            </Suspense>
-        </ErrorBoundary>
+                </div>
+            }
+        >
+            <KanbanBoard />
+        </Suspense>
     )
 });
