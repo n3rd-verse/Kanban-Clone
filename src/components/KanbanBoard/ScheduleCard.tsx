@@ -80,27 +80,27 @@ export const ScheduleCard = memo(function ScheduleCard({
             </h3>
             <div className="flex items-center gap-2 mb-1 overflow-hidden">
                 <div className="flex flex-shrink-0 items-center gap-1 min-w-0">
-                    {schedule.attendees.map((assignee, index) => (
-                        <React.Fragment key={assignee.email}>
-                            <span 
-                                className={`text-[#3362FF] text-sm truncate ${assignee.email ? 'cursor-pointer' : ''}`}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (assignee.email) {
-                                        openContact(assignee);
-                                    }
-                                }}
-                            >
-                                {assignee.name || assignee.email}
+                {schedule.attendees.map((attendee, index) => (
+                    <React.Fragment key={attendee.email}>
+                        <span 
+                            className={`text-sm truncate ${attendee.email ? 'text-[#3362FF] cursor-pointer' : 'text-gray-500'}`}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                if (attendee.email) {
+                                    openContact(attendee);
+                                }
+                            }}
+                        >
+                            {attendee.email ? (attendee.name || attendee.email) : attendee.name}
+                        </span>
+                        
+                        {index < schedule.attendees.length - 1 && (
+                            <span className="text-[#3362FF] text-sm">
+                                {" "}
                             </span>
-                            
-                            {index < schedule.attendees.length - 1 && (
-                                <span className="text-[#3362FF] text-sm">
-                                    {" "}
-                                </span>
-                            )}
-                        </React.Fragment>
-                    ))}
+                        )}
+                    </React.Fragment>
+                ))}
                 </div>
             </div>
 

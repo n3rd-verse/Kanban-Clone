@@ -120,7 +120,7 @@ export function TaskCard({ task, className }: TaskCardProps) {
                                 {task.assignee.map((assignee, index) => (
                                     <React.Fragment key={assignee.email}>
                                         <span 
-                                            className={`text-[#3362FF] text-sm truncate ${assignee.email ? 'cursor-pointer' : ''}`}
+                                            className={`text-sm truncate ${assignee.email ? 'text-[#3362FF] cursor-pointer' : 'text-gray-500'}`}
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 if (assignee.email) {
@@ -128,7 +128,7 @@ export function TaskCard({ task, className }: TaskCardProps) {
                                                 }
                                             }}
                                         >
-                                            {assignee.name || assignee.email}
+                                            {assignee.email ? (assignee.name || assignee.email) : assignee.name}
                                         </span>
                                         
                                         {index < task.assignee.length - 1 && (
