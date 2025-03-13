@@ -42,10 +42,10 @@ export const mockTasks: Task[] = [
             topic: "AI Topic",
             summary:
                 "AI summary, simply dummy text of the printing and typesetting industry.",
-            popupInfo: {
-                "Lecture Time": { startTime: "11:50", endTime: "12:50" },
-                "QA Session": { duration: "20 minutes" }
-            }
+            popupInfo: [
+                { "key": "bbb" },
+                { "ccc": "ddd" }
+            ]
         }
     },
 
@@ -98,11 +98,11 @@ export const mockTasks: Task[] = [
         ai: {
             topic: "입사 면접",
             summary: "오후 2시에 오프라인 면접으로 가능할까요?",
-            popupInfo: {
-                "면접 일시": { date: "2025-02-03", time: "14:00" },
-                "면접 장소": { location: "본사 3층 회의실" },
-                면접관: { name: "박지원", department: "개발팀" }
-            }
+            popupInfo: [
+                { "key": "bbb" },
+                { "ccc": "ddd" },
+                { "key": "duplicate key example" }
+            ]
         }
     }
 ];

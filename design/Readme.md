@@ -12,6 +12,41 @@
   - `getTasks()`: Returns a Promise containing tasks data as a JSON string
   - `openTask(taskId: string)`: Opens a task detail view for the specified task ID
 
+### Task Interface
+- Location: `src/types/task.ts`
+- Purpose: Defines the structure of task objects used throughout the application
+- Key Components:
+  - `TaskStatus` type: Enumeration of possible task statuses
+    - Values: `"new"`, `"in_progress"`, `"urgent"`, `"completed"`
+    - Usage: Controls the visual state and column placement in the Kanban board
+  
+  - `Task` interface: Main task data structure
+    - Core Properties:
+      - `id`: Unique identifier for the task
+      - `title`: Task title/description text
+      - `assignee`: Array of assignee names
+      - `date`: ISO string representing the task date
+      - `status`: Current task status (type: TaskStatus)
+      - `allowEdit`: Optional boolean flag to control editability
+    
+    - AI-related Properties (Optional):
+      - `ai.topic`: Brief topic or category of the AI-generated content
+      - `ai.summary`: Condensed summary of the task content
+      - `ai.popupInfo`: Array of key-value pair objects that can contain duplicate keys
+        - Format: `[{ "key": "value" }, { "anotherKey": "anotherValue" }, { "key": "duplicateKeyExample" }]`
+        - Rendering: Displayed in a popover when clicking the info button
+  
+  - `TaskDTO` interface: Data transfer object for task API operations
+    - Extends the `Task` interface with slight modifications
+    - Differences: `assignee` can be either a string or string array
+  
+  - `TaskFilters` interface: Used for filtering tasks in listings
+    - Supports filtering by status, assignee, date range, and text search
+    - Includes pagination parameters (limit, page)
+  
+  - `TasksResponse` interface: API response format for task listings
+    - Contains array of tasks, total count, and optional next page information
+
 ## Internationalization (i18n)
 
 ### Task-related Translations
