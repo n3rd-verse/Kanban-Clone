@@ -146,7 +146,7 @@ export function TaskCard({ task, className }: TaskCardProps) {
                                     </div>
                                 </div>
 
-                                {task.ai.summary && (
+                                { task.ai.popupInfo && (
                                     <Popover
                                         open={showAiInfo}
                                         onOpenChange={setShowAiInfo}
@@ -174,41 +174,30 @@ export function TaskCard({ task, className }: TaskCardProps) {
                                             <div className="font-bold text-sm">
                                                 {/* Display popupInfo data */}
                                                 {task.ai.popupInfo &&
-                                                    Object.keys(
-                                                        task.ai.popupInfo
-                                                    ).length > 0 && (
-                                                        <div className="space-y-2">
-                                                            {Object.entries(
-                                                                task.ai
-                                                                    .popupInfo
-                                                            ).map(
-                                                                ([
-                                                                    key,
-                                                                    value
-                                                                ]) => (
-                                                                    <div
-                                                                        key={
-                                                                            key
-                                                                        }
-                                                                        className="flex items-center gap-2 text-sm"
-                                                                    >
-                                                                        <div className="text-gray-700">
-                                                                            <span className="font-medium">
-                                                                                {
-                                                                                    key
-                                                                                }
-
-                                                                                :
-                                                                            </span>{" "}
-                                                                            {renderPopupInfoValue(
-                                                                                value
-                                                                            )}
-                                                                        </div>
-                                                                    </div>
-                                                                )
-                                                            )}
+                                                Array.isArray(task.ai.popupInfo) &&
+                                                task.ai.popupInfo.length > 0 && (
+                                                    <div className="space-y-2">
+                                                    {task.ai.popupInfo.map((item, index) => {
+                                                        // 각 객체에서 첫 번째 키-값 쌍 가져오기
+                                                        const key = Object.keys(item)[0];
+                                                        const value = item[key];
+                                                        
+                                                        return (
+                                                        <div
+                                                            key={index}
+                                                            className="flex items-center gap-2 text-sm"
+                                                        >
+                                                            <div className="text-gray-700">
+                                                            <span className="font-medium">
+                                                                {key}:
+                                                            </span>{" "}
+                                                            {renderPopupInfoValue(value)}
+                                                            </div>
                                                         </div>
-                                                    )}
+                                                        );
+                                                    })}
+                                                    </div>
+                                                )}
                                             </div>
                                         </PopoverContent>
                                     </Popover>
