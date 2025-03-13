@@ -16,6 +16,11 @@
 - Location: `src/types/task.ts`
 - Purpose: Defines the structure of task objects used throughout the application
 - Key Components:
+  - `Address` interface: Defines the structure for assignee contact information
+    - Properties:
+      - `name`: The display name of the assignee
+      - `email`: The email address of the assignee, used for contact functionality
+  
   - `TaskStatus` type: Enumeration of possible task statuses
     - Values: `"new"`, `"in_progress"`, `"urgent"`, `"completed"`
     - Usage: Controls the visual state and column placement in the Kanban board
@@ -24,7 +29,7 @@
     - Core Properties:
       - `id`: Unique identifier for the task
       - `title`: Task title/description text
-      - `assignee`: Array of assignee names
+      - `assignee`: Array of Address objects containing name and email information
       - `date`: ISO string representing the task date
       - `status`: Current task status (type: TaskStatus)
       - `allowEdit`: Optional boolean flag to control editability
@@ -38,7 +43,7 @@
   
   - `TaskDTO` interface: Data transfer object for task API operations
     - Extends the `Task` interface with slight modifications
-    - Differences: `assignee` can be either a string or string array
+    - Differences: `assignee` can be either a single Address object or an array of Address objects
   
   - `TaskFilters` interface: Used for filtering tasks in listings
     - Supports filtering by status, assignee, date range, and text search
@@ -46,6 +51,16 @@
   
   - `TasksResponse` interface: API response format for task listings
     - Contains array of tasks, total count, and optional next page information
+
+## Contact Functionality
+- Purpose: Enables users to access contact details directly from task assignees
+- Components:
+  - `openContact` function: Service method that opens contact details via the native bridge
+    - Location: `src/services/contacts.ts`
+    - Parameters: Takes an email address string to identify the contact
+  - `useOpenContactMutation` hook: React Query mutation for opening contacts
+    - Location: `src/hooks/api/contacts/use-open-contact-mutation.ts`
+    - Usage: Invoked when clicking on an assignee name in the TaskCard component
 
 ## Internationalization (i18n)
 

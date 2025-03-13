@@ -1,9 +1,11 @@
+import { Address } from "./contact";
+
 export type TaskStatus = "new" | "in_progress" | "urgent" | "completed";
 
 export interface Task {
     id: string;
     title: string;
-    assignee: string[];
+    assignee: Address[];
     date?: string;
     status: TaskStatus;
     allowEdit?: boolean;
@@ -17,7 +19,7 @@ export interface Task {
 export interface TaskDTO {
     id: string;
     title: string;
-    assignee: string | string[];
+    assignee: Address | Address[];
     date?: string;
     status: TaskStatus;
     allowEdit?: boolean;

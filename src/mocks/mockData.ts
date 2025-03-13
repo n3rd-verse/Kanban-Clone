@@ -20,10 +20,10 @@ const generateTasksForStatus = (
                   }`,
         assignee:
             index % 2 === 0
-                ? ["김태훈", "임희정"]
+                ? [{name: "김태훈", email: "taehoon.kim@nextintelligence.ai"}, {name: "임희정", email: "heejung.im@nextintelligence.ai"}]
                 : index % 3 === 0
-                  ? ["예인세무회계"]
-                  : ["Seokmin Lee", "Heemang Lee"],
+                  ? [{name: "예인세무회계", email: "yoonjoo.yoon@gmail.com"}]
+                  : [{name: "Seokmin Lee", email: "seokmin.lee@nextintelligence.ai"}, {name: "Heemang Lee", email: "heemang.lee@nextintelligence.ai"}],
         date: new Date(2024, 1, Math.floor(index / 10) + 1).toISOString(),
         status: status,
         completed: status === "completed"
@@ -35,7 +35,7 @@ export const mockTasks: Task[] = [
     {
         id: "new-1",
         title: "Simply dummy text of the printing and typesetting industry.",
-        assignee: ["김태호", "임지영"],
+        assignee: [{name: "김태호", email: "taehoo.kim@nextintelligence.ai"}, {name: "임지영", email: "jiyoung.im@nextintelligence.ai"}],
         date: new Date(2025, 1, 24).toISOString(),
         status: "new",
         ai: {
@@ -53,7 +53,7 @@ export const mockTasks: Task[] = [
     {
         id: "in_progress-1",
         title: "Simply dummy text of the printing and typesetting industry.",
-        assignee: ["김태호"],
+        assignee: [{name: "김태호", email: "taehoo.kim@nextintelligence.ai"}],
         date: new Date(2025, 1, 24).toISOString(),
         status: "in_progress"
     },
@@ -62,21 +62,21 @@ export const mockTasks: Task[] = [
     {
         id: "urgent-1",
         title: "2025년 1월분 급여자료 회신 요청",
-        assignee: ["예인세무회계"],
+        assignee: [{name: "예인세무회계", email: "yoonjoo.yoon@gmail.com"}],
         date: new Date(2025, 1, 4).toISOString(),
         status: "urgent"
     },
     {
         id: "urgent-2",
         title: "2025년 1월 입퇴사자 정보(인사/급여, 퇴직사유) 회신 요청",
-        assignee: ["예인세무회계"],
+        assignee: [ {name: "예인세무회계", email: "yoonjoo.yoon@gmail.com"}],
         date: new Date(2025, 1, 4).toISOString(),
         status: "urgent"
     },
     {
         id: "urgent-3",
         title: "2025년 1월 일용근로소득, 사업소득, 기타소득 지급 여부 확인 요청",
-        assignee: ["예인세무회계"],
+        assignee: [{name: "예인세무회계", email: "yoonjoo.yoon@gmail.com"}],
         date: new Date(2025, 1, 4).toISOString(),
         status: "urgent"
     },
@@ -85,14 +85,14 @@ export const mockTasks: Task[] = [
     {
         id: "completed-1",
         title: "명함 정보 확인 요청",
-        assignee: ["Juno Kwaan"],
+        assignee: [{name: "Juno Kwaan", email: "juno.kwan@nextintelligence.ai"}],
         date: new Date(2025, 1, 1).toISOString(),
         status: "completed"
     },
     {
         id: "completed-2",
         title: "면접 가능 여부 확인 요청(오프라인 2/3 오후 2시)",
-        assignee: ["Seokmin Lee", "Heemang Lee"],
+        assignee: [{name: "Seokmin Lee", email: "seokmin.lee@nextintelligence.ai"}, {name: "Heemang Lee", email: "heemang.lee@nextintelligence.ai"}],
         date: new Date(2025, 1, 1).toISOString(),
         status: "completed",
         ai: {

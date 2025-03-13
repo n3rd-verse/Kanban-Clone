@@ -10,6 +10,7 @@ import { useWindowSize } from "@/hooks/design/use-window-size";
 import { COLUMN_SIZES } from "./constants";
 import { cn } from "@/lib/utils";
 import { useOpenTaskMutation } from "@/hooks/api/tasks/use-open-task-mutation";
+import { useOpenContactMutation } from "@/hooks/api/contacts/use-open-contact-mutation";
 import { useTranslation } from "react-i18next";
 import {
     Popover,
@@ -27,6 +28,7 @@ export function TaskCard({ task, className }: TaskCardProps) {
     const { mutate: toggleTask } = useTaskMutation();
     const { width } = useWindowSize();
     const { mutate: openTask } = useOpenTaskMutation();
+    const { mutate: openContact } = useOpenContactMutation();
     const { t } = useTranslation();
     const isDesktop = width >= COLUMN_SIZES.DESKTOP_BREAKPOINT;
     // const [isHovered, setIsHovered] = useState(false);
@@ -116,10 +118,19 @@ export function TaskCard({ task, className }: TaskCardProps) {
                         <div className="flex items-center gap-2 mt-1 overflow-hidden">
                             <div className="flex flex-shrink-0 items-center gap-1 min-w-0">
                                 {task.assignee.map((assignee, index) => (
-                                    <React.Fragment key={assignee}>
-                                        <span className="text-[#3362FF] text-sm truncate">
-                                            {assignee}
+                                    <React.Fragment key={assignee.email}>
+                                        <span 
+                                            className={`text-[#3362FF] text-sm truncate ${assignee.email ? 'cursor-pointer' : ''}`}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                if (assignee.email) {
+                                                    openContact(assignee);
+                                                }
+                                            }}
+                                        >
+                                            {assignee.name || assignee.email}
                                         </span>
+                                        
                                         {index < task.assignee.length - 1 && (
                                             <span className="text-[#3362FF] text-sm">
                                                 {" "}

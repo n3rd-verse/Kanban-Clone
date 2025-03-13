@@ -1,9 +1,11 @@
+import { Address } from "./contact";
+
 export interface Schedule {
     id: string;
     title: string;
     startTime: string;
     endTime: string;
-    attendees: string[];
+    attendees: Address[];
     type: "past" | "future";
     location?: string;
 }
