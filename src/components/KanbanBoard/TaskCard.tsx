@@ -109,18 +109,27 @@ export function TaskCard({ task, className }: TaskCardProps) {
                         </div>
                         <div className="flex items-center gap-2 mt-1 overflow-hidden">
                             <div className="flex flex-shrink-0 items-center gap-1 min-w-0">
-                                {task.assignee.map((assignee, index) => (
-                                    <React.Fragment key={assignee}>
-                                        <span className="text-[#3362FF] text-sm truncate">
-                                            {assignee}
-                                        </span>
-                                        {index < task.assignee.length - 1 && (
-                                            <span className="text-[#3362FF] text-sm">
-                                                {" "}
+                                {task.assignee.map((assignee, index) => {
+                                    // Format the assignee name properly regardless of type
+                                    const displayName =
+                                        typeof assignee === "string"
+                                            ? assignee
+                                            : assignee.name || "Unknown User";
+
+                                    return (
+                                        <React.Fragment key={index}>
+                                            <span className="text-[#3362FF] text-sm truncate">
+                                                {displayName}
                                             </span>
-                                        )}
-                                    </React.Fragment>
-                                ))}
+                                            {index <
+                                                task.assignee.length - 1 && (
+                                                <span className="text-[#3362FF] text-sm">
+                                                    {" "}
+                                                </span>
+                                            )}
+                                        </React.Fragment>
+                                    );
+                                })}
                             </div>
                         </div>
 

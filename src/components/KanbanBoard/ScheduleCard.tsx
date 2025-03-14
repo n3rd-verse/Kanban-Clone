@@ -78,18 +78,26 @@ export const ScheduleCard = memo(function ScheduleCard({
             </h3>
             <div className="flex items-center gap-2 mb-1 overflow-hidden">
                 <div className="flex flex-shrink-0 items-center gap-1 min-w-0">
-                    {schedule.attendees.map((assignee, index) => (
-                        <React.Fragment key={assignee}>
-                            <span className="text-[#3362FF] text-sm truncate">
-                                {assignee}
-                            </span>
-                            {index < schedule.attendees.length - 1 && (
-                                <span className="text-[#3362FF] text-sm">
-                                    ,
+                    {schedule.attendees.map((attendee, index) => {
+                        // Format the attendee name properly regardless of type
+                        const displayName =
+                            typeof attendee === "string"
+                                ? attendee
+                                : attendee.name || "Unknown User";
+
+                        return (
+                            <React.Fragment key={index}>
+                                <span className="text-[#3362FF] text-sm truncate">
+                                    {displayName}
                                 </span>
-                            )}
-                        </React.Fragment>
-                    ))}
+                                {index < schedule.attendees.length - 1 && (
+                                    <span className="text-[#3362FF] text-sm">
+                                        ,
+                                    </span>
+                                )}
+                            </React.Fragment>
+                        );
+                    })}
                 </div>
             </div>
 
