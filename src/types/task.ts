@@ -14,8 +14,6 @@ export interface Task {
     };
 }
 
-export interface TaskDTO extends Task {}
-
 export interface TaskFilters {
     status?: TaskStatus[];
     assignee?: string[];
@@ -29,7 +27,7 @@ export interface TaskFilters {
 }
 
 export interface TasksResponse {
-    tasks: TaskDTO[];
+    tasks: Task[];
     total: number;
     nextPage?: number;
 }

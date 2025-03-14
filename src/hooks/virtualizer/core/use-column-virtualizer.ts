@@ -1,10 +1,10 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { RefObject } from "react";
-import { TaskDTO } from "@/types/task";
+import { Task } from "@/types/task";
 import { VIRTUALIZATION_CONFIG } from "@/components/KanbanBoard/constants";
 
 interface UseColumnVirtualizerProps {
-    tasks: TaskDTO[];
+    tasks: Task[];
     columnRef: RefObject<HTMLDivElement>;
 }
 
