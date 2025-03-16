@@ -5,6 +5,8 @@ import type { Schedule } from "@/types/schedule";
 import { cn } from "@/lib/utils";
 import { useOpenScheduleMutation } from "@/hooks/api/schedules/use-open-schedule-mutation";
 import React from "react";
+import { useOpenContactMutation } from "@/hooks/api/contacts/use-open-contact-mutation";
+import { ContactAddress } from "./ContactAddress";
 
 interface ScheduleCardProps {
     schedule: Schedule;
@@ -18,6 +20,7 @@ export const ScheduleCard = memo(function ScheduleCard({
     const opacity = isPast ? "opacity-50" : "";
     const showDay = schedule.startTime != null || schedule.endTime != null;
     const { mutate: openSchedule } = useOpenScheduleMutation();
+    const { mutate: openContact } = useOpenContactMutation();
     const [startPos, setStartPos] = useState({ x: 0, y: 0 });
 
     // const handleClick = () => {
@@ -78,17 +81,12 @@ export const ScheduleCard = memo(function ScheduleCard({
             </h3>
             <div className="flex items-center gap-2 mb-1 overflow-hidden">
                 <div className="flex flex-shrink-0 items-center gap-1 min-w-0">
-                    {schedule.attendees.map((assignee, index) => (
-                        <React.Fragment key={assignee}>
-                            <span className="text-[#3362FF] text-sm truncate">
-                                {assignee}
-                            </span>
-                            {index < schedule.attendees.length - 1 && (
-                                <span className="text-[#3362FF] text-sm">
-                                    ,
-                                </span>
-                            )}
-                        </React.Fragment>
+                    {schedule.attendees.map((address, index) => (
+                        <ContactAddress 
+                            key={address.email}
+                            address={address}
+                            showSeparator={index < schedule.attendees.length - 1}
+                        />
                     ))}
                 </div>
             </div>
