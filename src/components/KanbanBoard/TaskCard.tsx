@@ -79,8 +79,8 @@ export function TaskCard({ task, className }: TaskCardProps) {
             }}
             onMouseDown={handleMouseDown}
         >
-            <div className="flex flex-col max-w-full h-full">
-                <div className="flex justify-between max-w-full">
+            <div className="flex flex-col h-full">
+                <div className="flex justify-between items-start gap-4">
                     {/* 타이틀과 담당자 영역 - 고정된 너비 유지 */}
                     <div className="flex-1 min-w-0 max-w-full">
                         <div className="flex items-center">
@@ -160,9 +160,9 @@ export function TaskCard({ task, className }: TaskCardProps) {
                                                     e.stopPropagation();
                                                 }}
                                             >
-                                                <div className="flex justify-center items-center bg-gray-500 rounded-full w-5 h-5 text-white">
-                                                    <span className="font-bold text-xs">
-                                                        !
+                                                <div className="flex justify-center items-center bg-gray-500 rounded-full w-5 h-5 text-white text-center">
+                                                    <span className="inline-flex justify-center items-center w-full h-full font-bold text-xs">
+                                                        i
                                                     </span>
                                                 </div>
                                             </div>
@@ -171,7 +171,7 @@ export function TaskCard({ task, className }: TaskCardProps) {
                                             className="p-3 w-72"
                                             side="bottom"
                                         >
-                                            <div className="font-bold text-sm">
+                                            <div className="text-sm">
                                                 {/* Display popupInfo data */}
                                                 {task.ai.popupInfo &&
                                                     Array.isArray(
@@ -200,18 +200,21 @@ export function TaskCard({ task, className }: TaskCardProps) {
                                                                             key={
                                                                                 index
                                                                             }
-                                                                            className="flex items-center gap-2 text-sm"
+                                                                            className="flex flex-col gap-1 text-sm"
                                                                         >
-                                                                            <div className="text-gray-700">
+                                                                            <div className="text-gray-700 break-words">
                                                                                 <span className="font-medium">
                                                                                     {
                                                                                         key
                                                                                     }
+
                                                                                     :
                                                                                 </span>{" "}
-                                                                                {renderPopupInfoValue(
-                                                                                    value
-                                                                                )}
+                                                                                <span className="break-words">
+                                                                                    {renderPopupInfoValue(
+                                                                                        value
+                                                                                    )}
+                                                                                </span>
                                                                             </div>
                                                                         </div>
                                                                     );
