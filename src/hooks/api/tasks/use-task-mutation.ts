@@ -33,18 +33,18 @@ export function useTaskMutation() {
 
                 // Find the task we want to update
                 if (!taskToUpdate) {
-                    const taskDTO = data?.pages
+                    const task = data?.pages
                         .flatMap((p) => p.tasks)
                         .find((t) => t.id === taskId);
 
-                    taskToUpdate = taskDTO
-                        ? {
-                              ...taskDTO,
-                              assignee: Array.isArray(taskDTO.assignee)
-                                  ? taskDTO.assignee
-                                  : [taskDTO.assignee]
-                          }
-                        : undefined;
+                    if (task) {
+                        taskToUpdate = {
+                            ...task,
+                            assignee: Array.isArray(task.assignee)
+                                ? task.assignee
+                                : [task.assignee]
+                        };
+                    }
                 }
             }
 

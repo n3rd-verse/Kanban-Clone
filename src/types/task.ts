@@ -16,20 +16,6 @@ export interface Task {
     };
 }
 
-export interface TaskDTO {
-    id: string;
-    title: string;
-    assignee: Address | Address[];
-    date?: string;
-    status: TaskStatus;
-    allowEdit?: boolean;
-    ai?: {
-        topic?: string;
-        summary?: string;
-        popupInfo?: object;
-    };
-}
-
 export interface TaskFilters {
     status?: TaskStatus[];
     assignee?: string[];
@@ -43,7 +29,7 @@ export interface TaskFilters {
 }
 
 export interface TasksResponse {
-    tasks: TaskDTO[];
+    tasks: Task[];
     total: number;
     nextPage?: number;
 }

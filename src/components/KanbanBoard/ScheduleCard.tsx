@@ -82,10 +82,12 @@ export const ScheduleCard = memo(function ScheduleCard({
             <div className="flex items-center gap-2 mb-1 overflow-hidden">
                 <div className="flex flex-shrink-0 items-center gap-1 min-w-0">
                     {schedule.attendees.map((address, index) => (
-                        <ContactAddress 
+                        <ContactAddress
                             key={address.email}
                             address={address}
-                            showSeparator={index < schedule.attendees.length - 1}
+                            showSeparator={
+                                index < schedule.attendees.length - 1
+                            }
                         />
                     ))}
                 </div>

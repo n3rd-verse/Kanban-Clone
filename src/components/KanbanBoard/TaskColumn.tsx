@@ -1,10 +1,9 @@
 import { useRef, RefObject, memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { TaskDTO, TaskStatus } from "@/types/task";
+import { Task, TaskStatus } from "@/types/task";
 import { useColumnVirtualizer, useVirtualizedTasks } from "@/hooks/virtualizer";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { TaskCard } from "./TaskCard";
-import { taskTransformers } from "@/lib/transformers/task.transformer";
 import { COLUMN_SIZES, STATUS_CONFIG } from "./constants";
 // import { useWindowSize } from "@/hooks/design/use-window-size";
 // import { cn } from "@/lib/utils";
@@ -47,7 +46,7 @@ function VirtualizedTaskListComponent({
     virtualizer,
     isDesktop
 }: {
-    tasks: TaskDTO[];
+    tasks: Task[];
     virtualizer: ReturnType<typeof useColumnVirtualizer>;
     isDesktop: boolean;
 }) {
@@ -64,10 +63,7 @@ function VirtualizedTaskListComponent({
                     height: "auto"
                 }}
             >
-                <TaskCard
-                    task={taskTransformers.fromDTO(task)}
-                    className="h-full break-words"
-                />
+                <TaskCard task={task} className="h-full break-words" />
             </div>
         );
     });
