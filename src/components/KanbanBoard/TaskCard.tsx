@@ -17,6 +17,7 @@ import {
     PopoverContent,
     PopoverTrigger
 } from "@/components/ui/popover";
+import { ContactAddress } from "./ContactAddress";
 
 interface TaskCardProps {
     task: Task;
@@ -118,25 +119,11 @@ export function TaskCard({ task, className }: TaskCardProps) {
                         <div className="flex items-center gap-2 mt-1 overflow-hidden">
                             <div className="flex flex-shrink-0 items-center gap-1 min-w-0">
                                 {task.assignee.map((assignee, index) => (
-                                    <React.Fragment key={assignee.email}>
-                                        <span 
-                                            className={`text-sm truncate ${assignee.email ? 'text-[#3362FF] cursor-pointer' : 'text-gray-500'}`}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                if (assignee.email) {
-                                                    openContact(assignee);
-                                                }
-                                            }}
-                                        >
-                                            {assignee.email ? (assignee.name || assignee.email) : assignee.name}
-                                        </span>
-                                        
-                                        {index < task.assignee.length - 1 && (
-                                            <span className="text-[#3362FF] text-sm">
-                                                {" "}
-                                            </span>
-                                        )}
-                                    </React.Fragment>
+                                    <ContactAddress 
+                                        key={assignee.email}
+                                        address={assignee}
+                                        showSeparator={index < task.assignee.length - 1}
+                                />
                                 ))}
                             </div>
                         </div>
