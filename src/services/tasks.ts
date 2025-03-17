@@ -9,8 +9,17 @@ export async function openTask(taskId:string) : Promise<void> {
 export async function fetchTasks(
     filters?: TaskFilters
 ): Promise<TasksResponse> {
+    const filtersJson = JSON.stringify({
+        status: filters?.status || [],
+        assignee: filters?.assignee || [],
+        startDate: filters?.dateRange?.start?.toISOString(),
+        endDate: filters?.dateRange?.end?.toISOString(),
+        page: filters?.page || 0,
+        limit: filters?.limit || 20
+    });
+
     const json = await new Promise<string>((resolve) => {
-        window.OMNative.getTasks((json) => {
+        window.OMNative.getTasks(filtersJson, (json) => {
             resolve(json);
         });
     })
@@ -26,16 +35,10 @@ export async function fetchTasks(
         );
     }
 
-    // Apply pagination
-    const page = filters?.page || 0;
-    const limit = filters?.limit || 20;
-    const start = page * limit;
-    const end = start + limit;
-
     return {
-        tasks: filteredTasks.slice(start, end),
+        tasks: filteredTasks,
         total: filteredTasks.length,
-        nextPage: end < filteredTasks.length ? page + 1 : undefined
+        nextPage: undefined
     };
 }
 
