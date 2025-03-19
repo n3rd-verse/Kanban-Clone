@@ -42,31 +42,40 @@ export function TaskFilter() {
                     <Filter className="w-4 h-4" />
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="p-1 w-48">
-                {FILTER_OPTIONS.map((option) => (
-                    <button
-                        key={option.id}
-                        onClick={() => toggleFilter(option.id)}
-                        className={cn(
-                            "flex items-center justify-between w-full px-3 py-2 text-sm rounded-md hover:bg-gray-100",
-                            "transition-colors duration-150 ease-in-out"
-                        )}
-                    >
-                        <span>{option.label}</span>
-                        <div
+            <DropdownMenuContent
+                align="end"
+                className={cn(
+                    "shadow-lg p-0",
+                    "shadow-lg p-0 rounded-lg",
+                    // Base size for smaller screens
+                    "w-[140px] h-[128px]",
+                    // Medium size
+                    "md:w-[150px] md:h-[136px]",
+                    // Target size for 1336x943
+                    "xl:w-[160px] xl:h-[144px]",
+                    // Larger screens
+                    "2xl:w-[176px] 2xl:h-[152px]"
+                )}
+            >
+                <div className="py-2">
+                    {FILTER_OPTIONS.map((option) => (
+                        <button
+                            key={option.id}
+                            onClick={() => toggleFilter(option.id)}
                             className={cn(
-                                "flex items-center justify-center w-5 h-5 rounded-sm border transition-colors",
-                                selectedFilters.includes(option.id)
-                                    ? "bg-blue-500 border-blue-500"
-                                    : "border-gray-300"
+                                "flex items-center justify-between w-full px-4 py-2",
+                                "hover:bg-gray-50 transition-colors duration-150 ease-in-out"
                             )}
                         >
+                            <span className="text-[15px] text-gray-900 leading-5">
+                                {option.label}
+                            </span>
                             {selectedFilters.includes(option.id) && (
-                                <Check className="w-3.5 h-3.5 text-white" />
+                                <Check className="ml-2 w-[18px] h-[18px] text-blue-500" />
                             )}
-                        </div>
-                    </button>
-                ))}
+                        </button>
+                    ))}
+                </div>
             </DropdownMenuContent>
         </DropdownMenu>
     );
