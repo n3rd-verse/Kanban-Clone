@@ -9,8 +9,17 @@ import { TasksResponse } from "@/types/task";
 import { ColumnSkeleton } from "@/components/KanbanBoard/KanbanBoardSkeleton";
 import { ScheduleColumnSkeleton } from "@/components/KanbanBoard/KanbanBoardSkeleton";
 import { RouteErrorComponent } from "@/components/ErrorComponent";
+import { z } from "zod";
+
+export const filterSchema = z.object({
+    filters: z
+        .array(z.enum(["important", "company", "news", "other"]))
+        .default([])
+        .transform((val) => (Array.isArray(val) ? val : []))
+});
 
 export const Route = createFileRoute("/")({
+    validateSearch: filterSchema,
     loader: async () => {
         const statuses = ["new", "in_progress", "urgent", "completed"] as const;
 
