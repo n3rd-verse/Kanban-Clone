@@ -2,6 +2,7 @@ import * as React from "react";
 import { useQueryErrorResetBoundary } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { ErrorBoundary as ReactErrorBoundary } from "react-error-boundary";
+import { COMPONENT_TEXT } from "@/constants/messages";
 
 interface ErrorBoundaryProps {
     children: React.ReactNode;
@@ -32,9 +33,12 @@ export class ErrorBoundary extends React.Component<
         if (this.state.hasError) {
             return (
                 <div className="flex flex-col justify-center items-center gap-4 p-4">
-                    <h2 className="font-bold text-xl">Something went wrong</h2>
+                    <h2 className="font-bold text-xl">
+                        {COMPONENT_TEXT.ERROR_BOUNDARY.TITLE}
+                    </h2>
                     <p className="text-red-500">
-                        {this.state.error?.message || "Unknown error occurred"}
+                        {this.state.error?.message ||
+                            COMPONENT_TEXT.ERROR_BOUNDARY.UNKNOWN_ERROR}
                     </p>
                     <Button
                         onClick={() => {
@@ -42,7 +46,7 @@ export class ErrorBoundary extends React.Component<
                             this.props.onReset?.();
                         }}
                     >
-                        Try again
+                        {COMPONENT_TEXT.ERROR_BOUNDARY.TRY_AGAIN_BUTTON}
                     </Button>
                 </div>
             );
@@ -67,11 +71,11 @@ function ErrorFallback({
     return (
         <div className="flex flex-col justify-center items-center bg-red-50 p-4 border border-red-200 rounded-lg min-h-[200px]">
             <h2 className="mb-2 font-medium text-red-600">
-                Something went wrong:
+                {COMPONENT_TEXT.ERROR_BOUNDARY.ERROR_FALLBACK_TITLE}
             </h2>
             <pre className="mb-4 text-red-500 text-sm">{error.message}</pre>
             <Button variant="destructive" onClick={resetErrorBoundary}>
-                Try again
+                {COMPONENT_TEXT.ERROR_BOUNDARY.TRY_AGAIN_BUTTON}
             </Button>
         </div>
     );

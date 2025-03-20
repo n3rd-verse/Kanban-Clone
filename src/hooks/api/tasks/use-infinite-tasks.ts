@@ -4,6 +4,7 @@ import { fetchTasks } from "@/services/tasks";
 import type { TaskFilters } from "@/types/task";
 import { useToast } from "@/components/ui/use-toast";
 import { TASK_PAGE_SIZE } from "@/constants/pagination";
+import { ERROR_MESSAGES, TOAST_MESSAGES } from "@/constants/messages";
 
 export function useInfiniteTasks(filters: TaskFilters = {}) {
     const { toast } = useToast();
@@ -21,10 +22,10 @@ export function useInfiniteTasks(filters: TaskFilters = {}) {
                 const errorMessage =
                     error.response?.data?.message ||
                     error.message ||
-                    "알 수 없는 오류가 발생했습니다.";
+                    ERROR_MESSAGES.UNKNOWN_ERROR;
                 toast({
                     variant: "destructive",
-                    title: "데이터 로드 실패",
+                    title: TOAST_MESSAGES.TITLES.DATA_LOAD_FAILED,
                     description: errorMessage
                 });
                 throw new Error(errorMessage);
