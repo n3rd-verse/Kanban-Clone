@@ -1,5 +1,4 @@
-import { memo, useState } from "react";
-import { Clock } from "lucide-react";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import type { Schedule } from "@/types/schedule";
 import { cn } from "@/lib/utils";
@@ -12,9 +11,7 @@ interface ScheduleCardProps {
     schedule: Schedule;
 }
 
-export const ScheduleCard = memo(function ScheduleCard({
-    schedule
-}: ScheduleCardProps) {
+export function ScheduleCard({ schedule }: ScheduleCardProps) {
     const isPast = schedule.type === "past";
     const borderColor = isPast ? "" : "border-blue-200";
     const opacity = isPast ? "opacity-50" : "";
@@ -55,9 +52,7 @@ export const ScheduleCard = memo(function ScheduleCard({
                     ? "h-[73px] py-3 px-4"
                     : "p-4"
             )}
-            onClick={(e) => {
-                handleClick(e);
-            }}
+            onClick={handleClick}
             onMouseDown={handleMouseDown}
         >
             {showDay && (
@@ -100,4 +95,4 @@ export const ScheduleCard = memo(function ScheduleCard({
             )}
         </Card>
     );
-});
+}

@@ -1,10 +1,10 @@
-import { useRef, RefObject, memo, useMemo } from "react";
+import { useRef, RefObject } from "react";
 import { useTranslation } from "react-i18next";
 import { Task, TaskStatus } from "@/types/task";
 import { useColumnVirtualizer, useVirtualizedTasks } from "@/hooks/virtualizer";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { TaskCard } from "./TaskCard";
-import { COLUMN_SIZES, STATUS_CONFIG } from "./constants";
+import { STATUS_CONFIG } from "./constants";
 // import { useWindowSize } from "@/hooks/design/use-window-size";
 // import { cn } from "@/lib/utils";
 
@@ -14,7 +14,7 @@ interface TaskColumnProps {
     width: number;
 }
 
-function ColumnHeaderComponent({
+function ColumnHeader({
     status,
     count
 }: {
@@ -22,10 +22,7 @@ function ColumnHeaderComponent({
     count: number;
 }) {
     const { t } = useTranslation();
-    const statusConfig = useMemo(
-        () => STATUS_CONFIG.find((config) => config.id === status),
-        [status]
-    );
+    const statusConfig = STATUS_CONFIG.find((config) => config.id === status);
 
     return (
         <div className="flex justify-between items-center">
@@ -39,9 +36,7 @@ function ColumnHeaderComponent({
     );
 }
 
-const ColumnHeader = memo(ColumnHeaderComponent);
-
-function VirtualizedTaskListComponent({
+function VirtualizedTaskList({
     tasks,
     virtualizer,
     isDesktop
@@ -50,24 +45,6 @@ function VirtualizedTaskListComponent({
     virtualizer: ReturnType<typeof useColumnVirtualizer>;
     isDesktop: boolean;
 }) {
-    const virtualItems = virtualizer.getVirtualItems().map((virtualItem) => {
-        const task = tasks[virtualItem.index];
-        if (!task) return null;
-
-        return (
-            <div
-                key={task.id}
-                data-index={virtualItem.index}
-                className="relative mb-2 w-full"
-                style={{
-                    height: "auto"
-                }}
-            >
-                <TaskCard task={task} className="h-full break-words" />
-            </div>
-        );
-    });
-
     return (
         <div
             className="relative w-full"
@@ -76,14 +53,28 @@ function VirtualizedTaskListComponent({
                 position: "static"
             }}
         >
-            {virtualItems}
+            {virtualizer.getVirtualItems().map((virtualItem) => {
+                const task = tasks[virtualItem.index];
+                if (!task) return null;
+
+                return (
+                    <div
+                        key={task.id}
+                        data-index={virtualItem.index}
+                        className="relative mb-2 w-full"
+                        style={{
+                            height: "auto"
+                        }}
+                    >
+                        <TaskCard task={task} className="h-full break-words" />
+                    </div>
+                );
+            })}
         </div>
     );
 }
 
-const VirtualizedTaskList = memo(VirtualizedTaskListComponent);
-
-function TaskColumnComponent({
+export function TaskColumn({
     status,
     maxVisibleTasks = 10,
     width
@@ -140,5 +131,3 @@ function TaskColumnComponent({
         </div>
     );
 }
-
-export const TaskColumn = TaskColumnComponent;

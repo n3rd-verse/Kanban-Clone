@@ -1,4 +1,3 @@
-import { memo } from "react";
 import { format, isToday, isYesterday } from "date-fns";
 import { cn } from "@/lib/utils";
 
@@ -7,10 +6,7 @@ interface DateHeaderProps {
     type: "past" | "future";
 }
 
-export const DateHeader = memo(function DateHeader({
-    date,
-    type
-}: DateHeaderProps) {
+export function DateHeader({ date, type }: DateHeaderProps) {
     const day = format(date, "d");
     const weekday = format(date, "EEE").toUpperCase();
     const month = format(date, "MMM");
@@ -52,4 +48,4 @@ export const DateHeader = memo(function DateHeader({
             </div>
         </div>
     );
-});
+}
