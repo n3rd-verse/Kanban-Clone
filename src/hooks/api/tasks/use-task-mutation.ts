@@ -15,74 +15,101 @@ export function useTaskMutation() {
     return useMutation({
         mutationFn: toggleTaskStatus,
         onMutate: async (taskId) => {
-            // 1. Stop any in-flight queries to prevent race conditions
-            await queryClient.cancelQueries({
-                queryKey: queryKeys.tasks.root
+            await queryClient.cancelQueries({ queryKey: queryKeys.tasks.root });
+
+            const previousCache = new Map();
+            statuses.forEach((status) => {
+                const queryKey = queryKeys.tasks.infinite({ status: [status] });
+                previousCache.set(status, queryClient.getQueryData(queryKey));
             });
 
-            // 2. Save the current state (backup)
-            const previousData = new Map();
             let taskToUpdate: Task | undefined;
+            let sourceStatus: TaskStatus | undefined;
 
-            // 3. Find the task we want to update and save current state for each column
             for (const status of statuses) {
                 const queryKey = queryKeys.tasks.infinite({ status: [status] });
                 const data = queryClient.getQueryData<{
                     pages: TasksResponse[];
                 }>(queryKey);
+                if (!data) continue;
 
-                previousData.set(status, data);
+                const allTasks = data.pages.flatMap(
+                    (p: TasksResponse) => p.tasks
+                );
+                const task = allTasks.find((t: Task) => t.id === taskId);
 
-                // Find the task we want to update
-                if (!taskToUpdate) {
-                    const task = data?.pages
-                        .flatMap((p) => p.tasks)
-                        .find((t) => t.id === taskId);
-
-                    if (task) {
-                        taskToUpdate = {
-                            ...task,
-                            assignee: Array.isArray(task.assignee)
-                                ? task.assignee
-                                : [task.assignee]
-                        };
-                    }
+                if (task) {
+                    taskToUpdate = task;
+                    sourceStatus = status;
+                    break;
                 }
             }
 
-            if (!taskToUpdate) return { previousData };
-
-            // 4. Immediately update UI with what we expect the result to be
-            const updatedTask = {
-                ...taskToUpdate,
-                allowEdit: !taskToUpdate.allowEdit
-            };
-
-            for (const status of statuses) {
-                queryClient.setQueryData(
-                    queryKeys.tasks.infinite({ status: [status] }),
-                    (old: any) => ({
-                        ...old,
-                        pages: old.pages.map((page: any) => ({
-                            ...page,
-                            tasks: page.tasks.map((t: Task) =>
-                                t.id === taskId ? updatedTask : t
-                            )
-                        }))
-                    })
-                );
+            if (!taskToUpdate || !sourceStatus) {
+                return { previousCache };
             }
 
-            // 5. Return the backup data in case we need to rollback
-            return { previousData };
+            const targetStatus =
+                taskToUpdate.status === "completed" ? "new" : "completed";
+
+            // 원래 컬럼에서 task 제거
+            queryClient.setQueryData(
+                queryKeys.tasks.infinite({ status: [sourceStatus] }),
+                (old: any) => ({
+                    ...old,
+                    pages: old.pages.map((page: any) => ({
+                        ...page,
+                        tasks: page.tasks.filter((t: Task) => t.id !== taskId),
+                        total: Math.max(0, page.total - 1)
+                    }))
+                })
+            );
+
+            // 타겟 컬럼에 task 추가
+            const updatedTask = { ...taskToUpdate, status: targetStatus };
+            queryClient.setQueryData(
+                queryKeys.tasks.infinite({ status: [targetStatus] }),
+                (old: any) => {
+                    if (!old || !old.pages || old.pages.length === 0) {
+                        return {
+                            pages: [
+                                {
+                                    tasks: [updatedTask],
+                                    total: 1,
+                                    nextPage: undefined
+                                }
+                            ],
+                            pageParams: [0]
+                        };
+                    }
+
+                    return {
+                        ...old,
+                        pages: [
+                            {
+                                ...old.pages[0],
+                                tasks: [updatedTask, ...old.pages[0].tasks],
+                                total: old.pages[0].total + 1
+                            },
+                            ...old.pages.slice(1)
+                        ]
+                    };
+                }
+            );
+
+            return { previousCache, sourceStatus, targetStatus, taskId };
         },
-        onError: (error, __, context) => {
-            // Revert on error
-            if (context?.previousData) {
+
+        onError: (_, __, context) => {
+            if (context?.previousCache) {
+                // 원래 캐시 상태로 복원
                 statuses.forEach((status) => {
+                    const queryKey = queryKeys.tasks.infinite({
+                        status: [status]
+                    });
                     queryClient.setQueryData(
-                        queryKeys.tasks.infinite({ status: [status] }),
-                        context.previousData.get(status)
+                        queryKey,
+                        context.previousCache.get(status)
                     );
                 });
             }
@@ -93,11 +120,14 @@ export function useTaskMutation() {
                 description: t("errors.failedToUpdateTask")
             });
         },
-        onSuccess: (updatedTask) => {
+
+        onSuccess: () => {
             toast({
                 title: t("toast.titles.success"),
                 description: t("toast.descriptions.taskCompleted")
             });
+
+            queryClient.invalidateQueries({ queryKey: queryKeys.tasks.root });
         }
     });
 }

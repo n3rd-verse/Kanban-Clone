@@ -133,11 +133,11 @@ export async function fetchTasks(
     };
 }
 
-export async function toggleTaskStatus(taskId: string): Promise<void> {
+export async function toggleTaskStatus(taskId: string): Promise<Task> {
     const taskIndex = tasks.findIndex((t) => t.id === taskId);
     if (taskIndex === -1) throw new Error(ERROR_MESSAGES.TASK_NOT_FOUND);
 
-    const success = await new Promise((resolve) => {
+    const success = await new Promise<boolean>((resolve) => {
         if (tasks[taskIndex].status == "completed") {
             window.OMNative.clearTask(taskId, (success) => {
                 resolve(success);
@@ -150,6 +150,19 @@ export async function toggleTaskStatus(taskId: string): Promise<void> {
     });
 
     if (!success) throw new Error(ERROR_MESSAGES.FAILED_TO_UPDATE_TASK);
+
+    // 업데이트된 상태로 task 객체 업데이트
+    const newStatus =
+        tasks[taskIndex].status === "completed" ? "new" : "completed";
+    const updatedTask: Task = {
+        ...tasks[taskIndex],
+        status: newStatus
+    };
+
+    // tasks 배열에 반영
+    tasks[taskIndex] = updatedTask;
+
+    return updatedTask;
 }
 
 export async function deleteTask(taskId: string): Promise<string> {
