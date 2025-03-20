@@ -13,7 +13,20 @@ export function useDeleteTaskMutation() {
 
     return useMutation({
         mutationFn: deleteTask,
-        onSuccess: (deletedTaskId) => {
+        onMutate: async (taskId) => {
+            // 진행 중인 쿼리 취소
+            await queryClient.cancelQueries({
+                queryKey: queryKeys.tasks.root
+            });
+
+            // 이전 상태를 저장
+            const previousCache = new Map();
+            TASK_STATUSES.forEach((status) => {
+                const queryKey = queryKeys.tasks.infinite({ status: [status] });
+                previousCache.set(status, queryClient.getQueryData(queryKey));
+            });
+
+            // optimistic update: 모든 상태에서 해당 태스크 제거
             TASK_STATUSES.forEach((status) => {
                 queryClient.setQueryData<{
                     pages: TasksResponse[];
@@ -26,20 +39,42 @@ export function useDeleteTaskMutation() {
                         pages: old.pages.map((page) => ({
                             ...page,
                             tasks: page.tasks.filter(
-                                (task) => task.id !== deletedTaskId
+                                (task) => task.id !== taskId
                             ),
-                            total: page.total - 1
+                            total:
+                                page.total -
+                                (page.tasks.some((task) => task.id === taskId)
+                                    ? 1
+                                    : 0)
                         }))
                     };
                 });
             });
 
+            return { previousCache };
+        },
+        onSuccess: (deletedTaskId) => {
             toast({
                 title: t("toast.titles.success"),
                 description: t("toast.descriptions.taskDeleted")
             });
+
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.tasks.root,
+                refetchType: "none"
+            });
         },
-        onError: (error) => {
+        onError: (error, taskId, context) => {
+            // 오류 발생 시 이전 상태로 복원
+            if (context?.previousCache) {
+                TASK_STATUSES.forEach((status) => {
+                    queryClient.setQueryData(
+                        queryKeys.tasks.infinite({ status: [status] }),
+                        context.previousCache.get(status)
+                    );
+                });
+            }
+
             toast({
                 variant: "destructive",
                 title: t("toast.titles.error"),
