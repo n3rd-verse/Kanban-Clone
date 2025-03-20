@@ -73,7 +73,7 @@ function RootComponent() {
                                                 "!text-[#3b82f6] after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-[#3b82f6]"
                                         }}
                                         activeOptions={{
-                                            exact: view.id === "/"
+                                            includeSearch: false
                                         }}
                                     >
                                         <Icon size={20} />
