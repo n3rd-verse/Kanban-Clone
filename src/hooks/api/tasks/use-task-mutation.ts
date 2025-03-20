@@ -3,12 +3,14 @@ import { queryKeys } from "@/lib/query-keys";
 import { toggleTaskStatus } from "@/services/tasks";
 import type { Task, TasksResponse, TaskStatus } from "@/types/task";
 import { useToast } from "@/components/ui/use-toast";
+import { useTranslation } from "react-i18next";
 
 const statuses: TaskStatus[] = ["new", "in_progress", "urgent", "completed"];
 
 export function useTaskMutation() {
     const queryClient = useQueryClient();
     const { toast } = useToast();
+    const { t } = useTranslation();
 
     return useMutation({
         mutationFn: toggleTaskStatus,
@@ -87,14 +89,14 @@ export function useTaskMutation() {
 
             toast({
                 variant: "destructive",
-                title: "Error",
-                description: "Failed to update task status"
+                title: t("toast.titles.error"),
+                description: t("errors.failedToUpdateTask")
             });
         },
         onSuccess: (updatedTask) => {
             toast({
-                title: "Success",
-                description: `Task completed`
+                title: t("toast.titles.success"),
+                description: t("toast.descriptions.taskCompleted")
             });
         }
     });

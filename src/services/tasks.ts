@@ -89,6 +89,7 @@
  */
 
 import type { Task, TaskFilters, TasksResponse } from "@/types/task";
+import { ERROR_MESSAGES } from "@/constants/messages";
 
 let tasks: Task[];
 
@@ -134,7 +135,7 @@ export async function fetchTasks(
 
 export async function toggleTaskStatus(taskId: string): Promise<void> {
     const taskIndex = tasks.findIndex((t) => t.id === taskId);
-    if (taskIndex === -1) throw new Error("Task not found");
+    if (taskIndex === -1) throw new Error(ERROR_MESSAGES.TASK_NOT_FOUND);
 
     const success = await new Promise((resolve) => {
         if (tasks[taskIndex].status == "completed") {
@@ -148,7 +149,7 @@ export async function toggleTaskStatus(taskId: string): Promise<void> {
         }
     });
 
-    if (!success) throw new Error("Failed to completed task");
+    if (!success) throw new Error(ERROR_MESSAGES.FAILED_TO_UPDATE_TASK);
 }
 
 export async function deleteTask(taskId: string): Promise<string> {
@@ -159,8 +160,8 @@ export async function deleteTask(taskId: string): Promise<string> {
     });
 
     const taskIndex = tasks.findIndex((t) => t.id === taskId);
-    if (taskIndex === -1) throw new Error("Task not found");
-    if (!success) throw new Error("Failed to delete task");
+    if (taskIndex === -1) throw new Error(ERROR_MESSAGES.TASK_NOT_FOUND);
+    if (!success) throw new Error(ERROR_MESSAGES.FAILED_TO_DELETE_TASK);
 
     tasks = tasks.filter((t) => t.id !== taskId);
     return taskId;

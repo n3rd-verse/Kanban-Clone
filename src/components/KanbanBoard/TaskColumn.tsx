@@ -5,7 +5,6 @@ import { useColumnVirtualizer, useVirtualizedTasks } from "@/hooks/virtualizer";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { TaskCard } from "./TaskCard";
 import { STATUS_CONFIG } from "./constants";
-import { ERROR_MESSAGES } from "@/constants/messages";
 // import { useWindowSize } from "@/hooks/design/use-window-size";
 // import { cn } from "@/lib/utils";
 
@@ -102,10 +101,12 @@ export function TaskColumn({
         width
     });
 
+    const { t } = useTranslation();
+
     if (error) {
         return (
             <div className="p-4 text-red-500">
-                Error: {error?.message || ERROR_MESSAGES.FAILED_TO_LOAD_TASKS}
+                Error: {error?.message || t("errors.failedToLoadTasks")}
             </div>
         );
     }
