@@ -7,7 +7,11 @@
         "build": "vite build && tsc --noEmit",
         "serve": "vite preview",
         "start": "vite",
-        "typecheck": "tsc --noEmit"
+        "typecheck": "tsc --noEmit",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:ui": "vitest --ui",
+        "test:coverage": "vitest run --coverage"
     },
     "dependencies": {
         "@tanstack/react-query": "^5.66.0",
@@ -62,6 +66,7 @@
         "@tanstack/eslint-plugin-query": "^5.66.0",
         "@tanstack/router-plugin": "^1.109.2",
         "@testing-library/dom": "^10.4.0",
+        "@testing-library/jest-dom": "^6.6.3",
         "@testing-library/react": "^16.2.0",
         "@types/node": "^22.13.5",
         "@types/react": "^19.0.8",
