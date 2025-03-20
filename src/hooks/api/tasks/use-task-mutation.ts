@@ -49,8 +49,11 @@ export function useTaskMutation() {
     return useMutation({
         mutationFn: toggleTaskStatus,
         onMutate: async (taskId) => {
-            await queryClient.cancelQueries({ queryKey: queryKeys.tasks.root });
+            await queryClient.cancelQueries({
+                queryKey: queryKeys.tasks.root
+            });
 
+            // 이전 상태를 저장
             const previousCache = new Map();
             TASK_STATUSES.forEach((status) => {
                 const queryKey = queryKeys.tasks.infinite({ status: [status] });
@@ -62,21 +65,30 @@ export function useTaskMutation() {
 
             const { sourceStatus, targetStatus, updatedTask } = info;
 
+            // 소스 상태에서 태스크 제거
             queryClient.setQueryData(
                 queryKeys.tasks.infinite({ status: [sourceStatus] }),
-                (old: any) => ({
-                    ...old,
-                    pages: old.pages.map((page: any) => ({
-                        ...page,
-                        tasks: page.tasks.filter((t: Task) => t.id !== taskId),
-                        total: Math.max(0, page.total - 1)
-                    }))
-                })
+                (old: any) => {
+                    if (!old) return old;
+
+                    return {
+                        ...old,
+                        pages: old.pages.map((page: any) => ({
+                            ...page,
+                            tasks: page.tasks.filter(
+                                (t: Task) => t.id !== taskId
+                            ),
+                            total: Math.max(0, page.total - 1)
+                        }))
+                    };
+                }
             );
 
+            // 대상 상태에 태스크 추가
             queryClient.setQueryData(
                 queryKeys.tasks.infinite({ status: [targetStatus] }),
                 (old: any) => {
+                    // 기존 데이터가 없으면 새로 생성
                     if (!old || !old.pages || old.pages.length === 0) {
                         return {
                             pages: [
@@ -90,6 +102,7 @@ export function useTaskMutation() {
                         };
                     }
 
+                    // 기존 데이터가 있으면 첫 페이지 맨 앞에 추가
                     return {
                         ...old,
                         pages: [
@@ -107,7 +120,8 @@ export function useTaskMutation() {
             return { previousCache, info };
         },
 
-        onError: (_, __, context) => {
+        onError: (error, taskId, context) => {
+            // 오류 발생 시 이전 상태로 복원
             if (context?.previousCache) {
                 TASK_STATUSES.forEach((status) => {
                     queryClient.setQueryData(
@@ -120,17 +134,28 @@ export function useTaskMutation() {
             toast({
                 variant: "destructive",
                 title: t("toast.titles.error"),
-                description: t("errors.failedToUpdateTask")
+                description:
+                    error instanceof Error
+                        ? error.message
+                        : t("errors.failedToUpdateTask")
             });
         },
 
-        onSuccess: () => {
+        onSuccess: (_, taskId, context) => {
+            // 성공 메시지 표시 (context의 info를 사용하여 메시지 커스터마이징 가능)
+            const isCompleted =
+                context?.info?.targetStatus === TaskStatus.COMPLETED;
             toast({
                 title: t("toast.titles.success"),
-                description: t("toast.descriptions.taskCompleted")
+                description: isCompleted
+                    ? t("toast.descriptions.taskCompleted")
+                    : t("toast.descriptions.taskUncompleted")
             });
 
-            queryClient.invalidateQueries({ queryKey: queryKeys.tasks.root });
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.tasks.root,
+                refetchType: "none"
+            });
         }
     });
 }

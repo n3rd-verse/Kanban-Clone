@@ -15,66 +15,6 @@ interface TaskColumnProps {
     width: number;
 }
 
-function ColumnHeader({
-    status,
-    count
-}: {
-    status: TaskStatus;
-    count: number;
-}) {
-    const { t } = useTranslation();
-    const statusConfig = STATUS_CONFIG.find((config) => config.id === status);
-
-    return (
-        <div className="flex justify-between items-center">
-            <div
-                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg ${statusConfig?.color}`}
-            >
-                <h3 className="font-medium">{t(`status.${status}`)}</h3>
-                <span className="text-sm">({count})</span>
-            </div>
-        </div>
-    );
-}
-
-function VirtualizedTaskList({
-    tasks,
-    virtualizer,
-    isDesktop
-}: {
-    tasks: Task[];
-    virtualizer: ReturnType<typeof useColumnVirtualizer>;
-    isDesktop: boolean;
-}) {
-    return (
-        <div
-            className="relative w-full"
-            style={{
-                height: "auto",
-                position: "static"
-            }}
-        >
-            {virtualizer.getVirtualItems().map((virtualItem) => {
-                const task = tasks[virtualItem.index];
-                if (!task) return null;
-
-                return (
-                    <div
-                        key={task.id}
-                        data-index={virtualItem.index}
-                        className="relative mb-2 w-full"
-                        style={{
-                            height: "auto"
-                        }}
-                    >
-                        <TaskCard task={task} className="h-full break-words" />
-                    </div>
-                );
-            })}
-        </div>
-    );
-}
-
 export function TaskColumn({
     status,
     maxVisibleTasks = 10,
@@ -84,8 +24,6 @@ export function TaskColumn({
     const loadMoreRef = useRef<HTMLDivElement>(
         null
     ) as RefObject<HTMLDivElement>;
-    // 윈도우 크기에 관계없이 항상 데스크탑 뷰 사용
-    const isDesktop = true;
 
     const {
         tasks,
@@ -123,14 +61,68 @@ export function TaskColumn({
                     minHeight: "auto"
                 }}
             >
-                <VirtualizedTaskList
-                    tasks={tasks}
-                    virtualizer={virtualizer}
-                    isDesktop={isDesktop}
-                />
+                <VirtualizedTaskList tasks={tasks} virtualizer={virtualizer} />
                 <div ref={loadMoreRef} className="h-5" />
                 {isFetchingNextPage && <LoadingSpinner className="mt-4" />}
             </div>
+        </div>
+    );
+}
+
+function ColumnHeader({
+    status,
+    count
+}: {
+    status: TaskStatus;
+    count: number;
+}) {
+    const { t } = useTranslation();
+    const statusConfig = STATUS_CONFIG.find((config) => config.id === status);
+
+    return (
+        <div className="flex justify-between items-center">
+            <div
+                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg ${statusConfig?.color}`}
+            >
+                <h3 className="font-medium">{t(`status.${status}`)}</h3>
+                <span className="text-sm">({count})</span>
+            </div>
+        </div>
+    );
+}
+
+function VirtualizedTaskList({
+    tasks,
+    virtualizer
+}: {
+    tasks: Task[];
+    virtualizer: ReturnType<typeof useColumnVirtualizer>;
+}) {
+    return (
+        <div
+            className="relative w-full"
+            style={{
+                height: "auto",
+                position: "static"
+            }}
+        >
+            {virtualizer.getVirtualItems().map((virtualItem) => {
+                const task = tasks[virtualItem.index];
+                if (!task) return null;
+
+                return (
+                    <div
+                        key={task.id}
+                        data-index={virtualItem.index}
+                        className="relative mb-2 w-full"
+                        style={{
+                            height: "auto"
+                        }}
+                    >
+                        <TaskCard task={task} className="h-full break-words" />
+                    </div>
+                );
+            })}
         </div>
     );
 }

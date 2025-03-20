@@ -33,7 +33,8 @@ const resources = {
                     success: "성공"
                 },
                 descriptions: {
-                    taskCompleted: "작업이 완료되었습니다."
+                    taskCompleted: "작업이 완료되었습니다.",
+                    taskDeleted: "작업이 삭제되었습니다."
                 }
             },
             components: {
@@ -77,7 +78,8 @@ const resources = {
                     success: "Success"
                 },
                 descriptions: {
-                    taskCompleted: "Task completed"
+                    taskCompleted: "Task completed",
+                    taskDeleted: "Task deleted"
                 }
             },
             components: {

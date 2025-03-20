@@ -4,7 +4,6 @@ import type { Schedule } from "@/types/schedule";
 import { cn } from "@/lib/utils";
 import { useOpenScheduleMutation } from "@/hooks/api/schedules/use-open-schedule-mutation";
 import React from "react";
-import { useOpenContactMutation } from "@/hooks/api/contacts/use-open-contact-mutation";
 import { ContactAddress } from "./ContactAddress";
 
 interface ScheduleCardProps {
@@ -17,7 +16,6 @@ export function ScheduleCard({ schedule }: ScheduleCardProps) {
     const opacity = isPast ? "opacity-50" : "";
     const showDay = schedule.startTime != null || schedule.endTime != null;
     const { mutate: openSchedule } = useOpenScheduleMutation();
-    const { mutate: openContact } = useOpenContactMutation();
     const [startPos, setStartPos] = useState({ x: 0, y: 0 });
 
     // const handleClick = () => {

@@ -1,7 +1,8 @@
 import { queryClient } from "./query-config";
 import { queryKeys } from "./query-keys";
-import type { TaskFilters, TasksResponse, TaskStatus } from "@/types/task";
+import type { TaskFilters, TasksResponse } from "@/types/task";
 import { fetchTasks } from "@/services/tasks";
+import { TaskStatus } from "@/constants/task-status";
 
 export const queryStrategies = {
     tasks: {

@@ -1,24 +1,20 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import { deleteTask } from "@/services/tasks";
-import type { TasksResponse, TaskStatus } from "@/types/task";
+import type { TasksResponse } from "@/types/task";
 import { useToast } from "@/components/ui/use-toast";
+import { TASK_STATUSES } from "@/constants/task-status";
+import { useTranslation } from "react-i18next";
 
 export function useDeleteTaskMutation() {
     const queryClient = useQueryClient();
     const { toast } = useToast();
-
-    const statuses: TaskStatus[] = [
-        "new",
-        "in_progress",
-        "urgent",
-        "completed"
-    ];
+    const { t } = useTranslation();
 
     return useMutation({
         mutationFn: deleteTask,
         onSuccess: (deletedTaskId) => {
-            statuses.forEach((status) => {
+            TASK_STATUSES.forEach((status) => {
                 queryClient.setQueryData<{
                     pages: TasksResponse[];
                     pageParams: number[];
@@ -39,15 +35,18 @@ export function useDeleteTaskMutation() {
             });
 
             toast({
-                title: "Task deleted",
-                description: "The task has been successfully deleted."
+                title: t("toast.titles.success"),
+                description: t("toast.descriptions.taskDeleted")
             });
         },
         onError: (error) => {
             toast({
                 variant: "destructive",
-                title: "Error",
-                description: `Failed to delete task: ${error.message ?? "Unknown error"}`
+                title: t("toast.titles.error"),
+                description:
+                    error instanceof Error
+                        ? error.message
+                        : t("errors.failedToDeleteTask")
             });
         }
     });
