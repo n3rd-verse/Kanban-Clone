@@ -1,5 +1,6 @@
 import type { Task } from "@/types/task";
 import type { ScheduleDay } from "@/types/schedule";
+import { TaskStatus } from "@/constants/task-status";
 
 // 각 상태별 100개의 태스크를 생성하는 헬퍼 함수
 const generateTasksForStatus = (
@@ -104,19 +105,19 @@ const generateTasksForStatus = (
 
 // 각 상태별로 100개씩 태스크 생성
 export const mockTasks: Task[] = [
-    ...generateTasksForStatus("new"),
-    ...generateTasksForStatus("in_progress"),
-    ...generateTasksForStatus("urgent"),
-    ...generateTasksForStatus("completed")
+    ...generateTasksForStatus(TaskStatus.NEW),
+    ...generateTasksForStatus(TaskStatus.IN_PROGRESS),
+    ...generateTasksForStatus(TaskStatus.URGENT),
+    ...generateTasksForStatus(TaskStatus.COMPLETED)
 ];
 
 // 테스트용 함수 - 원하는 개수의 태스크를 생성
 export const generateTestTasks = (count: number = 100) => {
-    const statuses: Task["status"][] = [
-        "new",
-        "in_progress",
-        "urgent",
-        "completed"
+    const statuses: TaskStatus[] = [
+        TaskStatus.NEW,
+        TaskStatus.IN_PROGRESS,
+        TaskStatus.URGENT,
+        TaskStatus.COMPLETED
     ];
     return statuses
         .map((status) => generateTasksForStatus(status, count))
@@ -131,10 +132,10 @@ export const generateCustomTasks = (
     completedCount: number = 100
 ) => {
     return [
-        ...generateTasksForStatus("new", newCount),
-        ...generateTasksForStatus("in_progress", inProgressCount),
-        ...generateTasksForStatus("urgent", urgentCount),
-        ...generateTasksForStatus("completed", completedCount)
+        ...generateTasksForStatus(TaskStatus.NEW, newCount),
+        ...generateTasksForStatus(TaskStatus.IN_PROGRESS, inProgressCount),
+        ...generateTasksForStatus(TaskStatus.URGENT, urgentCount),
+        ...generateTasksForStatus(TaskStatus.COMPLETED, completedCount)
     ];
 };
 
