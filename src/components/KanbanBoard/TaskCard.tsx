@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { useOpenTaskMutation } from "@/hooks/api/tasks/use-open-task-mutation";
 import { useOpenContactMutation } from "@/hooks/api/contacts/use-open-contact-mutation";
 import { ContactAddress } from "./ContactAddress";
+import { TaskStatus } from "@/constants/task-status";
 import {
     Popover,
     PopoverContent,
@@ -35,7 +36,7 @@ export function TaskCard({ task, className }: TaskCardProps) {
     const [showAiInfo, setShowAiInfo] = useState(false);
 
     const dateColorClass =
-        task.status === "urgent" ? "text-[#ea384c]" : "text-gray-400";
+        task.status === TaskStatus.URGENT ? "text-[#ea384c]" : "text-gray-400";
 
     const handleDelete = () => {
         deleteTask(task.id);
@@ -102,7 +103,9 @@ export function TaskCard({ task, className }: TaskCardProps) {
                                     onClick={(e) => e.stopPropagation()}
                                 >
                                     <Checkbox
-                                        checked={task.status === "completed"}
+                                        checked={
+                                            task.status === TaskStatus.COMPLETED
+                                        }
                                         onCheckedChange={handleComplete}
                                         className="w-5 h-5"
                                         disabled={task.allowEdit}
@@ -124,7 +127,7 @@ export function TaskCard({ task, className }: TaskCardProps) {
                             </div>
                         </div>
 
-                        {task.date && task.status !== "completed" && (
+                        {task.date && task.status !== TaskStatus.COMPLETED && (
                             <div
                                 className={`text-sm ${dateColorClass} mt-auto pt-2`}
                             >

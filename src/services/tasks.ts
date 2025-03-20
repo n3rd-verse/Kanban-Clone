@@ -90,6 +90,7 @@
 
 import type { Task, TaskFilters, TasksResponse } from "@/types/task";
 import { ERROR_MESSAGES } from "@/constants/messages";
+import { TaskStatus } from "@/constants/task-status";
 
 let tasks: Task[];
 
@@ -138,7 +139,7 @@ export async function toggleTaskStatus(taskId: string): Promise<Task> {
     if (taskIndex === -1) throw new Error(ERROR_MESSAGES.TASK_NOT_FOUND);
 
     const success = await new Promise<boolean>((resolve) => {
-        if (tasks[taskIndex].status == "completed") {
+        if (tasks[taskIndex].status == TaskStatus.COMPLETED) {
             window.OMNative.clearTask(taskId, (success) => {
                 resolve(success);
             });
@@ -153,7 +154,9 @@ export async function toggleTaskStatus(taskId: string): Promise<Task> {
 
     // 업데이트된 상태로 task 객체 업데이트
     const newStatus =
-        tasks[taskIndex].status === "completed" ? "new" : "completed";
+        tasks[taskIndex].status === TaskStatus.COMPLETED
+            ? TaskStatus.NEW
+            : TaskStatus.COMPLETED;
     const updatedTask: Task = {
         ...tasks[taskIndex],
         status: newStatus

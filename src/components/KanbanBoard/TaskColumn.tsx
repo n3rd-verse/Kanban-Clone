@@ -1,6 +1,7 @@
 import { useRef, RefObject } from "react";
 import { useTranslation } from "react-i18next";
-import { Task, TaskStatus } from "@/types/task";
+import { Task } from "@/types/task";
+import { TaskStatus } from "@/constants/task-status";
 import { useColumnVirtualizer, useVirtualizedTasks } from "@/hooks/virtualizer";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { TaskCard } from "./TaskCard";

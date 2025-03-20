@@ -1,6 +1,5 @@
 import { Address } from "./contact";
-
-export type TaskStatus = "new" | "in_progress" | "urgent" | "completed";
+import { TaskStatus } from "@/constants/task-status";
 
 export interface Task {
     id: string;
