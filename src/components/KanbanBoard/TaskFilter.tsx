@@ -45,17 +45,15 @@ export function TaskFilter() {
             <DropdownMenuContent
                 align="end"
                 className={cn(
-                    "shadow-lg p-0",
                     "shadow-lg p-0 rounded-lg",
-                    // Base size for smaller screens
-                    "w-[140px] h-[128px]",
-                    // Medium size
-                    "md:w-[150px] md:h-[136px]",
-                    // Target size for 1336x943
-                    "xl:w-[160px] xl:h-[144px]",
-                    // Larger screens
-                    "2xl:w-[176px] 2xl:h-[152px]"
+                    // 반응형 너비와 높이 설정
+                    "w-[160px] h-auto",
+                    "md:w-[170px]",
+                    "lg:w-[180px]",
+                    "xl:w-[180px]",
+                    "2xl:w-[200px]"
                 )}
+                sideOffset={5}
             >
                 <div className="py-2">
                     {FILTER_OPTIONS.map((option) => (
@@ -63,15 +61,30 @@ export function TaskFilter() {
                             key={option.id}
                             onClick={() => toggleFilter(option.id)}
                             className={cn(
-                                "flex items-center justify-between w-full px-4 py-2",
+                                "flex items-center justify-between w-full px-3 py-2",
+                                "md:px-4 md:py-2.5",
                                 "hover:bg-gray-50 transition-colors duration-150 ease-in-out"
                             )}
                         >
-                            <span className="text-[15px] text-gray-900 leading-5">
+                            <span
+                                className={cn(
+                                    "text-xs text-gray-900 leading-4",
+                                    "sm:text-sm",
+                                    "md:text-[14px] md:leading-5",
+                                    "lg:text-[15px]",
+                                    "xl:text-base"
+                                )}
+                            >
                                 {option.label}
                             </span>
                             {selectedFilters.includes(option.id) && (
-                                <Check className="ml-2 w-[18px] h-[18px] text-blue-500" />
+                                <Check
+                                    className={cn(
+                                        "ml-1 w-[14px] h-[14px] text-blue-500",
+                                        "md:ml-2 md:w-[16px] md:h-[16px]",
+                                        "lg:w-[18px] lg:h-[18px]"
+                                    )}
+                                />
                             )}
                         </button>
                     ))}
