@@ -142,16 +142,6 @@ export function useTaskMutation() {
         },
 
         onSuccess: (_, taskId, context) => {
-            // 성공 메시지 표시 (context의 info를 사용하여 메시지 커스터마이징 가능)
-            const isCompleted =
-                context?.info?.targetStatus === TaskStatus.COMPLETED;
-            toast({
-                title: t("toast.titles.success"),
-                description: isCompleted
-                    ? t("toast.descriptions.taskCompleted")
-                    : t("toast.descriptions.taskUncompleted")
-            });
-
             queryClient.invalidateQueries({
                 queryKey: queryKeys.tasks.root,
                 refetchType: "none"

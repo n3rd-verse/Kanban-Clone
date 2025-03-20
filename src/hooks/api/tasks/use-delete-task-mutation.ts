@@ -54,11 +54,6 @@ export function useDeleteTaskMutation() {
             return { previousCache };
         },
         onSuccess: (deletedTaskId) => {
-            toast({
-                title: t("toast.titles.success"),
-                description: t("toast.descriptions.taskDeleted")
-            });
-
             queryClient.invalidateQueries({
                 queryKey: queryKeys.tasks.root,
                 refetchType: "none"
