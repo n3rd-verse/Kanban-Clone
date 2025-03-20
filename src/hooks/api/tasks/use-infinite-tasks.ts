@@ -3,6 +3,7 @@ import { queryKeys } from "@/lib/query-keys";
 import { fetchTasks } from "@/services/tasks";
 import type { TaskFilters } from "@/types/task";
 import { useToast } from "@/components/ui/use-toast";
+import { TASK_PAGE_SIZE } from "@/constants/pagination";
 
 export function useInfiniteTasks(filters: TaskFilters = {}) {
     const { toast } = useToast();
@@ -14,7 +15,7 @@ export function useInfiniteTasks(filters: TaskFilters = {}) {
                 return await fetchTasks({
                     ...filters,
                     page: pageParam,
-                    limit: 30
+                    limit: TASK_PAGE_SIZE
                 });
             } catch (error: any) {
                 const errorMessage =
