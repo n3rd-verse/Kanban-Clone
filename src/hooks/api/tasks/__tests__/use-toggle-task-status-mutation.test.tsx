@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { useTaskMutation } from "../use-task-mutation";
+import { useToggleTaskStatusMutation } from "../use-toggle-task-status-mutation";
 import { toggleTaskStatus } from "@/services/tasks";
 import { ERROR_MESSAGES, TOAST_MESSAGES } from "@/constants/messages";
 
@@ -16,7 +16,7 @@ vi.mock("@/components/ui/use-toast", () => ({
     })
 }));
 
-describe("useTaskMutation", () => {
+describe("useToggleTaskStatusMutation", () => {
     let queryClient: QueryClient;
     const mockQueryData = {
         pages: [
@@ -85,7 +85,9 @@ describe("useTaskMutation", () => {
         (toggleTaskStatus as any).mockResolvedValue(updatedTask);
 
         // 훅 렌더링
-        const { result } = renderHook(() => useTaskMutation(), { wrapper });
+        const { result } = renderHook(() => useToggleTaskStatusMutation(), {
+            wrapper
+        });
 
         // 뮤테이션 실행
         await act(async () => {
@@ -110,7 +112,9 @@ describe("useTaskMutation", () => {
         (toggleTaskStatus as any).mockRejectedValue(error);
 
         // 훅 렌더링
-        const { result } = renderHook(() => useTaskMutation(), { wrapper });
+        const { result } = renderHook(() => useToggleTaskStatusMutation(), {
+            wrapper
+        });
 
         // 뮤테이션 실행
         await act(async () => {

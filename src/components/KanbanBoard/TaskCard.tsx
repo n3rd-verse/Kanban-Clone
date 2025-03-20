@@ -4,7 +4,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { format } from "date-fns";
 import { CardDeleteButton } from "./CardDeleteButton";
 import { useDeleteTaskMutation } from "@/hooks/api/tasks/use-delete-task-mutation";
-import { useTaskMutation } from "@/hooks/api/tasks/use-task-mutation";
+import { useToggleTaskStatusMutation } from "@/hooks/api/tasks/use-toggle-task-status-mutation";
 import React, { useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { useOpenTaskMutation } from "@/hooks/api/tasks/use-open-task-mutation";
@@ -23,7 +23,7 @@ interface TaskCardProps {
 
 export function TaskCard({ task, className }: TaskCardProps) {
     const { mutate: deleteTask } = useDeleteTaskMutation();
-    const { mutate: toggleTask } = useTaskMutation();
+    const { mutate: toggleTask } = useToggleTaskStatusMutation();
     const { mutate: openTask } = useOpenTaskMutation();
     const [startPos, setStartPos] = useState({ x: 0, y: 0 });
 

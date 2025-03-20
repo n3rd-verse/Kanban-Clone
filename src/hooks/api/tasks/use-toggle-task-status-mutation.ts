@@ -41,7 +41,7 @@ function getToggleStatusInfo(
     return { taskToUpdate, sourceStatus, targetStatus, updatedTask };
 }
 
-export function useTaskMutation() {
+export function useToggleTaskStatusMutation() {
     const queryClient = useQueryClient();
     const { toast } = useToast();
     const { t } = useTranslation();
