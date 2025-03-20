@@ -1,6 +1,6 @@
 interface OMNative {
     deleteTask(taskId: string, callback: (success: boolean) => void): boolean;
-    getTasks(callback: (json: string) => void): boolean;
+    getTasks(filters: string, callback: (json: string) => void): boolean;
     completeTask(taskId: string, callback: (success: boolean) => void): boolean;
     clearTask(taskId: string, callback: (success: boolean) => void): boolean;
     openTask(taskId: string): Promise<void>;
