@@ -8,6 +8,8 @@ import {
 import { Check } from "lucide-react";
 import { Filter } from "lucide-react";
 import { useTaskFilter } from "@/hooks/filter/use-task-filter";
+import filterIcon from '../../assets/icons/filter.svg'
+import React from "react";
 
 type FilterType = "important" | "company" | "news" | "other";
 
@@ -38,8 +40,14 @@ export function TaskFilter() {
                             ? "text-blue-500"
                             : "text-gray-500"
                     )}
-                >
-                    <Filter className="w-4 h-4" />
+                    onClick={(e) => {
+                        e.stopPropagation()
+                    }}>
+                    {React.createElement('img', {
+                        src: filterIcon,
+                        alt: 'Filter',
+                        className: 'w-6 h-6'
+                    })}
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
