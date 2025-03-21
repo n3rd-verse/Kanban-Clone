@@ -1,5 +1,4 @@
 import { Address } from "@/types/contact";
-import { add } from "date-fns";
 
 /**
  * Opens contact details for a given email address

@@ -9,7 +9,7 @@ interface ContactAddressProps {
 
 export function ContactAddress({ address, showSeparator = false }: ContactAddressProps) {
     const { mutate: openContact } = useOpenContactMutation();
-
+    
     return (
         <React.Fragment>
             <span 
@@ -23,7 +23,7 @@ export function ContactAddress({ address, showSeparator = false }: ContactAddres
             >
                 {address.name || address.email}
             </span>
-
+            
             {showSeparator && (
                 <span className="text-[#3362FF] text-sm">
                     {" "}

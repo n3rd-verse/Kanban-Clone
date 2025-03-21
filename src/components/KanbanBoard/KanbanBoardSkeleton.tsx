@@ -23,7 +23,7 @@ export const ColumnSkeleton = () => (
             </div>
         </div>
         <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
                 <TaskCardSkeleton key={i} />
             ))}
         </div>

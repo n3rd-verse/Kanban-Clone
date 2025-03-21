@@ -1,7 +1,7 @@
-import { RefObject, useEffect } from "react";
+import { RefObject, useEffect, useCallback } from "react";
 import { useInfiniteTasks } from "@/hooks/api/tasks/use-infinite-tasks";
 import { useColumnVirtualizer } from "@/hooks/virtualizer/core/use-column-virtualizer";
-import { TaskStatus } from "@/types/task";
+import { TaskStatus } from "@/constants/task-status";
 import { COLUMN_SIZES } from "@/components/KanbanBoard/constants";
 
 interface UseVirtualizedTasksProps {
@@ -45,7 +45,10 @@ export function useVirtualizedTasks({
             ? "overflow-visible"
             : "overflow-y-auto";
 
-    useEffect(() => {
+    // Set up the intersection observer to load more items when scrolling to bottom
+    const setupIntersectionObserver = useCallback(() => {
+        if (!loadMoreRef.current) return;
+
         const observer = new IntersectionObserver(
             (entries) => {
                 if (
@@ -59,9 +62,14 @@ export function useVirtualizedTasks({
             { rootMargin: "200px", threshold: 0.1 }
         );
 
-        loadMoreRef.current && observer.observe(loadMoreRef.current);
+        observer.observe(loadMoreRef.current);
         return () => observer.disconnect();
-    }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+    }, [hasNextPage, isFetchingNextPage, fetchNextPage, loadMoreRef]);
+
+    useEffect(() => {
+        const cleanup = setupIntersectionObserver();
+        return cleanup;
+    }, [setupIntersectionObserver]);
 
     return {
         tasks,
@@ -69,6 +77,7 @@ export function useVirtualizedTasks({
         columnStyle,
         scrollbarClass,
         isFetchingNextPage,
-        error
+        error,
+        hasNextPage
     };
 }

@@ -11,7 +11,7 @@ export interface Schedule {
 }
 
 export interface ScheduleDay {
-    id:string;
+    id: string;
     date: string;
     type: "past" | "future";
     schedules: Schedule[];

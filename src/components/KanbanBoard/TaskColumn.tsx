@@ -1,11 +1,11 @@
-import { useRef, RefObject, memo, useMemo } from "react";
+import { useRef, RefObject } from "react";
 import { useTranslation } from "react-i18next";
-import { TaskDTO, TaskStatus } from "@/types/task";
+import { Task } from "@/types/task";
+import { TaskStatus } from "@/constants/task-status";
 import { useColumnVirtualizer, useVirtualizedTasks } from "@/hooks/virtualizer";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { TaskCard } from "./TaskCard";
-import { taskTransformers } from "@/lib/transformers/task.transformer";
-import { COLUMN_SIZES, STATUS_CONFIG } from "./constants";
+import { STATUS_CONFIG } from "./constants";
 // import { useWindowSize } from "@/hooks/design/use-window-size";
 // import { cn } from "@/lib/utils";
 
@@ -15,79 +15,7 @@ interface TaskColumnProps {
     width: number;
 }
 
-function ColumnHeaderComponent({
-    status,
-    count
-}: {
-    status: TaskStatus;
-    count: number;
-}) {
-    const { t } = useTranslation();
-    const statusConfig = useMemo(
-        () => STATUS_CONFIG.find((config) => config.id === status),
-        [status]
-    );
-
-    return (
-        <div className="flex justify-between items-center">
-            <div
-                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg ${statusConfig?.color}`}
-            >
-                <h3 className="font-medium">{t(`status.${status}`)}</h3>
-                <span className="text-sm">({count})</span>
-            </div>
-        </div>
-    );
-}
-
-const ColumnHeader = memo(ColumnHeaderComponent);
-
-function VirtualizedTaskListComponent({
-    tasks,
-    virtualizer,
-    isDesktop
-}: {
-    tasks: TaskDTO[];
-    virtualizer: ReturnType<typeof useColumnVirtualizer>;
-    isDesktop: boolean;
-}) {
-    const virtualItems = virtualizer.getVirtualItems().map((virtualItem) => {
-        const task = tasks[virtualItem.index];
-        if (!task) return null;
-
-        return (
-            <div
-                key={task.id}
-                data-index={virtualItem.index}
-                className="relative mb-2 w-full"
-                style={{
-                    height: "auto"
-                }}
-            >
-                <TaskCard
-                    task={taskTransformers.fromDTO(task)}
-                    className="h-full break-words"
-                />
-            </div>
-        );
-    });
-
-    return (
-        <div
-            className="relative w-full"
-            style={{
-                height: "auto",
-                position: "static"
-            }}
-        >
-            {virtualItems}
-        </div>
-    );
-}
-
-const VirtualizedTaskList = memo(VirtualizedTaskListComponent);
-
-function TaskColumnComponent({
+export function TaskColumn({
     status,
     maxVisibleTasks = 10,
     width
@@ -96,8 +24,6 @@ function TaskColumnComponent({
     const loadMoreRef = useRef<HTMLDivElement>(
         null
     ) as RefObject<HTMLDivElement>;
-    // 윈도우 크기에 관계없이 항상 데스크탑 뷰 사용
-    const isDesktop = true;
 
     const {
         tasks,
@@ -114,10 +40,12 @@ function TaskColumnComponent({
         width
     });
 
+    const { t } = useTranslation();
+
     if (error) {
         return (
             <div className="p-4 text-red-500">
-                Error: {error?.message || "Failed to load tasks"}
+                Error: {error?.message || t("errors.failedToLoadTasks")}
             </div>
         );
     }
@@ -133,11 +61,7 @@ function TaskColumnComponent({
                     minHeight: "auto"
                 }}
             >
-                <VirtualizedTaskList
-                    tasks={tasks}
-                    virtualizer={virtualizer}
-                    isDesktop={isDesktop}
-                />
+                <VirtualizedTaskList tasks={tasks} virtualizer={virtualizer} />
                 <div ref={loadMoreRef} className="h-5" />
                 {isFetchingNextPage && <LoadingSpinner className="mt-4" />}
             </div>
@@ -145,4 +69,60 @@ function TaskColumnComponent({
     );
 }
 
-export const TaskColumn = TaskColumnComponent;
+function ColumnHeader({
+    status,
+    count
+}: {
+    status: TaskStatus;
+    count: number;
+}) {
+    const { t } = useTranslation();
+    const statusConfig = STATUS_CONFIG.find((config) => config.id === status);
+
+    return (
+        <div className="flex justify-between items-center">
+            <div
+                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg ${statusConfig?.color}`}
+            >
+                <h3 className="font-medium">{t(`status.${status}`)}</h3>
+                <span className="text-sm">({count})</span>
+            </div>
+        </div>
+    );
+}
+
+function VirtualizedTaskList({
+    tasks,
+    virtualizer
+}: {
+    tasks: Task[];
+    virtualizer: ReturnType<typeof useColumnVirtualizer>;
+}) {
+    return (
+        <div
+            className="relative w-full"
+            style={{
+                height: "auto",
+                position: "static"
+            }}
+        >
+            {virtualizer.getVirtualItems().map((virtualItem) => {
+                const task = tasks[virtualItem.index];
+                if (!task) return null;
+
+                return (
+                    <div
+                        key={task.id}
+                        data-index={virtualItem.index}
+                        className="relative mb-2 w-full"
+                        style={{
+                            height: "auto"
+                        }}
+                    >
+                        <TaskCard task={task} className="h-full break-words" />
+                    </div>
+                );
+            })}
+        </div>
+    );
+}

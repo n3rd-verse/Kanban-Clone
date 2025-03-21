@@ -3,9 +3,12 @@ import { queryKeys } from "@/lib/query-keys";
 import { fetchTasks } from "@/services/tasks";
 import type { TaskFilters } from "@/types/task";
 import { useToast } from "@/components/ui/use-toast";
+import { TASK_PAGE_SIZE } from "@/constants/pagination";
+import { useTranslation } from "react-i18next";
 
 export function useInfiniteTasks(filters: TaskFilters = {}) {
     const { toast } = useToast();
+    const { t } = useTranslation();
 
     return useSuspenseInfiniteQuery({
         queryKey: queryKeys.tasks.infinite(filters),
@@ -14,16 +17,16 @@ export function useInfiniteTasks(filters: TaskFilters = {}) {
                 return await fetchTasks({
                     ...filters,
                     page: pageParam,
-                    limit: 30
+                    limit: TASK_PAGE_SIZE
                 });
             } catch (error: any) {
                 const errorMessage =
                     error.response?.data?.message ||
                     error.message ||
-                    "알 수 없는 오류가 발생했습니다.";
+                    t("errors.unknownError");
                 toast({
                     variant: "destructive",
-                    title: "데이터 로드 실패",
+                    title: t("toast.titles.dataLoadFailed"),
                     description: errorMessage
                 });
                 throw new Error(errorMessage);

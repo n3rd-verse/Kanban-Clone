@@ -1,25 +1,10 @@
 import { Address } from "./contact";
-
-export type TaskStatus = "new" | "in_progress" | "urgent" | "completed";
+import { TaskStatus } from "@/constants/task-status";
 
 export interface Task {
     id: string;
     title: string;
     assignee: Address[];
-    date?: string;
-    status: TaskStatus;
-    allowEdit?: boolean;
-    ai?: {
-        topic?: string;
-        summary?: string;
-        popupInfo?: object;
-    };
-}
-
-export interface TaskDTO {
-    id: string;
-    title: string;
-    assignee: Address | Address[];
     date?: string;
     status: TaskStatus;
     allowEdit?: boolean;
@@ -43,7 +28,7 @@ export interface TaskFilters {
 }
 
 export interface TasksResponse {
-    tasks: TaskDTO[];
+    tasks: Task[];
     total: number;
     nextPage?: number;
 }

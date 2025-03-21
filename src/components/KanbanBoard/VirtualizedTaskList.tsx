@@ -1,13 +1,12 @@
 import { memo } from "react";
 import { TaskCard } from "./TaskCard";
-import { taskTransformers } from "@/lib/transformers/task.transformer";
 import { cn } from "@/lib/utils";
-import type { TaskDTO } from "@/types/task";
+import type { Task } from "@/types/task";
 import type { useColumnVirtualizer } from "@/hooks/virtualizer";
 import { useIntersectionObserver } from "@/hooks/core/use-intersection-observer";
 
 interface VirtualizedTaskListProps {
-    tasks: TaskDTO[];
+    tasks: Task[];
     virtualizer: ReturnType<typeof useColumnVirtualizer>;
     isDesktop: boolean;
     loadMoreRef: React.RefObject<HTMLDivElement>;
@@ -62,10 +61,7 @@ export const VirtualizedTaskList = memo(function VirtualizedTaskList({
                             minHeight: "100px"
                         }}
                     >
-                        <TaskCard
-                            task={taskTransformers.fromDTO(task)}
-                            className="h-full break-words"
-                        />
+                        <TaskCard task={task} className="h-full break-words" />
                     </div>
                 );
             })}

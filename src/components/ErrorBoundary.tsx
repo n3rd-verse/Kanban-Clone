@@ -2,6 +2,7 @@ import * as React from "react";
 import { useQueryErrorResetBoundary } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { ErrorBoundary as ReactErrorBoundary } from "react-error-boundary";
+import { useTranslation } from "react-i18next";
 
 interface ErrorBoundaryProps {
     children: React.ReactNode;
@@ -31,25 +32,42 @@ export class ErrorBoundary extends React.Component<
     render() {
         if (this.state.hasError) {
             return (
-                <div className="flex flex-col justify-center items-center gap-4 p-4">
-                    <h2 className="font-bold text-xl">Something went wrong</h2>
-                    <p className="text-red-500">
-                        {this.state.error?.message || "Unknown error occurred"}
-                    </p>
-                    <Button
-                        onClick={() => {
-                            this.setState({ hasError: false, error: null });
-                            this.props.onReset?.();
-                        }}
-                    >
-                        Try again
-                    </Button>
-                </div>
+                <ErrorBoundaryContent
+                    error={this.state.error}
+                    onReset={() => {
+                        this.setState({ hasError: false, error: null });
+                        this.props.onReset?.();
+                    }}
+                />
             );
         }
 
         return this.props.children;
     }
+}
+
+function ErrorBoundaryContent({
+    error,
+    onReset
+}: {
+    error: Error | null;
+    onReset: () => void;
+}) {
+    const { t } = useTranslation();
+
+    return (
+        <div className="flex flex-col justify-center items-center gap-4 p-4">
+            <h2 className="font-bold text-xl">
+                {t("components.errorBoundary.title")}
+            </h2>
+            <p className="text-red-500">
+                {error?.message || t("components.errorBoundary.unknownError")}
+            </p>
+            <Button onClick={onReset}>
+                {t("components.errorBoundary.tryAgainButton")}
+            </Button>
+        </div>
+    );
 }
 
 export function ErrorBoundaryWithQueryReset(props: ErrorBoundaryProps) {
@@ -64,14 +82,16 @@ function ErrorFallback({
     error: Error;
     resetErrorBoundary: () => void;
 }) {
+    const { t } = useTranslation();
+
     return (
         <div className="flex flex-col justify-center items-center bg-red-50 p-4 border border-red-200 rounded-lg min-h-[200px]">
             <h2 className="mb-2 font-medium text-red-600">
-                Something went wrong:
+                {t("components.errorBoundary.errorFallbackTitle")}
             </h2>
             <pre className="mb-4 text-red-500 text-sm">{error.message}</pre>
             <Button variant="destructive" onClick={resetErrorBoundary}>
-                Try again
+                {t("components.errorBoundary.tryAgainButton")}
             </Button>
         </div>
     );

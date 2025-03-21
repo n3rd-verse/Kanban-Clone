@@ -1,4 +1,4 @@
-import { TaskStatus } from "@/types/task";
+import { TaskStatus } from "@/constants/task-status";
 
 export const COLUMN_SIZES = {
     MOBILE_MAX_TASKS: 6,
@@ -38,19 +38,23 @@ export type TaskStatusConfig = {
 };
 
 export const STATUS_CONFIG: TaskStatusConfig[] = [
-    { id: "new", label: "Requested", color: "text-[#3b82f6] bg-blue-100/50" },
     {
-        id: "in_progress",
+        id: TaskStatus.NEW,
+        label: "Requested",
+        color: "text-[#3b82f6] bg-blue-100/50"
+    },
+    {
+        id: TaskStatus.IN_PROGRESS,
         label: "In progress",
         color: "text-[#fbbf24] bg-yellow-100/50"
     },
     {
-        id: "urgent",
+        id: TaskStatus.URGENT,
         label: "Overdue",
         color: "text-[#ef4444] bg-red-100/50"
     },
     {
-        id: "completed",
+        id: TaskStatus.COMPLETED,
         label: "Completed",
         color: "text-[#22c55e] bg-green-100/50"
     }
