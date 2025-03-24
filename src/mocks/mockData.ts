@@ -29,6 +29,8 @@ const generateTasksForStatus = (
         "Google Meet: abc-defg-hij"
     ];
 
+    const categories = ["important", "company", "news", "other"];
+
     const assignees = [
         [{ name: "김태호", email: "taehoo.kim@nextintelligence.ai" }],
         [{ name: "임지영", email: "jiyoung.im@nextintelligence.ai" }],
@@ -86,6 +88,12 @@ const generateTasksForStatus = (
         // 랜덤으로 담당자 선택
         const assigneeIndex = Math.floor(Math.random() * assignees.length);
 
+        // 랜덤으로 카테고리 선택
+        const categoryIndex = Math.floor(Math.random() * categories.length);
+
+        // 랜덤으로 assignedMe 선택
+        const assignedMe = Math.random() < 0.5;
+
         // 약 20%의 확률로 AI 관련 정보 추가
         const hasAi = Math.random() < 0.2;
         const aiIndex = hasAi
@@ -96,6 +104,8 @@ const generateTasksForStatus = (
             id: `${status}-${index + 1}`,
             title: titles[titleIndex],
             assignee: assignees[assigneeIndex],
+            assignedMe: assignedMe,
+            category: categories[categoryIndex],
             date: date.toISOString(),
             status: status,
             ...(hasAi && { ai: aiContent[aiIndex] })
