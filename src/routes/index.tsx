@@ -2,10 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { KanbanBoard } from "@/components/KanbanBoard/KanbanBoard";
 import { RouteErrorComponent } from "@/components/ErrorComponent";
 import { z } from "zod";
+import { TaskCategory } from "@/components/KanbanBoard/TaskFilter";
 
 export const filterSchema = z.object({
-    filters: z
-        .array(z.enum(["important", "company", "news", "other"]))
+    categories: z
+        .array(z.nativeEnum(TaskCategory))
         .default([])
         .transform((val) => (Array.isArray(val) ? val : []))
 });

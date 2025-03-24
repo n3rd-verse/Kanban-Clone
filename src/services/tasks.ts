@@ -106,6 +106,7 @@ export async function fetchTasks(
         assignee: filters?.assignee || [],
         startDate: filters?.dateRange?.start?.toISOString(),
         endDate: filters?.dateRange?.end?.toISOString(),
+        categories: filters?.categories || [],
         page: filters?.page || 0,
         limit: filters?.limit || 20
     });

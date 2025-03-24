@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { TaskFilter } from "../TaskFilter";
+import { TaskFilter, TaskCategory } from "../TaskFilter";
 import { useTaskFilter } from "@/hooks/filter/use-task-filter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -41,9 +41,9 @@ describe("TaskFilter", () => {
 
     it("renders the filter button", () => {
         (useTaskFilter as any).mockReturnValue({
-            selectedFilters: [],
-            toggleFilter: vi.fn(),
-            clearFilters: vi.fn(),
+            selectedCategories: [],
+            toggleCategory: vi.fn(),
+            clearCategories: vi.fn(),
             isFilterActive: false
         });
 
@@ -53,11 +53,11 @@ describe("TaskFilter", () => {
         expect(filterButton).toBeInTheDocument();
     });
 
-    it("applies inactive styling when no filters are active", () => {
+    it("applies inactive styling when no categories are active", () => {
         (useTaskFilter as any).mockReturnValue({
-            selectedFilters: [],
-            toggleFilter: vi.fn(),
-            clearFilters: vi.fn(),
+            selectedCategories: [],
+            toggleCategory: vi.fn(),
+            clearCategories: vi.fn(),
             isFilterActive: false
         });
 
@@ -67,13 +67,13 @@ describe("TaskFilter", () => {
         expect(filterButton).not.toHaveClass("text-blue-500");
     });
 
-    it("receives toggleFilter function from hook", () => {
+    it("receives toggleCategory function from hook", () => {
         const toggleMock = vi.fn();
 
         (useTaskFilter as any).mockReturnValue({
-            selectedFilters: ["important"],
-            toggleFilter: toggleMock,
-            clearFilters: vi.fn(),
+            selectedCategories: [TaskCategory.IMPORTANT],
+            toggleCategory: toggleMock,
+            clearCategories: vi.fn(),
             isFilterActive: true
         });
 
@@ -82,11 +82,11 @@ describe("TaskFilter", () => {
         expect(useTaskFilter).toHaveBeenCalled();
     });
 
-    it("shows active filter indicator when filters are applied", () => {
+    it("shows active filter indicator when categories are applied", () => {
         (useTaskFilter as any).mockReturnValue({
-            selectedFilters: ["important", "company"],
-            toggleFilter: vi.fn(),
-            clearFilters: vi.fn(),
+            selectedCategories: [TaskCategory.IMPORTANT, TaskCategory.COMPANY],
+            toggleCategory: vi.fn(),
+            clearCategories: vi.fn(),
             isFilterActive: true
         });
 
@@ -96,13 +96,13 @@ describe("TaskFilter", () => {
         expect(filterButton.className).toMatch(/text-\w+/);
     });
 
-    it("receives clearFilters function from hook", () => {
+    it("receives clearCategories function from hook", () => {
         const clearMock = vi.fn();
 
         (useTaskFilter as any).mockReturnValue({
-            selectedFilters: ["important", "company"],
-            toggleFilter: vi.fn(),
-            clearFilters: clearMock,
+            selectedCategories: [TaskCategory.IMPORTANT, TaskCategory.COMPANY],
+            toggleCategory: vi.fn(),
+            clearCategories: clearMock,
             isFilterActive: true
         });
 

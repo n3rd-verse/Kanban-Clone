@@ -2,15 +2,19 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useTaskFilter } from "../use-task-filter";
 import { useNavigate, useSearch } from "@tanstack/react-router";
+import { TaskCategory } from "@/components/KanbanBoard/TaskFilter";
 
 vi.mock("@tanstack/react-router", () => ({
     useNavigate: vi.fn(),
     useSearch: vi.fn()
 }));
 
-vi.mock("@/routes", () => ({
-    Route: {
-        fullPath: "/"
+vi.mock("@/components/KanbanBoard/TaskFilter", () => ({
+    TaskCategory: {
+        IMPORTANT: "important",
+        COMPANY: "company",
+        NEWS: "news",
+        OTHER: "other"
     }
 }));
 
@@ -23,72 +27,76 @@ describe("useTaskFilter", () => {
         (useNavigate as any).mockReturnValue(mockNavigate);
     });
 
-    it("should return selected filters from search params", () => {
+    it("should return selected categories from search params", () => {
         (useSearch as any).mockReturnValue({
-            filters: ["important", "company"]
+            categories: [TaskCategory.IMPORTANT, TaskCategory.COMPANY]
         });
 
         const { result } = renderHook(() => useTaskFilter());
 
-        expect(result.current.selectedFilters).toEqual([
-            "important",
-            "company"
+        expect(result.current.selectedCategories).toEqual([
+            TaskCategory.IMPORTANT,
+            TaskCategory.COMPANY
         ]);
     });
 
-    it("should toggle filter on when not already selected", () => {
+    it("should toggle category on when not already selected", () => {
         (useSearch as any).mockReturnValue({
-            filters: []
+            categories: []
         });
 
         const { result } = renderHook(() => useTaskFilter());
 
         act(() => {
-            result.current.toggleFilter("important");
+            result.current.toggleCategory(TaskCategory.IMPORTANT);
         });
 
         expect(mockNavigate).toHaveBeenCalledWith({
             to: "/",
             search: {
-                filters: ["important"]
+                categories: [TaskCategory.IMPORTANT]
             }
         });
     });
 
-    it("should toggle filter off when already selected", () => {
+    it("should toggle category off when already selected", () => {
         (useSearch as any).mockReturnValue({
-            filters: ["important", "company"]
+            categories: [TaskCategory.IMPORTANT, TaskCategory.COMPANY]
         });
 
         const { result } = renderHook(() => useTaskFilter());
 
         act(() => {
-            result.current.toggleFilter("important");
+            result.current.toggleCategory(TaskCategory.IMPORTANT);
         });
 
         expect(mockNavigate).toHaveBeenCalledWith({
             to: "/",
             search: {
-                filters: ["company"]
+                categories: [TaskCategory.COMPANY]
             }
         });
     });
 
-    it("should clear all filters when clearFilters is called", () => {
+    it("should clear all categories when clearCategories is called", () => {
         (useSearch as any).mockReturnValue({
-            filters: ["important", "company", "news"]
+            categories: [
+                TaskCategory.IMPORTANT,
+                TaskCategory.COMPANY,
+                TaskCategory.NEWS
+            ]
         });
 
         const { result } = renderHook(() => useTaskFilter());
 
         act(() => {
-            result.current.clearFilters();
+            result.current.clearCategories();
         });
 
         expect(mockNavigate).toHaveBeenCalledWith({
             to: "/",
             search: {
-                filters: []
+                categories: []
             }
         });
     });
