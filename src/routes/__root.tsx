@@ -55,7 +55,7 @@ function RootComponent() {
         <div className="min-h-screen">
             <main>
                 <div className="pt-4">
-                    <div className="flex justify-between items-center px-8 border-gray-200 border-b h-10">
+                    <div className="flex justify-between items-center ml-8 mr-8 border-gray-200 border-b h-10">
                         <div className="flex items-center">
                             {views.map((view, index) => {
                                 const Icon = view.icon;
