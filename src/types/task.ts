@@ -8,6 +8,8 @@ export interface Task {
     date?: string;
     status: TaskStatus;
     allowEdit?: boolean;
+    category?: string;
+    assignedMe: boolean;
     ai?: {
         topic?: string;
         summary?: string;
