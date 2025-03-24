@@ -10,6 +10,8 @@ import { cn } from "@/lib/utils";
 import { useOpenTaskMutation } from "@/hooks/api/tasks/use-open-task-mutation";
 import { ContactAddress } from "./ContactAddress";
 import { TaskStatus } from "@/constants/task-status";
+import { useTranslation } from "react-i18next";
+
 import {
     Popover,
     PopoverContent,
@@ -26,9 +28,12 @@ export function TaskCard({ task, className }: TaskCardProps) {
     const { mutate: toggleTask } = useToggleTaskStatusMutation();
     const { mutate: openTask } = useOpenTaskMutation();
     const [startPos, setStartPos] = useState({ x: 0, y: 0 });
-
+    const { t } = useTranslation();
     const handleDelete = useCallback(() => {
-        deleteTask(task.id);
+        let result = window.confirm(t("task.deleteConfirmation"));
+        if (result) {
+             deleteTask(task.id);
+        }
     }, [deleteTask, task.id]);
 
     const handleComplete = useCallback(() => {

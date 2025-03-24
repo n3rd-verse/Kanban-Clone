@@ -44,7 +44,7 @@ const resources = {
                     errorFallbackTitle: "오류가 발생했습니다:",
                     tryAgainButton: "다시 시도"
                 }
-			},
+            },
             task: {
                 deleteConfirmation: "이 작업을 삭제하시겠습니까?"
             }
@@ -92,7 +92,7 @@ const resources = {
                     errorFallbackTitle: "Something went wrong:",
                     tryAgainButton: "Try again"
                 }
-			},
+            },
             task: {
                 deleteConfirmation: "Are you sure you want to delete this task?"
             }
