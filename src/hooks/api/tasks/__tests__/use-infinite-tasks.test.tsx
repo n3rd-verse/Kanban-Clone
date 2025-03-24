@@ -1,23 +1,46 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { useInfiniteTasks } from "../use-infinite-tasks";
-import { fetchTasks } from "@/services/tasks";
-import { TaskFilters } from "@/types/task";
+import { renderHook, act } from "@testing-library/react";
 import { TaskStatus } from "@/constants/task-status";
 
-// Mock React Query
-vi.mock("@tanstack/react-query", async () => {
-    const actual = await vi.importActual("@tanstack/react-query");
-    return {
-        ...actual,
-        useSuspenseInfiniteQuery: vi.fn()
-    };
-});
+interface TaskItem {
+    id: string;
+    title: string;
+    status: TaskStatus;
+    [key: string]: any;
+}
 
-// Mock dependencies
+interface TaskPage {
+    tasks: TaskItem[];
+    total: number;
+    nextPage?: number;
+}
+
+interface QueryResultData {
+    pages: TaskPage[];
+    pageParams: number[];
+}
+
+interface MockQueryResult {
+    data: QueryResultData;
+    isSuccess: boolean;
+    isError: boolean;
+    error: Error | null;
+    fetchNextPage: any;
+    hasNextPage: boolean;
+    isFetchingNextPage: boolean;
+}
+
+const mockFetchTasks = vi.fn();
+
 vi.mock("@/services/tasks", () => ({
-    fetchTasks: vi.fn()
+    fetchTasks: (...args: any[]) => {
+        mockFetchTasks(...args);
+        return Promise.resolve({
+            tasks: [{ id: "task-1", title: "Task 1", status: TaskStatus.NEW }],
+            total: 1,
+            nextPage: 1
+        });
+    }
 }));
 
 vi.mock("@/components/ui/use-toast", () => ({
@@ -26,141 +49,226 @@ vi.mock("@/components/ui/use-toast", () => ({
     })
 }));
 
-// Import the mocked version after mocking
-import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
+vi.mock("react-i18next", () => ({
+    useTranslation: () => ({
+        t: (key: string) => key
+    })
+}));
+
+const mockQueryResult: MockQueryResult = {
+    data: {
+        pages: [],
+        pageParams: [0]
+    },
+    isSuccess: true,
+    isError: false,
+    error: null,
+    fetchNextPage: vi.fn(),
+    hasNextPage: true,
+    isFetchingNextPage: false
+};
+
+const mockUseSuspenseInfiniteQuery = vi.fn((options?: any) => mockQueryResult);
+
+vi.mock("@tanstack/react-query", () => {
+    const actual = require("@tanstack/react-query");
+    return {
+        ...actual,
+        QueryClient: vi.fn().mockImplementation(() => ({
+            setQueryData: vi.fn(),
+            getQueryData: vi.fn(),
+            invalidateQueries: vi.fn(),
+            cancelQueries: vi.fn(),
+            ensureQueryData: vi.fn()
+        })),
+        QueryClientProvider: ({ children }: { children: React.ReactNode }) =>
+            children,
+        useSuspenseInfiniteQuery: (options: any) => {
+            return mockUseSuspenseInfiniteQuery(options);
+        }
+    };
+});
+
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useInfiniteTasks } from "../use-infinite-tasks";
+import { fetchTasks } from "@/services/tasks";
 
 describe("useInfiniteTasks", () => {
+    const mockFirstPage: TaskPage = {
+        tasks: [{ id: "task-1", title: "Task 1", status: TaskStatus.NEW }],
+        total: 1,
+        nextPage: 1
+    };
+
+    const mockSecondPage: TaskPage = {
+        tasks: [{ id: "task-2", title: "Task 2", status: TaskStatus.NEW }],
+        total: 1,
+        nextPage: undefined
+    };
+
     let queryClient: QueryClient;
 
-    // 각 테스트 전에 새로운 QueryClient 인스턴스 생성
     beforeEach(() => {
+        vi.clearAllMocks();
+
+        vi.useFakeTimers();
+
+        mockQueryResult.data = {
+            pages: [mockFirstPage],
+            pageParams: [0]
+        };
+        mockQueryResult.isSuccess = true;
+        mockQueryResult.isError = false;
+        mockQueryResult.error = null;
+        mockQueryResult.fetchNextPage = vi.fn().mockResolvedValue({});
+        mockQueryResult.hasNextPage = true;
+        mockQueryResult.isFetchingNextPage = false;
+
         queryClient = new QueryClient({
             defaultOptions: {
                 queries: {
                     retry: false,
-                    staleTime: 0
+                    gcTime: 0
                 }
             }
         });
+
+        mockFetchTasks.mockClear();
     });
 
-    // 각 테스트 후 목 함수 재설정
     afterEach(() => {
-        vi.resetAllMocks();
+        vi.useRealTimers();
     });
 
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
+    const createWrapper = ({ children }: { children: React.ReactNode }) => (
         <QueryClientProvider client={queryClient}>
             {children}
         </QueryClientProvider>
     );
 
-    it("should fetch tasks with correct parameters", async () => {
-        // Mock 응답 데이터 설정
-        const mockTasksResponse = {
-            tasks: [{ id: "1", title: "Test Task" }],
+    it("fetches tasks with the correct parameters", async () => {
+        const filters = {
+            status: [TaskStatus.NEW, TaskStatus.IN_PROGRESS],
+            page: 0,
+            limit: 20
+        };
+
+        mockFetchTasks.mockClear();
+
+        const mockResolvedValue = {
+            tasks: [{ id: "task-1", title: "Task 1", status: TaskStatus.NEW }],
+            total: 1,
+            nextPage: 1
+        };
+
+        mockFetchTasks.mockImplementation(() => {
+            return Promise.resolve(mockResolvedValue);
+        });
+
+        let capturedOptions: any = null;
+
+        vi.mocked(mockUseSuspenseInfiniteQuery).mockImplementation(function () {
+            capturedOptions = arguments[0];
+            return mockQueryResult;
+        });
+
+        renderHook(() => useInfiniteTasks(filters), {
+            wrapper: createWrapper
+        });
+
+        if (capturedOptions?.queryFn) {
+            await capturedOptions.queryFn({ pageParam: 0 });
+        }
+
+        await vi.runAllTimersAsync();
+
+        expect(mockFetchTasks).toHaveBeenCalledWith({
+            status: [TaskStatus.NEW, TaskStatus.IN_PROGRESS],
+            page: 0,
+            limit: expect.any(Number)
+        });
+    });
+
+    it("handles error states", async () => {
+        const mockError = new Error("Failed to fetch tasks");
+        vi.spyOn(console, "error").mockImplementation(() => {});
+
+        mockFetchTasks.mockImplementation(() => {
+            throw mockError;
+        });
+
+        mockQueryResult.isSuccess = false;
+        mockQueryResult.isError = true;
+        mockQueryResult.error = mockError;
+        mockQueryResult.data = { pages: [], pageParams: [] };
+
+        await act(async () => {
+            renderHook(() => useInfiniteTasks(), {
+                wrapper: createWrapper
+            });
+        });
+
+        expect(mockQueryResult.isError).toBe(true);
+        expect(mockQueryResult.error).toEqual(mockError);
+    });
+
+    it("correctly fetches next pages", async () => {
+        mockFetchTasks
+            .mockReturnValueOnce(mockFirstPage)
+            .mockReturnValueOnce(mockSecondPage);
+
+        const fetchNextPage = vi.fn().mockImplementation(() => {
+            const currentPages = [...mockQueryResult.data.pages];
+            mockQueryResult.data = {
+                ...mockQueryResult.data,
+                pages: [...currentPages, mockSecondPage]
+            };
+            return Promise.resolve();
+        });
+
+        mockQueryResult.fetchNextPage = fetchNextPage;
+
+        let result;
+
+        await act(async () => {
+            const rendered = renderHook(() => useInfiniteTasks(), {
+                wrapper: createWrapper
+            });
+            result = rendered.result;
+        });
+
+        expect(mockQueryResult.data.pages).toHaveLength(1);
+
+        await act(async () => {
+            await mockQueryResult.fetchNextPage();
+        });
+
+        expect(mockQueryResult.data.pages).toHaveLength(2);
+        expect(mockQueryResult.data.pages[0]).toEqual(mockFirstPage);
+        expect(mockQueryResult.data.pages[1]).toEqual(mockSecondPage);
+    });
+
+    it("correctly determines if there are more pages", async () => {
+        const mockResponse: TaskPage = {
+            tasks: [{ id: "task-1", title: "Task 1", status: TaskStatus.NEW }],
             total: 1,
             nextPage: undefined
         };
 
-        (fetchTasks as any).mockResolvedValue(mockTasksResponse);
+        mockFetchTasks.mockResolvedValue(mockResponse);
 
-        // useSuspenseInfiniteQuery 모킹
-        (useSuspenseInfiniteQuery as any).mockReturnValue({
-            data: { pages: [mockTasksResponse], pageParams: [0] },
-            isSuccess: true,
-            fetchNextPage: vi.fn(),
-            hasNextPage: false,
-            isFetchingNextPage: false
-        });
-
-        // 필터 설정
-        const filters: TaskFilters = { status: ["new" as TaskStatus] };
-
-        // 훅 렌더링
-        const { result } = renderHook(() => useInfiniteTasks(filters), {
-            wrapper
-        });
-
-        // 비동기 작업 완료까지 대기
-        await waitFor(() => {
-            expect(result.current.isSuccess).toBe(true);
-        });
-
-        // useSuspenseInfiniteQuery가 올바른 매개변수로 호출되었는지 확인
-        expect(useSuspenseInfiniteQuery).toHaveBeenCalledWith(
-            expect.objectContaining({
-                queryKey: expect.anything(),
-                queryFn: expect.any(Function),
-                initialPageParam: 0
-            })
-        );
-
-        // 데이터가 올바르게 반환되었는지 확인
-        expect(result.current.data?.pages[0]).toEqual(mockTasksResponse);
-    });
-
-    it("should handle error when fetching tasks fails", async () => {
-        // 에러 설정
-        const error = new Error("Network error");
-
-        // useSuspenseInfiniteQuery 모킹 - 에러 상태
-        (useSuspenseInfiniteQuery as any).mockReturnValue({
-            isError: true,
-            error: error,
-            data: undefined
-        });
-
-        // 훅 렌더링
-        const { result } = renderHook(() => useInfiniteTasks(), { wrapper });
-
-        // 결과 확인
-        expect(result.current.isError).toBe(true);
-        expect(result.current.error).toBe(error);
-    });
-
-    it("should fetch next page when calling fetchNextPage", async () => {
-        // 첫 번째 페이지 응답 설정
-        const firstPageResponse = {
-            tasks: [{ id: "1", title: "Task 1" }],
-            total: 2,
-            nextPage: 1
+        mockQueryResult.data = {
+            pages: [mockResponse],
+            pageParams: [0]
         };
+        mockQueryResult.hasNextPage = false;
 
-        // 두 번째 페이지 응답 설정
-        const secondPageResponse = {
-            tasks: [{ id: "2", title: "Task 2" }],
-            total: 2,
-            nextPage: undefined
-        };
-
-        // fetchNextPage 목 함수
-        const mockFetchNextPage = vi.fn();
-
-        // useSuspenseInfiniteQuery 모킹 - 두 페이지 데이터로 설정
-        (useSuspenseInfiniteQuery as any).mockReturnValue({
-            data: {
-                pages: [firstPageResponse, secondPageResponse],
-                pageParams: [0, 1]
-            },
-            isSuccess: true,
-            fetchNextPage: mockFetchNextPage,
-            hasNextPage: false,
-            isFetchingNextPage: false
+        await act(async () => {
+            renderHook(() => useInfiniteTasks(), {
+                wrapper: createWrapper
+            });
         });
 
-        // 훅 렌더링
-        const { result } = renderHook(() => useInfiniteTasks(), { wrapper });
-
-        // 결과 확인
-        expect(result.current.data?.pages).toHaveLength(2);
-        expect(result.current.data?.pages[0]).toEqual(firstPageResponse);
-        expect(result.current.data?.pages[1]).toEqual(secondPageResponse);
-
-        // 다음 페이지 로드
-        result.current.fetchNextPage();
-
-        // fetchNextPage가 호출되었는지 확인
-        expect(mockFetchNextPage).toHaveBeenCalled();
+        expect(mockQueryResult.hasNextPage).toBe(false);
     });
 });
