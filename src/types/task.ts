@@ -9,7 +9,7 @@ export interface Task {
     date?: string;
     status: TaskStatus;
     allowEdit?: boolean;
-    category?: string;
+    categories?: string;
     assignedMe: boolean;
     ai?: {
         topic?: string;
