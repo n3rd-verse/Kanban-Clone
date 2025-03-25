@@ -1,38 +1,37 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { Route } from "@/routes";
-
-type FilterType = "important" | "company" | "news" | "other";
+import { TaskCategory } from "@/components/KanbanBoard/TaskFilter";
 
 export function useTaskFilter() {
     const search = useSearch({ from: Route.fullPath });
     const navigate = useNavigate();
 
-    const toggleFilter = (filterId: FilterType) => {
-        const currentFilters = search.filters;
-        const newFilters = currentFilters.includes(filterId)
-            ? currentFilters.filter((id: FilterType) => id !== filterId)
-            : [...currentFilters, filterId];
+    const toggleCategory = (categoryId: TaskCategory) => {
+        const currentCategories = search.categories || [];
+        const newCategories = currentCategories.includes(categoryId)
+            ? currentCategories.filter((id: TaskCategory) => id !== categoryId)
+            : [...currentCategories, categoryId];
 
         navigate({
             to: Route.fullPath,
             search: {
-                filters: newFilters
+                categories: newCategories
             }
         });
     };
 
-    const clearFilters = () => {
+    const clearCategories = () => {
         navigate({
             to: Route.fullPath,
             search: {
-                filters: []
+                categories: []
             }
         });
     };
 
     return {
-        selectedFilters: search.filters,
-        toggleFilter,
-        clearFilters
+        selectedCategories: search.categories || [],
+        toggleCategory,
+        clearCategories
     } as const;
 }

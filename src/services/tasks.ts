@@ -106,6 +106,8 @@ export async function fetchTasks(
         assignee: filters?.assignee || [],
         startDate: filters?.dateRange?.start?.toISOString(),
         endDate: filters?.dateRange?.end?.toISOString(),
+        categories: filters?.categories || [],
+        assignedMe: null, // TODO 필터에 옵션이 들어갈 경우, 지정 가능.
         page: filters?.page || 0,
         limit: filters?.limit || 20
     });

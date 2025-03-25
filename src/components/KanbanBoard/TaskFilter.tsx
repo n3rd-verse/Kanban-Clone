@@ -6,27 +6,31 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { Check } from "lucide-react";
-import { Filter } from "lucide-react";
 import { useTaskFilter } from "@/hooks/filter/use-task-filter";
-import filterIcon from '../../assets/icons/filter.svg'
+import filterIcon from "../../assets/icons/filter.svg";
 import React from "react";
 
-type FilterType = "important" | "company" | "news" | "other";
+export enum TaskCategory {
+    IMPORTANT = "important",
+    COMPANY = "company",
+    NEWS = "news",
+    OTHER = "other"
+}
 
-type FilterOption = {
-    id: FilterType;
+type CategoryOption = {
+    id: TaskCategory;
     label: string;
 };
 
-const FILTER_OPTIONS: FilterOption[] = [
-    { id: "important", label: "Important" },
-    { id: "company", label: "Company" },
-    { id: "news", label: "News" },
-    { id: "other", label: "Other" }
+const CATEGORY_OPTIONS: CategoryOption[] = [
+    { id: TaskCategory.IMPORTANT, label: "Important" },
+    { id: TaskCategory.COMPANY, label: "Company" },
+    { id: TaskCategory.NEWS, label: "News" },
+    { id: TaskCategory.OTHER, label: "Other" }
 ];
 
 export function TaskFilter() {
-    const { selectedFilters, toggleFilter } = useTaskFilter();
+    const { selectedCategories, toggleCategory } = useTaskFilter();
 
     return (
         <DropdownMenu>
@@ -36,17 +40,18 @@ export function TaskFilter() {
                     size="icon"
                     className={cn(
                         "h-8 w-8",
-                        selectedFilters.length > 0
+                        selectedCategories.length > 0
                             ? "text-blue-500"
                             : "text-gray-500"
                     )}
                     onClick={(e) => {
-                        e.stopPropagation()
-                    }}>
-                    {React.createElement('img', {
+                        e.stopPropagation();
+                    }}
+                >
+                    {React.createElement("img", {
                         src: filterIcon,
-                        alt: 'Filter',
-                        className: 'w-6 h-6'
+                        alt: "Filter",
+                        className: "w-6 h-6"
                     })}
                 </Button>
             </DropdownMenuTrigger>
@@ -64,10 +69,10 @@ export function TaskFilter() {
                 sideOffset={5}
             >
                 <div className="py-2">
-                    {FILTER_OPTIONS.map((option) => (
+                    {CATEGORY_OPTIONS.map((option) => (
                         <button
                             key={option.id}
-                            onClick={() => toggleFilter(option.id)}
+                            onClick={() => toggleCategory(option.id)}
                             className={cn(
                                 "flex items-center justify-between w-full px-3 py-2",
                                 "md:px-4 md:py-2.5",
@@ -85,7 +90,7 @@ export function TaskFilter() {
                             >
                                 {option.label}
                             </span>
-                            {selectedFilters.includes(option.id) && (
+                            {selectedCategories.includes(option.id) && (
                                 <Check
                                     className={cn(
                                         "ml-1 w-[14px] h-[14px] text-blue-500",

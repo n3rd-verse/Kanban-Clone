@@ -1,5 +1,6 @@
 import { Address } from "./contact";
 import { TaskStatus } from "@/constants/task-status";
+import { TaskCategory } from "@/components/KanbanBoard/TaskFilter";
 
 export interface Task {
     id: string;
@@ -8,7 +9,7 @@ export interface Task {
     date?: string;
     status: TaskStatus;
     allowEdit?: boolean;
-    category?: string;
+    categories?: string;
     assignedMe: boolean;
     ai?: {
         topic?: string;
@@ -24,6 +25,7 @@ export interface TaskFilters {
         start?: Date;
         end?: Date;
     };
+    categories?: TaskCategory[];
     search?: string;
     limit?: number;
     page?: number;

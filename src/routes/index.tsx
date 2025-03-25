@@ -1,17 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { KanbanBoard } from "@/components/KanbanBoard/KanbanBoard";
 import { RouteErrorComponent } from "@/components/ErrorComponent";
-import { z } from "zod";
-
-export const filterSchema = z.object({
-    filters: z
-        .array(z.enum(["important", "company", "news", "other"]))
-        .default([])
-        .transform((val) => (Array.isArray(val) ? val : []))
-});
 
 export const Route = createFileRoute("/")({
-    validateSearch: filterSchema,
     // loader: async () => {
     //     const statuses = ["new", "in_progress", "urgent", "completed"] as const;
 

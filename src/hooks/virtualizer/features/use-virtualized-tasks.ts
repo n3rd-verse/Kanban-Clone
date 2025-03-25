@@ -3,6 +3,9 @@ import { useInfiniteTasks } from "@/hooks/api/tasks/use-infinite-tasks";
 import { useColumnVirtualizer } from "@/hooks/virtualizer/core/use-column-virtualizer";
 import { TaskStatus } from "@/constants/task-status";
 import { COLUMN_SIZES } from "@/components/KanbanBoard/constants";
+import { useSearch } from "@tanstack/react-router";
+import { Route } from "@/routes/";
+import { useTaskFilter } from "@/hooks/filter/use-task-filter";
 
 interface UseVirtualizedTasksProps {
     status: TaskStatus;
@@ -19,9 +22,11 @@ export function useVirtualizedTasks({
     maxVisibleTasks,
     width
 }: UseVirtualizedTasksProps) {
+    const { selectedCategories } = useTaskFilter();
     const { data, isFetchingNextPage, hasNextPage, fetchNextPage, error } =
         useInfiniteTasks({
-            status: [status]
+            status: [status],
+            categories: selectedCategories
         });
 
     const tasks = data?.pages.flatMap((p) => p.tasks) ?? [];
