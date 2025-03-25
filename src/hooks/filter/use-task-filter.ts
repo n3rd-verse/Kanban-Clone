@@ -3,7 +3,9 @@ import { Route } from "@/routes";
 import { TaskCategory } from "@/components/KanbanBoard/TaskFilter";
 
 export function useTaskFilter() {
-    const search = useSearch({ from: Route.fullPath });
+    const search = useSearch({ from: Route.fullPath }) as {
+        categories?: TaskCategory[];
+    };
     const navigate = useNavigate();
 
     const toggleCategory = (categoryId: TaskCategory) => {
