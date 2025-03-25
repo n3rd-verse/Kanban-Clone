@@ -59,7 +59,8 @@ describe("TaskCard", () => {
         status: TaskStatus.NEW,
         assignee: [{ name: "John Doe", email: "john@example.com" }],
         date: "2023-01-01T12:00:00Z",
-        allowEdit: false
+        allowEdit: false,
+        assignedMe: false // 필수 속성 추가
     };
 
     const createWrapper = () => {

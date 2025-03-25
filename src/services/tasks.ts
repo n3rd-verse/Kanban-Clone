@@ -107,7 +107,7 @@ export async function fetchTasks(
         startDate: filters?.dateRange?.start?.toISOString(),
         endDate: filters?.dateRange?.end?.toISOString(),
         categories: filters?.categories || [],
-        assignedMe: Math.random() < 0.5, // TODO: 임시로 랜덤으로 할당
+        assignedMe: null, // TODO 필터에 옵션이 들어갈 경우, 지정 가능.
         page: filters?.page || 0,
         limit: filters?.limit || 20
     });
