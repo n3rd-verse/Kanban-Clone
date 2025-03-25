@@ -32,18 +32,15 @@ const CATEGORY_OPTIONS: CategoryOption[] = [
 export function TaskFilter() {
     const { selectedCategories, toggleCategory } = useTaskFilter();
 
+    const hasFilter = selectedCategories.length > 0;
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button
                     variant="ghost"
                     size="icon"
-                    className={cn(
-                        "h-8 w-8",
-                        selectedCategories.length > 0
-                            ? "text-blue-500"
-                            : "text-gray-500"
-                    )}
+                    className="h-8 w-8"
                     onClick={(e) => {
                         e.stopPropagation();
                     }}
@@ -51,7 +48,8 @@ export function TaskFilter() {
                     {React.createElement("img", {
                         src: filterIcon,
                         alt: "Filter",
-                        className: "w-6 h-6"
+                        className: "w-6 h-6",
+                        style: { filter: !hasFilter ? "" : "invert(40%) sepia(100%) saturate(1000%) hue-rotate(204deg) brightness(100%) contrast(100%)" }
                     })}
                 </Button>
             </DropdownMenuTrigger>
