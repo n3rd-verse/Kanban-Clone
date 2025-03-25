@@ -6,7 +6,6 @@ import { useColumnVirtualizer } from "@/hooks/virtualizer/core/use-column-virtua
 import { COLUMN_SIZES } from "@/components/KanbanBoard/constants";
 import { TaskStatus } from "@/constants/task-status";
 import { useVirtualizedTasks } from "../use-virtualized-tasks";
-import { createMemoryHistory } from "@tanstack/react-router";
 
 vi.mock("@/hooks/api/tasks/use-infinite-tasks", () => ({
     useInfiniteTasks: vi.fn()
