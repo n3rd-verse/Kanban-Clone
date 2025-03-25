@@ -4,6 +4,12 @@ import { useTaskFilter } from "../use-task-filter";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { TaskCategory } from "@/components/KanbanBoard/TaskFilter";
 
+vi.mock("@/routes", () => ({
+    Route: {
+        fullPath: "/"
+    }
+}));
+
 vi.mock("@tanstack/react-router", () => ({
     useNavigate: vi.fn(),
     useSearch: vi.fn()
@@ -23,8 +29,8 @@ describe("useTaskFilter", () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-
         (useNavigate as any).mockReturnValue(mockNavigate);
+        (useSearch as any).mockReturnValue({ categories: [] });
     });
 
     it("should return selected categories from search params", () => {
