@@ -8,26 +8,31 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
+
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as TimelineImport } from './routes/timeline'
-import { Route as CalendarImport } from './routes/calendar'
 import { Route as IndexImport } from './routes/index'
+
+// Create Virtual Routes
+
+const TimelineLazyImport = createFileRoute('/timeline')()
+const CalendarLazyImport = createFileRoute('/calendar')()
 
 // Create/Update Routes
 
-const TimelineRoute = TimelineImport.update({
+const TimelineLazyRoute = TimelineLazyImport.update({
   id: '/timeline',
   path: '/timeline',
   getParentRoute: () => rootRoute,
-} as any)
+} as any).lazy(() => import('./routes/timeline.lazy').then((d) => d.Route))
 
-const CalendarRoute = CalendarImport.update({
+const CalendarLazyRoute = CalendarLazyImport.update({
   id: '/calendar',
   path: '/calendar',
   getParentRoute: () => rootRoute,
-} as any)
+} as any).lazy(() => import('./routes/calendar.lazy').then((d) => d.Route))
 
 const IndexRoute = IndexImport.update({
   id: '/',
@@ -50,14 +55,14 @@ declare module '@tanstack/react-router' {
       id: '/calendar'
       path: '/calendar'
       fullPath: '/calendar'
-      preLoaderRoute: typeof CalendarImport
+      preLoaderRoute: typeof CalendarLazyImport
       parentRoute: typeof rootRoute
     }
     '/timeline': {
       id: '/timeline'
       path: '/timeline'
       fullPath: '/timeline'
-      preLoaderRoute: typeof TimelineImport
+      preLoaderRoute: typeof TimelineLazyImport
       parentRoute: typeof rootRoute
     }
   }
@@ -67,21 +72,21 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/calendar': typeof CalendarRoute
-  '/timeline': typeof TimelineRoute
+  '/calendar': typeof CalendarLazyRoute
+  '/timeline': typeof TimelineLazyRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/calendar': typeof CalendarRoute
-  '/timeline': typeof TimelineRoute
+  '/calendar': typeof CalendarLazyRoute
+  '/timeline': typeof TimelineLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/calendar': typeof CalendarRoute
-  '/timeline': typeof TimelineRoute
+  '/calendar': typeof CalendarLazyRoute
+  '/timeline': typeof TimelineLazyRoute
 }
 
 export interface FileRouteTypes {
@@ -95,14 +100,14 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CalendarRoute: typeof CalendarRoute
-  TimelineRoute: typeof TimelineRoute
+  CalendarLazyRoute: typeof CalendarLazyRoute
+  TimelineLazyRoute: typeof TimelineLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CalendarRoute: CalendarRoute,
-  TimelineRoute: TimelineRoute,
+  CalendarLazyRoute: CalendarLazyRoute,
+  TimelineLazyRoute: TimelineLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -124,10 +129,10 @@ export const routeTree = rootRoute
       "filePath": "index.tsx"
     },
     "/calendar": {
-      "filePath": "calendar.tsx"
+      "filePath": "calendar.lazy.tsx"
     },
     "/timeline": {
-      "filePath": "timeline.tsx"
+      "filePath": "timeline.lazy.tsx"
     }
   }
 }
