@@ -1,6 +1,6 @@
 import { Address } from "./contact";
 import { TaskStatus } from "@/constants/task-status";
-import { TaskCategory } from "@/components/KanbanBoard/TaskFilter";
+import { TaskCategory } from "@/components/KanbanBoard/tasks/TaskFilter";
 
 export interface Task {
     id: string;

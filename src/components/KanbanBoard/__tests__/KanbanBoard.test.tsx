@@ -27,7 +27,6 @@ vi.mock("../schedules/ScheduleColumn", () => ({
     ))
 }));
 
-// Mock Suspense
 vi.mock("react", async () => {
     const actual = await vi.importActual("react");
     return {
