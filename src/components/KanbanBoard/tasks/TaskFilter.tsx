@@ -8,7 +8,7 @@ import {
 import { Check } from "lucide-react";
 import { useTaskFilter } from "@/hooks/filter/use-task-filter";
 import filterIcon from "@/assets/icons/filter.svg";
-import React from "react";
+import { Icon } from "@/components/common/Icon";
 
 export enum TaskCategory {
     IMPORTANT = "important",
@@ -31,7 +31,6 @@ const CATEGORY_OPTIONS: CategoryOption[] = [
 
 export function TaskFilter() {
     const { selectedCategories, toggleCategory } = useTaskFilter();
-
     const hasFilter = selectedCategories.length > 0;
 
     return (
@@ -45,16 +44,15 @@ export function TaskFilter() {
                         e.stopPropagation();
                     }}
                 >
-                    {React.createElement("img", {
-                        src: filterIcon,
-                        alt: "Filter",
-                        className: "w-6 h-6",
-                        style: {
+                    <Icon
+                        src={filterIcon}
+                        alt="Filter"
+                        style={{
                             filter: !hasFilter
                                 ? ""
                                 : "invert(40%) sepia(100%) saturate(1000%) hue-rotate(204deg) brightness(100%) contrast(100%)"
-                        }
-                    })}
+                        }}
+                    />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
