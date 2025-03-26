@@ -11,6 +11,7 @@ import { useOpenTaskMutation } from "@/hooks/api/tasks/use-open-task-mutation";
 import { ContactAddress } from "../common";
 import { TaskStatus } from "@/constants/task-status";
 import { useTranslation } from "react-i18next";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 import {
     Popover,
@@ -31,6 +32,7 @@ interface TaskHeaderProps {
     onComplete: () => void;
     isCompleted: boolean;
     allowEdit: boolean;
+    isLoading: boolean;
 }
 
 interface TaskHeaderActionsProps {
@@ -38,11 +40,14 @@ interface TaskHeaderActionsProps {
     onComplete: () => void;
     isCompleted: boolean;
     allowEdit: boolean;
+    isLoading: boolean;
 }
 
 export function TaskCard({ task, className }: TaskCardProps) {
-    const { mutate: deleteTask } = useDeleteTaskMutation();
-    const { mutate: toggleTask } = useToggleTaskStatusMutation();
+    const { mutate: deleteTask, isPending: isDeleting } =
+        useDeleteTaskMutation();
+    const { mutate: toggleTask, isPending: isToggling } =
+        useToggleTaskStatusMutation();
     const { mutate: openTask } = useOpenTaskMutation();
     const { t } = useTranslation();
 
@@ -60,6 +65,8 @@ export function TaskCard({ task, className }: TaskCardProps) {
         openTask(task.id);
     }, [openTask, task.id]);
 
+    const isLoading = isToggling || isDeleting;
+
     return (
         <Card
             className={cn(
@@ -67,10 +74,12 @@ export function TaskCard({ task, className }: TaskCardProps) {
                 "break-words h-full",
                 "group relative",
                 "cursor-pointer overflow-hidden",
+                isLoading && "opacity-50",
                 className
             )}
             onClick={handleClick}
         >
+            {isLoading && <LoadingSpinner overlay />}
             <div className="flex flex-col h-full">
                 <div className="flex-1 min-w-0 max-w-full">
                     <TaskHeader
@@ -79,6 +88,7 @@ export function TaskCard({ task, className }: TaskCardProps) {
                         onComplete={handleComplete}
                         isCompleted={task.status === TaskStatus.COMPLETED}
                         allowEdit={task.allowEdit ?? false}
+                        isLoading={isLoading}
                     />
                     <TaskAssignees assignees={task.assignee} />
                     <TaskDate date={task.date} status={task.status} />
@@ -94,7 +104,8 @@ function TaskHeader({
     onDelete,
     onComplete,
     isCompleted,
-    allowEdit
+    allowEdit,
+    isLoading
 }: TaskHeaderProps) {
     return (
         <div className="flex items-center">
@@ -104,6 +115,7 @@ function TaskHeader({
                 onComplete={onComplete}
                 isCompleted={isCompleted}
                 allowEdit={allowEdit}
+                isLoading={isLoading}
             />
         </div>
     );
@@ -113,12 +125,13 @@ function TaskHeaderActions({
     onDelete,
     onComplete,
     isCompleted,
-    allowEdit
+    allowEdit,
+    isLoading
 }: TaskHeaderActionsProps) {
     return (
         <div className="flex items-center gap-2 ml-2 shrink-0">
             <div className="flex items-center">
-                <CardDeleteButton onClick={onDelete} />
+                <CardDeleteButton onClick={onDelete} disabled={isLoading} />
             </div>
             <div
                 className="flex items-center"
@@ -128,7 +141,7 @@ function TaskHeaderActions({
                     checked={isCompleted}
                     onCheckedChange={onComplete}
                     className="w-5 h-5"
-                    disabled={!!allowEdit}
+                    disabled={!!allowEdit || isLoading}
                 />
             </div>
         </div>

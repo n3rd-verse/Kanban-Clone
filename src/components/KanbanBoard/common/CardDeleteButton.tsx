@@ -4,9 +4,14 @@ import trashIcon from "@/assets//icons/delete.svg";
 interface DeleteButtonProps {
     onClick: () => void;
     className?: string;
+    disabled?: boolean;
 }
 
-export function CardDeleteButton({ onClick, className }: DeleteButtonProps) {
+export function CardDeleteButton({
+    onClick,
+    className,
+    disabled
+}: DeleteButtonProps) {
     return (
         <button
             type="button"
@@ -15,6 +20,7 @@ export function CardDeleteButton({ onClick, className }: DeleteButtonProps) {
                 e.stopPropagation();
                 onClick();
             }}
+            disabled={disabled}
         >
             {React.createElement("img", {
                 src: trashIcon,
