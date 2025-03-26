@@ -4,15 +4,8 @@ import { KanbanBoard } from "../board";
 import { useResponsiveLayout } from "@/hooks/design/use-responsive-layout";
 import { QueryErrorBoundary } from "@/components/ErrorBoundary";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-vi.mock("react-i18next", () => ({
-    useTranslation: () => ({
-        t: (key: string) => key,
-        i18n: {
-            changeLanguage: vi.fn()
-        }
-    })
-}));
+import { I18nextProvider } from "react-i18next";
+import i18n from "@/test/setup";
 
 vi.mock("@/hooks/design/use-responsive-layout", () => ({
     useResponsiveLayout: vi.fn()
@@ -64,9 +57,11 @@ describe("KanbanBoard", () => {
 
     const createWrapper = () => {
         return ({ children }: { children: React.ReactNode }) => (
-            <QueryClientProvider client={queryClient}>
-                {children}
-            </QueryClientProvider>
+            <I18nextProvider i18n={i18n}>
+                <QueryClientProvider client={queryClient}>
+                    {children}
+                </QueryClientProvider>
+            </I18nextProvider>
         );
     };
 
