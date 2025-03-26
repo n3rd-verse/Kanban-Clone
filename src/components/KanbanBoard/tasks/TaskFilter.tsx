@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Check } from "lucide-react";
 import { useTaskFilter } from "@/hooks/filter/use-task-filter";
-import filterIcon from "../../assets/icons/filter.svg";
+import filterIcon from "@/assets/icons/filter.svg";
 import React from "react";
 
 export enum TaskCategory {
@@ -40,7 +40,7 @@ export function TaskFilter() {
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8"
+                    className="w-8 h-8"
                     onClick={(e) => {
                         e.stopPropagation();
                     }}
@@ -49,7 +49,11 @@ export function TaskFilter() {
                         src: filterIcon,
                         alt: "Filter",
                         className: "w-6 h-6",
-                        style: { filter: !hasFilter ? "" : "invert(40%) sepia(100%) saturate(1000%) hue-rotate(204deg) brightness(100%) contrast(100%)" }
+                        style: {
+                            filter: !hasFilter
+                                ? ""
+                                : "invert(40%) sepia(100%) saturate(1000%) hue-rotate(204deg) brightness(100%) contrast(100%)"
+                        }
                     })}
                 </Button>
             </DropdownMenuTrigger>

@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { QueryErrorBoundary } from "@/components/ErrorBoundary";
-import { TaskColumn } from "./TaskColumn";
-import { STATUS_CONFIG } from "./constants";
+import { TaskColumn } from "../tasks";
+import { STATUS_CONFIG } from "../utils/constants";
 import { ColumnSkeleton } from "./KanbanBoardSkeleton";
 
 interface BoardColumnsProps {

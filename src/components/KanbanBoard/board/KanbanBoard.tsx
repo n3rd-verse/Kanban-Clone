@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { TaskColumns } from "./BoardColumns";
-import { ScheduleColumn } from "./ScheduleColumn";
+import { ScheduleColumn } from "../schedules";
 import { useResponsiveLayout } from "@/hooks/design/use-responsive-layout";
 import { QueryErrorBoundary } from "@/components/ErrorBoundary";
 import { ScheduleColumnSkeleton } from "./KanbanBoardSkeleton";

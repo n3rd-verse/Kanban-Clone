@@ -5,7 +5,7 @@ import { TaskStatus } from "@/constants/task-status";
 import { useColumnVirtualizer, useVirtualizedTasks } from "@/hooks/virtualizer";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { TaskCard } from "./TaskCard";
-import { STATUS_CONFIG } from "./constants";
+import { STATUS_CONFIG } from "../utils/constants";
 // import { useWindowSize } from "@/hooks/design/use-window-size";
 // import { cn } from "@/lib/utils";
 

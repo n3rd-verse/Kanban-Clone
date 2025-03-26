@@ -3,7 +3,7 @@ import { renderHook } from "@testing-library/react";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useInfiniteTasks } from "@/hooks/api/tasks/use-infinite-tasks";
 import { useColumnVirtualizer } from "@/hooks/virtualizer/core/use-column-virtualizer";
-import { COLUMN_SIZES } from "@/components/KanbanBoard/constants";
+import { COLUMN_SIZES } from "@/components/KanbanBoard/utils/constants";
 import { TaskStatus } from "@/constants/task-status";
 import { useVirtualizedTasks } from "../use-virtualized-tasks";
 

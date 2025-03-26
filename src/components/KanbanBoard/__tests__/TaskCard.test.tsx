@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { TaskCard } from "../TaskCard";
+import { TaskCard } from "../tasks";
 import { useDeleteTaskMutation } from "@/hooks/api/tasks/use-delete-task-mutation";
 import { useToggleTaskStatusMutation } from "@/hooks/api/tasks/use-toggle-task-status-mutation";
 import { useOpenTaskMutation } from "@/hooks/api/tasks/use-open-task-mutation";

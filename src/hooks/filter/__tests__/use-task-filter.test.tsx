@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useTaskFilter } from "../use-task-filter";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { TaskCategory } from "@/components/KanbanBoard/TaskFilter";
+import { TaskCategory } from "@/components/KanbanBoard/tasks";
 
 vi.mock("@/routes", () => ({
     Route: {

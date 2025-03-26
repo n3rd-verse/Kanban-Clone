@@ -1,10 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { KanbanBoard } from "../KanbanBoard";
+import { KanbanBoard, TaskColumns } from "../board";
 import { useResponsiveLayout } from "@/hooks/design/use-responsive-layout";
 import { QueryErrorBoundary } from "@/components/ErrorBoundary";
-import { TaskColumns } from "../BoardColumns";
-import { ScheduleColumn } from "../ScheduleColumn";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 vi.mock("@/hooks/design/use-responsive-layout", () => ({

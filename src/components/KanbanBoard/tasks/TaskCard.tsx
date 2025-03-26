@@ -2,13 +2,13 @@ import type { Task } from "@/types/task";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { format } from "date-fns";
-import { CardDeleteButton } from "./CardDeleteButton";
+import { CardDeleteButton } from "../common";
 import { useDeleteTaskMutation } from "@/hooks/api/tasks/use-delete-task-mutation";
 import { useToggleTaskStatusMutation } from "@/hooks/api/tasks/use-toggle-task-status-mutation";
 import React, { useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { useOpenTaskMutation } from "@/hooks/api/tasks/use-open-task-mutation";
-import { ContactAddress } from "./ContactAddress";
+import { ContactAddress } from "../common";
 import { TaskStatus } from "@/constants/task-status";
 import { useTranslation } from "react-i18next";
 

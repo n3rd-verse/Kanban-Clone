@@ -12,7 +12,7 @@ import { CgBoard } from "react-icons/cg";
 import { CiCalendar, CiViewTimeline } from "react-icons/ci";
 import { useTranslation } from "react-i18next";
 import { Toaster } from "@/components/ui/toaster";
-import { TaskFilter } from "@/components/KanbanBoard/TaskFilter";
+import { TaskFilter } from "@/components/KanbanBoard/tasks";
 
 const TanStackRouterDevtools =
     process.env.NODE_ENV === "production"
@@ -55,7 +55,7 @@ function RootComponent() {
         <div className="min-h-screen">
             <main>
                 <div className="pt-4">
-                    <div className="flex justify-between items-center ml-8 mr-8 border-gray-200 border-b h-10">
+                    <div className="flex justify-between items-center mr-8 ml-8 border-gray-200 border-b h-10">
                         <div className="flex items-center">
                             {views.map((view, index) => {
                                 const Icon = view.icon;
