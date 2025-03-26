@@ -12,12 +12,18 @@ export function KanbanBoard() {
         <div className="min-h-screen">
             <div className="grid grid-cols-[minmax(0,1156fr)_minmax(0,377fr)]">
                 <TaskColumns maxVisibleTasks={maxVisibleTasks} width={width} />
-                <QueryErrorBoundary>
-                    <Suspense fallback={<ScheduleColumnSkeleton />}>
-                        <ScheduleColumn />
-                    </Suspense>
-                </QueryErrorBoundary>
+                <ScheduleColumnWrapper />
             </div>
         </div>
+    );
+}
+
+function ScheduleColumnWrapper() {
+    return (
+        <QueryErrorBoundary>
+            <Suspense fallback={<ScheduleColumnSkeleton />}>
+                <ScheduleColumn />
+            </Suspense>
+        </QueryErrorBoundary>
     );
 }

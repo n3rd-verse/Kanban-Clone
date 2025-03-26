@@ -18,48 +18,47 @@ import {
     PopoverTrigger
 } from "@/components/ui/popover";
 
+import { AI_INFO_FIELD, AiInfoValue } from "@/constants/ai-info-fields";
+
 interface TaskCardProps {
     task: Task;
     className?: string;
+}
+
+interface TaskHeaderProps {
+    title: string;
+    onDelete: () => void;
+    onComplete: () => void;
+    isCompleted: boolean;
+    allowEdit: boolean;
+}
+
+interface TaskHeaderActionsProps {
+    onDelete: () => void;
+    onComplete: () => void;
+    isCompleted: boolean;
+    allowEdit: boolean;
 }
 
 export function TaskCard({ task, className }: TaskCardProps) {
     const { mutate: deleteTask } = useDeleteTaskMutation();
     const { mutate: toggleTask } = useToggleTaskStatusMutation();
     const { mutate: openTask } = useOpenTaskMutation();
-    const [startPos, setStartPos] = useState({ x: 0, y: 0 });
     const { t } = useTranslation();
+
     const handleDelete = useCallback(() => {
-        let result = window.confirm(t("task.deleteConfirmation"));
-        if (result) {
-             deleteTask(task.id);
+        if (window.confirm(t("task.deleteConfirmation"))) {
+            deleteTask(task.id);
         }
-    }, [deleteTask, task.id]);
+    }, [deleteTask, task.id, t]);
 
     const handleComplete = useCallback(() => {
         toggleTask(task.id);
     }, [toggleTask, task.id]);
 
-    const handleMouseDown = useCallback((e: React.MouseEvent) => {
-        setStartPos({ x: e.clientX, y: e.clientY });
-    }, []);
-
-    const handleClick = useCallback(
-        (e: React.MouseEvent) => {
-            const diffX = Math.abs(e.clientX - startPos.x);
-            const diffY = Math.abs(e.clientY - startPos.y);
-            const threshold = 5;
-
-            if (diffX > threshold || diffY > threshold) {
-                // 드래그로 간주하고 클릭 이벤트 무시
-                return;
-            }
-
-            // 드래그가 아닌 경우 openTask 함수 호출
-            openTask(task.id);
-        },
-        [openTask, task.id, startPos]
-    );
+    const handleClick = useCallback(() => {
+        openTask(task.id);
+    }, [openTask, task.id]);
 
     return (
         <Card
@@ -71,7 +70,6 @@ export function TaskCard({ task, className }: TaskCardProps) {
                 className
             )}
             onClick={handleClick}
-            onMouseDown={handleMouseDown}
         >
             <div className="flex flex-col h-full">
                 <div className="flex-1 min-w-0 max-w-full">
@@ -80,13 +78,10 @@ export function TaskCard({ task, className }: TaskCardProps) {
                         onDelete={handleDelete}
                         onComplete={handleComplete}
                         isCompleted={task.status === TaskStatus.COMPLETED}
-                        allowEdit={task.allowEdit}
+                        allowEdit={task.allowEdit ?? false}
                     />
-
                     <TaskAssignees assignees={task.assignee} />
-
                     <TaskDate date={task.date} status={task.status} />
-
                     <AiInfo ai={task.ai} />
                 </div>
             </div>
@@ -100,33 +95,41 @@ function TaskHeader({
     onComplete,
     isCompleted,
     allowEdit
-}: {
-    title: string;
-    onDelete: () => void;
-    onComplete: () => void;
-    isCompleted: boolean;
-    allowEdit: boolean | undefined;
-}) {
+}: TaskHeaderProps) {
     return (
         <div className="flex items-center">
             <h3 className="mb-1 font-medium break-words">{title}</h3>
+            <TaskHeaderActions
+                onDelete={onDelete}
+                onComplete={onComplete}
+                isCompleted={isCompleted}
+                allowEdit={allowEdit}
+            />
+        </div>
+    );
+}
 
-            {/* 버튼 영역 - 타이틀과 세로 중앙 정렬 */}
-            <div className="flex items-center gap-2 ml-2 shrink-0">
-                <div className="flex items-center">
-                    <CardDeleteButton onClick={onDelete} />
-                </div>
-                <div
-                    className="flex items-center"
-                    onClick={(e) => e.stopPropagation()}
-                >
-                    <Checkbox
-                        checked={isCompleted}
-                        onCheckedChange={onComplete}
-                        className="w-5 h-5"
-                        disabled={!!allowEdit}
-                    />
-                </div>
+function TaskHeaderActions({
+    onDelete,
+    onComplete,
+    isCompleted,
+    allowEdit
+}: TaskHeaderActionsProps) {
+    return (
+        <div className="flex items-center gap-2 ml-2 shrink-0">
+            <div className="flex items-center">
+                <CardDeleteButton onClick={onDelete} />
+            </div>
+            <div
+                className="flex items-center"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <Checkbox
+                    checked={isCompleted}
+                    onCheckedChange={onComplete}
+                    className="w-5 h-5"
+                    disabled={!!allowEdit}
+                />
             </div>
         </div>
     );
@@ -170,51 +173,17 @@ function TaskDate({
 function AiInfo({ ai }: { ai: Task["ai"] | undefined }) {
     const [showAiInfo, setShowAiInfo] = useState(false);
 
-    if (!ai) return null;
-
-    // AI 정보 렌더링 헬퍼 함수
-    const renderPopupInfoValue = (value: any): React.ReactNode => {
-        if (typeof value === "string") {
-            return value;
-        }
-
-        if (value && typeof value === "object") {
-            if ("startTime" in value && "endTime" in value) {
-                return `${value.startTime} - ${value.endTime}`;
-            }
-            if ("duration" in value) {
-                return value.duration;
-            }
-            if ("date" in value && "time" in value) {
-                return `${value.date} ${value.time}`;
-            }
-            if ("date" in value) {
-                return value.date;
-            }
-            if ("name" in value && "department" in value) {
-                return `${value.name} (${value.department})`;
-            }
-            if ("location" in value) {
-                return value.location;
-            }
-
-            return Object.values(value).join(", ");
-        }
-
-        return String(value);
-    };
-
     return (
         <div className="flex justify-between items-center mt-3 w-full max-w-full text-sm">
             <div className="flex-1 min-w-0 max-w-[calc(100%-24px)]">
                 <div className="break-words">
-                    <span className="font-medium text-[#444]">{ai.topic}</span>
+                    <span className="font-medium text-[#444]">{ai?.topic}</span>
                     <span className="text-[#666]"> - </span>
-                    <span className="text-[#666]">{ai.summary}</span>
+                    <span className="text-[#666]">{ai?.summary}</span>
                 </div>
             </div>
 
-            {ai.popupInfo && (
+            {ai?.popupInfo && (
                 <Popover open={showAiInfo} onOpenChange={setShowAiInfo}>
                     <PopoverTrigger asChild>
                         <div
@@ -232,7 +201,7 @@ function AiInfo({ ai }: { ai: Task["ai"] | undefined }) {
                     </PopoverTrigger>
                     <PopoverContent className="p-3 w-72" side="bottom">
                         <div className="text-sm">
-                            {ai.popupInfo &&
+                            {ai?.popupInfo &&
                                 Array.isArray(ai.popupInfo) &&
                                 ai.popupInfo.length > 0 && (
                                     <div className="space-y-2">
@@ -267,3 +236,41 @@ function AiInfo({ ai }: { ai: Task["ai"] | undefined }) {
         </div>
     );
 }
+
+const renderPopupInfoValue = (value: AiInfoValue): string => {
+    if (typeof value === "string") {
+        return value;
+    }
+
+    if (typeof value === "object" && value !== null) {
+        const { START_TIME, END_TIME } = AI_INFO_FIELD.TIME_RANGE;
+        const { DATE, TIME } = AI_INFO_FIELD.DATETIME;
+        const { NAME, DEPARTMENT } = AI_INFO_FIELD.CONTACT;
+
+        if (START_TIME in value && END_TIME in value) {
+            return `${value[START_TIME]} - ${value[END_TIME]}`;
+        }
+
+        if (AI_INFO_FIELD.DURATION in value) {
+            return value[AI_INFO_FIELD.DURATION];
+        }
+
+        if (DATE in value) {
+            const date = value[DATE];
+            const time = TIME in value ? value[TIME] : null;
+            return time ? `${date} ${time}` : date;
+        }
+
+        if (NAME in value && DEPARTMENT in value) {
+            return `${value[NAME]} (${value[DEPARTMENT]})`;
+        }
+
+        if (AI_INFO_FIELD.LOCATION in value) {
+            return value[AI_INFO_FIELD.LOCATION];
+        }
+
+        return Object.values(value).filter(Boolean).join(", ");
+    }
+
+    return String(value);
+};

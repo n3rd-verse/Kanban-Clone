@@ -15,6 +15,23 @@ interface TaskColumnProps {
     width: number;
 }
 
+interface TaskColumnContentProps {
+    columnRef: RefObject<HTMLDivElement>;
+    loadMoreRef: RefObject<HTMLDivElement>;
+    tasks: Task[];
+    virtualizer: ReturnType<typeof useColumnVirtualizer>;
+    isFetchingNextPage: boolean;
+}
+
+interface TaskColumnErrorProps {
+    error: Error;
+}
+
+interface ColumnHeaderProps {
+    status: TaskStatus;
+    count: number;
+}
+
 export function TaskColumn({
     status,
     maxVisibleTasks = 10,
@@ -40,42 +57,57 @@ export function TaskColumn({
         width
     });
 
-    const { t } = useTranslation();
-
     if (error) {
-        return (
-            <div className="p-4 text-red-500">
-                Error: {error?.message || t("errors.failedToLoadTasks")}
-            </div>
-        );
+        return <TaskColumnError error={error} />;
     }
 
     return (
         <div className="flex flex-col gap-2.5">
             <ColumnHeader status={status} count={tasks.length} />
-            <div
-                ref={columnRef}
-                className="px-0 overflow-visible"
-                style={{
-                    height: "auto",
-                    minHeight: "auto"
-                }}
-            >
-                <VirtualizedTaskList tasks={tasks} virtualizer={virtualizer} />
-                <div ref={loadMoreRef} className="h-5" />
-                {isFetchingNextPage && <LoadingSpinner className="mt-4" />}
-            </div>
+            <TaskColumnContent
+                columnRef={columnRef}
+                loadMoreRef={loadMoreRef}
+                tasks={tasks}
+                virtualizer={virtualizer}
+                isFetchingNextPage={isFetchingNextPage}
+            />
         </div>
     );
 }
 
-function ColumnHeader({
-    status,
-    count
-}: {
-    status: TaskStatus;
-    count: number;
-}) {
+function TaskColumnContent({
+    columnRef,
+    loadMoreRef,
+    tasks,
+    virtualizer,
+    isFetchingNextPage
+}: TaskColumnContentProps) {
+    return (
+        <div
+            ref={columnRef}
+            className="px-0 overflow-visible"
+            style={{
+                height: "auto",
+                minHeight: "auto"
+            }}
+        >
+            <VirtualizedTaskList tasks={tasks} virtualizer={virtualizer} />
+            <div ref={loadMoreRef} className="h-5" />
+            {isFetchingNextPage && <LoadingSpinner className="mt-4" />}
+        </div>
+    );
+}
+
+function TaskColumnError({ error }: TaskColumnErrorProps) {
+    const { t } = useTranslation();
+    return (
+        <div className="p-4 text-red-500">
+            Error: {error?.message || t("errors.failedToLoadTasks")}
+        </div>
+    );
+}
+
+function ColumnHeader({ status, count }: ColumnHeaderProps) {
     const { t } = useTranslation();
     const statusConfig = STATUS_CONFIG.find((config) => config.id === status);
 
@@ -91,13 +123,12 @@ function ColumnHeader({
     );
 }
 
-function VirtualizedTaskList({
-    tasks,
-    virtualizer
-}: {
+interface VirtualizedTaskListProps {
     tasks: Task[];
     virtualizer: ReturnType<typeof useColumnVirtualizer>;
-}) {
+}
+
+function VirtualizedTaskList({ tasks, virtualizer }: VirtualizedTaskListProps) {
     return (
         <div
             className="relative w-full"

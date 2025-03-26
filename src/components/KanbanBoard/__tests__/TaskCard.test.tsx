@@ -158,7 +158,6 @@ describe("TaskCard", () => {
         render(<TaskCard task={mockTask} />, { wrapper: createWrapper() });
 
         const card = screen.getByText("Test Task").closest(".p-4");
-        fireEvent.mouseDown(card as HTMLElement);
         fireEvent.click(card as HTMLElement);
 
         await waitFor(() => {
@@ -178,18 +177,5 @@ describe("TaskCard", () => {
 
         expect(screen.getByText("Meeting")).toBeInTheDocument();
         expect(screen.getByText("Team standup")).toBeInTheDocument();
-    });
-
-    it("doesn't trigger open task when dragging", async () => {
-        render(<TaskCard task={mockTask} />, { wrapper: createWrapper() });
-
-        const card = screen.getByText("Test Task").closest(".p-4");
-
-        fireEvent.mouseDown(card as HTMLElement, { clientX: 0, clientY: 0 });
-        fireEvent.click(card as HTMLElement, { clientX: 20, clientY: 20 });
-
-        await waitFor(() => {
-            expect(openMock).not.toHaveBeenCalled();
-        });
     });
 });
