@@ -1,6 +1,6 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { Route } from "@/routes";
-import { TaskCategory } from "@/components/KanbanBoard/TaskFilter";
+import { TaskCategory } from "@/components/KanbanBoard/tasks/TaskFilter";
 
 export function useTaskFilter() {
     const search = useSearch({ from: Route.fullPath }) as {
