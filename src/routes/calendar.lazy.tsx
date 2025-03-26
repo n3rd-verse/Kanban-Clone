@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createLazyFileRoute } from "@tanstack/react-router";
 import { RouteErrorComponent } from "@/components/ErrorComponent";
-export const Route = createFileRoute("/calendar")({
+
+export const Route = createLazyFileRoute("/calendar")({
     component: RouteComponent,
     errorComponent: RouteErrorComponent
 });
