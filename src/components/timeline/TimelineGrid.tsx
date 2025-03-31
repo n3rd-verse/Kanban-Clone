@@ -27,9 +27,10 @@ function TimelineGridComponent({
                     style={{
                         width: `${dayColumnWidth}px`,
                         minWidth: `${dayColumnWidth}px`,
-                        scrollSnapAlign: "start"
+                        scrollSnapAlign: "start",
+                        height: "100%"
                     }}
-                    className={cn("h-[150px]", isWeekendDay && "bg-[#F7F7F7]")}
+                    className={cn("h-full", isWeekendDay && "bg-[#F7F7F7]")}
                 />
             );
         });
@@ -37,13 +38,15 @@ function TimelineGridComponent({
 
     const gridRows = useMemo(() => {
         return rows.map((row) => (
-            <div key={row} className="flex">
+            <div key={row} className="flex flex-1">
                 {renderDateCell}
             </div>
         ));
     }, [rows, renderDateCell]);
 
-    return <div className="flex flex-col gap-0">{gridRows}</div>;
+    return (
+        <div className="flex flex-col h-[calc(100vh-130px)]">{gridRows}</div>
+    );
 }
 
 export const TimelineGrid = memo(TimelineGridComponent);

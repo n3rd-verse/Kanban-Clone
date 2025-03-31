@@ -6,6 +6,7 @@ interface OMNative {
     openTask(taskId: string): Promise<void>;
     openContact(name?: string, email: string): Promise<void>;
     openSchedule(scheduleId: string): Promise<void>;
+    deleteSchedule(scheduleId: string, callback: (success: boolean) => void): boolean;
     getSchedules(callback: (json: string) => void): boolean;
 }
 

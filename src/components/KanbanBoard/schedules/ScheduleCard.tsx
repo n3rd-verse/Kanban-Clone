@@ -4,7 +4,7 @@ import type { Schedule } from "@/types/schedule";
 import { cn } from "@/lib/utils";
 import { useOpenScheduleMutation } from "@/hooks/api/schedules/use-open-schedule-mutation";
 import React from "react";
-import { ContactAddress } from "./ContactAddress";
+import { ContactAddress } from "../common";
 
 interface ScheduleCardProps {
     schedule: Schedule;

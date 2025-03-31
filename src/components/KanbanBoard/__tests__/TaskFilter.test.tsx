@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { TaskFilter, TaskCategory } from "../TaskFilter";
+import { TaskFilter, TaskCategory } from "../tasks";
 import { useTaskFilter } from "@/hooks/filter/use-task-filter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 

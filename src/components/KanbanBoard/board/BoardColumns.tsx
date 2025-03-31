@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { QueryErrorBoundary } from "@/components/ErrorBoundary";
-import { TaskColumn } from "./TaskColumn";
-import { STATUS_CONFIG } from "./constants";
+import { TaskColumn } from "../tasks";
+import { STATUS_CONFIG } from "../utils/constants";
 import { ColumnSkeleton } from "./KanbanBoardSkeleton";
 
 interface BoardColumnsProps {
@@ -11,7 +11,10 @@ interface BoardColumnsProps {
 
 export function TaskColumns({ maxVisibleTasks, width }: BoardColumnsProps) {
     return (
-        <div className="content-start gap-2.5 grid grid-cols-4">
+        <div
+            className="content-start gap-2.5 grid grid-cols-4"
+            data-testid="task-columns"
+        >
             {STATUS_CONFIG.map(({ id }) => (
                 <QueryErrorBoundary key={id}>
                     <Suspense fallback={<ColumnSkeleton />}>

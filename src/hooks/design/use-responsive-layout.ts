@@ -1,6 +1,6 @@
-import { useMemo } from "react";
+// import { useMemo } from "react";
 import { useWindowSize } from "@/hooks/design/use-window-size";
-import { COLUMN_SIZES } from "@/components/KanbanBoard/constants";
+import { COLUMN_SIZES } from "@/components/KanbanBoard/utils/constants";
 
 export function useResponsiveLayout() {
     const { width } = useWindowSize();

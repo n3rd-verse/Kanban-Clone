@@ -24,7 +24,10 @@ export function ScheduleColumn() {
     const scheduleGroups = useScheduleGroups();
 
     return (
-        <div className="ml-8 border-gray-200 border-l">
+        <div
+            className="ml-8 border-gray-200 border-l"
+            data-testid="schedule-column"
+        >
             {scheduleGroups.map((dayInfo) => (
                 <ScheduleGroup key={dayInfo.id} dayInfo={dayInfo} />
             ))}

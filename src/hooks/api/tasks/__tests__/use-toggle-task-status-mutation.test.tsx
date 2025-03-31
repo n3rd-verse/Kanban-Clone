@@ -4,6 +4,8 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useToggleTaskStatusMutation } from "../use-toggle-task-status-mutation";
 import { toggleTaskStatus } from "@/services/tasks";
 import { ERROR_MESSAGES, TOAST_MESSAGES } from "@/constants/messages";
+import { I18nextProvider } from "react-i18next";
+import i18n from "@/test/setup";
 
 vi.mock("@/services/tasks", () => ({
     toggleTaskStatus: vi.fn()
@@ -66,11 +68,15 @@ describe("useToggleTaskStatusMutation", () => {
         vi.resetAllMocks();
     });
 
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <QueryClientProvider client={queryClient}>
-            {children}
-        </QueryClientProvider>
-    );
+    const createWrapper = () => {
+        return ({ children }: { children: React.ReactNode }) => (
+            <I18nextProvider i18n={i18n}>
+                <QueryClientProvider client={queryClient}>
+                    {children}
+                </QueryClientProvider>
+            </I18nextProvider>
+        );
+    };
 
     it("should update task status optimistically", async () => {
         const updatedTask = {
@@ -82,7 +88,7 @@ describe("useToggleTaskStatusMutation", () => {
         (toggleTaskStatus as any).mockResolvedValue(updatedTask);
 
         const { result } = renderHook(() => useToggleTaskStatusMutation(), {
-            wrapper
+            wrapper: createWrapper()
         });
 
         await act(async () => {
@@ -104,7 +110,7 @@ describe("useToggleTaskStatusMutation", () => {
         (toggleTaskStatus as any).mockRejectedValue(error);
 
         const { result } = renderHook(() => useToggleTaskStatusMutation(), {
-            wrapper
+            wrapper: createWrapper()
         });
 
         await act(async () => {

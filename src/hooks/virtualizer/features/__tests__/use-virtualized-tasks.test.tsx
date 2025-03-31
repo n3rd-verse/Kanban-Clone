@@ -3,7 +3,7 @@ import { renderHook } from "@testing-library/react";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useInfiniteTasks } from "@/hooks/api/tasks/use-infinite-tasks";
 import { useColumnVirtualizer } from "@/hooks/virtualizer/core/use-column-virtualizer";
-import { COLUMN_SIZES } from "@/components/KanbanBoard/constants";
+import { COLUMN_SIZES } from "@/components/KanbanBoard/utils/constants";
 import { TaskStatus } from "@/constants/task-status";
 import { useVirtualizedTasks } from "../use-virtualized-tasks";
 
@@ -15,8 +15,15 @@ vi.mock("@/hooks/virtualizer/core/use-column-virtualizer", () => ({
     useColumnVirtualizer: vi.fn()
 }));
 
-vi.mock("@/hooks/core/use-intersection-observer", () => ({
-    useIntersectionObserver: vi.fn()
+vi.mock("@/routes", () => ({
+    Route: {
+        fullPath: "/"
+    }
+}));
+
+vi.mock("@tanstack/react-router", () => ({
+    useNavigate: vi.fn(),
+    useSearch: vi.fn().mockReturnValue({ categories: [] })
 }));
 
 describe("useVirtualizedTasks", () => {
@@ -72,11 +79,7 @@ describe("useVirtualizedTasks", () => {
 
         (useInfiniteTasks as any).mockReturnValue({
             data: {
-                pages: [
-                    {
-                        tasks: mockTasks
-                    }
-                ],
+                pages: [{ tasks: mockTasks }],
                 pageParams: [0]
             },
             fetchNextPage: vi.fn(),
@@ -146,7 +149,8 @@ describe("useVirtualizedTasks", () => {
         renderHook(() => useVirtualizedTasks(props), { wrapper });
 
         expect(useInfiniteTasks).toHaveBeenCalledWith({
-            status: [props.status]
+            status: [props.status],
+            categories: []
         });
     });
 

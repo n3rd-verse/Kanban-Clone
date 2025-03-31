@@ -1,7 +1,7 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { RefObject, useCallback } from "react";
 import { Task } from "@/types/task";
-import { VIRTUALIZATION_CONFIG } from "@/components/KanbanBoard/constants";
+import { VIRTUALIZATION_CONFIG } from "@/components/KanbanBoard/utils/constants";
 
 interface UseColumnVirtualizerProps {
     tasks: Task[];
