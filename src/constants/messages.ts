@@ -6,7 +6,8 @@ export const ERROR_MESSAGES = {
     TASK_NOT_FOUND: "Task not found",
     FAILED_TO_LOAD_TASKS: "Failed to load tasks",
     FAILED_TO_UPDATE_TASK: "Failed to update task status",
-    FAILED_TO_DELETE_TASK: "Failed to delete task"
+    FAILED_TO_DELETE_TASK: "Failed to delete task",
+    FAILED_TO_DELETE_EVENT: "Failed to delete event"
 };
 
 /**
