@@ -47,6 +47,9 @@ const resources = {
             },
             task: {
                 deleteConfirmation: "이 작업을 삭제하시겠습니까?"
+            },
+            event: { 
+                deleteConfirmation: "이 이벤트를 삭제하시겠습니까?"
             }
         }
     },
@@ -95,6 +98,9 @@ const resources = {
             },
             task: {
                 deleteConfirmation: "Are you sure you want to delete this task?"
+            },
+            event: { 
+                deleteConfirmation: "Are you sure you want to delete this event?"
             }
         }
     }
