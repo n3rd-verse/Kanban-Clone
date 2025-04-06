@@ -62,6 +62,8 @@ export function useDeleteTaskMutation() {
                         ? err.message
                         : t("errors.failedToDeleteTask")
             });
+
+            console.error("Failed to delete task:", err);
         }
     });
 }
