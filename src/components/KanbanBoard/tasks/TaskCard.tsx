@@ -108,7 +108,7 @@ function TaskHeader({
     isLoading
 }: TaskHeaderProps) {
     return (
-        <div className="flex items-center">
+        <div className="flex items-center justify-between">
             <h3 className="mb-1 font-medium break-words">{title}</h3>
             <TaskHeaderActions
                 onDelete={onDelete}

@@ -6,6 +6,7 @@ import { COLUMN_SIZES } from "@/components/KanbanBoard/utils/constants";
 import { useSearch } from "@tanstack/react-router";
 import { Route } from "@/routes/";
 import { useTaskFilter } from "@/hooks/filter/use-task-filter";
+import { useIntersectionObserver } from "@/hooks/core/use-intersection-observer";
 
 interface UseVirtualizedTasksProps {
     status: TaskStatus;
@@ -25,12 +26,19 @@ export function useVirtualizedTasks({
     const { selectedCategories } = useTaskFilter();
     const { data, isFetchingNextPage, hasNextPage, fetchNextPage, error } =
         useInfiniteTasks({
-            status: [status],
+            status: [status], // 각 column의 status에 맞는 데이터만 fetch
             categories: selectedCategories
         });
 
     const tasks = data?.pages.flatMap((p) => p.tasks) ?? [];
     const virtualizer = useColumnVirtualizer({ tasks, columnRef });
+
+    // Setup infinite scrolling
+    useIntersectionObserver({
+        target: loadMoreRef,
+        onIntersect: fetchNextPage,
+        enabled: hasNextPage && !isFetchingNextPage
+    });
 
     const columnStyle = {
         height:
@@ -39,7 +47,6 @@ export function useVirtualizedTasks({
                 : `${Math.min(
                       maxVisibleTasks * COLUMN_SIZES.BASE_TASK_HEIGHT +
                           COLUMN_SIZES.COLUMN_PADDING,
-                      // 화면 높이의 60%로 제한하여 아래 컬럼이 보이도록 함
                       window.innerHeight * 0.6
                   )}px`,
         position: "relative" as const
@@ -47,34 +54,8 @@ export function useVirtualizedTasks({
 
     const scrollbarClass =
         width >= COLUMN_SIZES.DESKTOP_BREAKPOINT
-            ? "overflow-visible"
-            : "overflow-y-auto";
-
-    // Set up the intersection observer to load more items when scrolling to bottom
-    const setupIntersectionObserver = useCallback(() => {
-        if (!loadMoreRef.current) return;
-
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (
-                    entries[0].isIntersecting &&
-                    hasNextPage &&
-                    !isFetchingNextPage
-                ) {
-                    fetchNextPage();
-                }
-            },
-            { rootMargin: "200px", threshold: 0.1 }
-        );
-
-        observer.observe(loadMoreRef.current);
-        return () => observer.disconnect();
-    }, [hasNextPage, isFetchingNextPage, fetchNextPage, loadMoreRef]);
-
-    useEffect(() => {
-        const cleanup = setupIntersectionObserver();
-        return cleanup;
-    }, [setupIntersectionObserver]);
+            ? ""
+            : "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400";
 
     return {
         tasks,
@@ -82,7 +63,8 @@ export function useVirtualizedTasks({
         columnStyle,
         scrollbarClass,
         isFetchingNextPage,
-        error,
-        hasNextPage
+        hasNextPage,
+        fetchNextPage,
+        error
     };
 }

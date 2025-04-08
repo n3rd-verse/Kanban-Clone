@@ -43,7 +43,7 @@ export function TaskColumn({
     ) as RefObject<HTMLDivElement>;
 
     const {
-        tasks,
+        tasks: allTasks,
         virtualizer,
         columnStyle,
         scrollbarClass,
@@ -56,6 +56,9 @@ export function TaskColumn({
         maxVisibleTasks,
         width
     });
+
+    // Filter tasks based on current column status
+    const tasks = allTasks.filter((task) => task.status === status);
 
     if (error) {
         return <TaskColumnError error={error} />;

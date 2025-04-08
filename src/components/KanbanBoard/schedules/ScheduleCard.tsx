@@ -18,7 +18,8 @@ export function ScheduleCard({ schedule }: ScheduleCardProps) {
     const opacity = isPast ? "opacity-50" : "";
     const showDay = schedule.startTime != null || schedule.endTime != null;
     const { mutate: openSchedule } = useOpenScheduleMutation();
-    const { mutate: deleteSchedule, isPending: isDeleting } = useDeleteScheduleMutation();
+    const { mutate: deleteSchedule, isPending: isDeleting } =
+        useDeleteScheduleMutation();
     const { t } = useTranslation();
     const [startPos, setStartPos] = useState({ x: 0, y: 0 });
 
@@ -72,16 +73,23 @@ export function ScheduleCard({ schedule }: ScheduleCardProps) {
                 </div>
             )}
 
-            <div className="flex items-center justify-between">
-                <h3 className={cn(
-                    "font-medium",
-                    !schedule.attendees.length && !schedule.location
-                        ? "mb-0"
-                        : "mb-2"
-                )}>{schedule.title}</h3>
+            <div className="flex justify-between items-center">
+                <h3
+                    className={cn(
+                        "font-medium",
+                        !schedule.attendees.length && !schedule.location
+                            ? "mb-0"
+                            : "mb-2"
+                    )}
+                >
+                    {schedule.title}
+                </h3>
                 <div className="flex items-center gap-2 ml-2 shrink-0">
                     <div className="flex items-center">
-                        <CardDeleteButton onClick={handleDelete} disabled={isDeleting} />
+                        <CardDeleteButton
+                            onClick={handleDelete}
+                            disabled={isDeleting}
+                        />
                     </div>
                 </div>
             </div>
@@ -90,7 +98,7 @@ export function ScheduleCard({ schedule }: ScheduleCardProps) {
                 <div className="flex flex-shrink-0 items-center gap-1 min-w-0">
                     {schedule.attendees.map((address, index) => (
                         <ContactAddress
-                            key={address.email}
+                            key={`${address.email || address.name}-${index}`}
                             address={address}
                             showSeparator={
                                 index < schedule.attendees.length - 1
