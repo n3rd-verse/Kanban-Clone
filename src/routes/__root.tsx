@@ -85,8 +85,10 @@ function RootComponent() {
                         {isRootRoute && <TaskFilter />}
                     </div>
                 </div>
-                <div className="px-8 pt-4">
-                    <Outlet />
+                <div className="group">
+                    <div className="px-8 pt-4 h-[calc(100vh-80px)] overflow-y-auto scrollbar-hover scrollbar-gutter-stable">
+                        <Outlet />
+                    </div>
                 </div>
             </main>
             <Toaster />
