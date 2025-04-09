@@ -137,6 +137,11 @@ export async function fetchTasks(
 }
 
 export async function toggleTaskStatus(taskId: string): Promise<Task> {
+    // // 에러 테스트용
+    // await new Promise((_, reject) =>
+    //     setTimeout(() => reject(new Error("test")), 1000)
+    // );
+
     const taskIndex = tasks.findIndex((t) => t.id === taskId);
     if (taskIndex === -1) throw new Error(ERROR_MESSAGES.TASK_NOT_FOUND);
 
@@ -171,6 +176,11 @@ export async function toggleTaskStatus(taskId: string): Promise<Task> {
 }
 
 export async function deleteTask(taskId: string): Promise<string> {
+    // // 에러 테스트용
+    // await new Promise((_, reject) =>
+    //     setTimeout(() => reject(new Error("test")), 1000)
+    // );
+
     const success = await new Promise((resolve) => {
         window.OMNative.deleteTask(taskId, (success) => {
             resolve(success);
