@@ -1,23 +1,17 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useOptimisticMutation } from "../core/use-optimistic-mutation";
 import { queryKeys } from "@/lib/query-keys";
 import { deleteSchedule } from "@/services/schedules";
-import { useToast } from "@/components/ui/use-toast";
 import { useTranslation } from "react-i18next";
 import { ScheduleDay } from "@/types/schedule";
 
 export function useDeleteScheduleMutation() {
-    const queryClient = useQueryClient();
-    const { toast } = useToast();
     const { t } = useTranslation();
 
-    return useMutation({
+    return useOptimisticMutation({
         mutationFn: deleteSchedule,
-        onMutate: async (scheduleId: string) => {
-            // Cancel any outgoing refetches
-            await queryClient.cancelQueries({
-                queryKey: queryKeys.schedules.all()
-            });
+        queryKey: [...queryKeys.schedules.all()] as string[],
 
+        optimisticUpdate: (queryClient, scheduleId: string) => {
             // Snapshot the previous value
             const previousSchedules = queryClient.getQueryData<ScheduleDay[]>(
                 queryKeys.schedules.all()
@@ -41,26 +35,15 @@ export function useDeleteScheduleMutation() {
 
             return { previousSchedules };
         },
-        onError: (error, scheduleId, context) => {
-            // Revert to the previous value
-            if (context?.previousSchedules) {
-                queryClient.setQueryData(
-                    queryKeys.schedules.all(),
-                    context.previousSchedules
-                );
-            }
 
-            toast({
-                variant: "destructive",
-                title: t("toast.titles.error"),
-                description:
-                    error instanceof Error
-                        ? error.message
-                        : t("errors.failedToDeleteSchedule")
-            });
+        errorTitle: t("toast.titles.error"),
+        errorDescription: (error) =>
+            error instanceof Error
+                ? error.message
+                : t("errors.failedToDeleteSchedule"),
+        fallbackErrorMessage: t("errors.failedToDeleteSchedule")
 
-            console.error("Failed to delete schedule:", error);
-        }
+        // Uncomment if needed
         // onSuccess: () => {
         //     queryClient.invalidateQueries({
         //         queryKey: queryKeys.schedules.all()

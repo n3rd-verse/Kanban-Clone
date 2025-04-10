@@ -1,30 +1,24 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+    useOptimisticMutation,
+    storePreviousStates
+} from "../core/use-optimistic-mutation";
 import { queryKeys } from "@/lib/query-keys";
 import { deleteTask } from "@/services/tasks";
-import { useToast } from "@/components/ui/use-toast";
 import { useTranslation } from "react-i18next";
 import { Task } from "@/types/task";
 
 export function useDeleteTaskMutation() {
-    const queryClient = useQueryClient();
-    const { toast } = useToast();
     const { t } = useTranslation();
 
-    return useMutation({
+    return useOptimisticMutation({
         mutationFn: deleteTask,
-        onMutate: async (taskId: string) => {
-            await queryClient.cancelQueries({ queryKey: queryKeys.tasks.root });
+        queryKey: [...queryKeys.tasks.root] as string[],
 
-            // Store the previous states for all queries
-            const previousStates = new Map();
-
-            // Get all task-related queries and their data
-            const queries = queryClient.getQueriesData({
-                queryKey: queryKeys.tasks.root
-            });
-            queries.forEach(([queryKey, data]: any) => {
-                previousStates.set(queryKey, data);
-            });
+        optimisticUpdate: (queryClient, taskId: string) => {
+            // Store previous states
+            const previousStates = storePreviousStates(queryClient, [
+                ...queryKeys.tasks.root
+            ]);
 
             // Optimistically remove the task from all queries
             queryClient.setQueriesData(
@@ -46,24 +40,12 @@ export function useDeleteTaskMutation() {
 
             return { previousStates };
         },
-        onError: (err, taskId, context) => {
-            // Revert all queries to their previous states
-            if (context?.previousStates) {
-                context.previousStates.forEach((data, queryKey) => {
-                    queryClient.setQueryData(queryKey, data);
-                });
-            }
 
-            toast({
-                variant: "destructive",
-                title: t("toast.titles.error"),
-                description:
-                    err instanceof Error
-                        ? err.message
-                        : t("errors.failedToDeleteTask")
-            });
-
-            console.error("Failed to delete task:", err);
-        }
+        errorTitle: t("toast.titles.error"),
+        errorDescription: (error) =>
+            error instanceof Error
+                ? error.message
+                : t("errors.failedToDeleteTask"),
+        fallbackErrorMessage: t("errors.failedToDeleteTask")
     });
 }
