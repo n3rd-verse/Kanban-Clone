@@ -8,6 +8,7 @@ interface OMNative {
     openSchedule(scheduleId: string): Promise<void>;
     deleteSchedule(scheduleId: string, callback: (success: boolean) => void): boolean;
     getSchedules(callback: (json: string) => void): boolean;
+    undoDelete(itemId:string);
 }
 
 declare interface Window {
