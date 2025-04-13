@@ -42,7 +42,7 @@ declare module "@tanstack/react-router" {
 }
 
 scan({
-    enabled: true
+    enabled: false
 });
 
 const rootElement = document.getElementById("app")!;
