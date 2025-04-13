@@ -72,9 +72,15 @@ export function TaskCard({ task, className }: TaskCardProps) {
         toggleTask(task.id);
     }, [toggleTask, task.id]);
 
-    const handleClick = useCallback(() => {
-        openTask(task.id);
-    }, [openTask, task.id]);
+    const handleClick = useCallback(
+        (e: React.MouseEvent) => {
+            if (window.getSelection()?.toString()) {
+                return;
+            }
+            openTask(task.id);
+        },
+        [openTask, task.id]
+    );
 
     const isLoading = isToggling || isDeleting;
 
