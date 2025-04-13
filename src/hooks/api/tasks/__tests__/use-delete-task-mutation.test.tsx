@@ -57,12 +57,13 @@ describe("useDeleteTaskMutation", () => {
 
     it("should optimistically remove task and handle successful deletion", async () => {
         queryClient.setQueryData(["tasks"], mockTasks);
+        (deleteTask as any).mockResolvedValueOnce("success");
 
         const { result } = renderHook(() => useDeleteTaskMutation(), {
             wrapper
         });
 
-        result.current.mutate("task-1");
+        await result.current.mutateAsync({ id: "task-1", title: "Task 1" });
 
         // Check if task was immediately removed (optimistic update)
         const currentData: any = queryClient.getQueryData(["tasks"]);
@@ -82,7 +83,9 @@ describe("useDeleteTaskMutation", () => {
         });
 
         // Trigger mutation
-        await result.current.mutateAsync("task-1").catch(() => {});
+        await result.current
+            .mutateAsync({ id: "task-1", title: "Task 1" })
+            .catch(() => {});
 
         // Check if data was reverted
         const currentData: any = queryClient.getQueryData(["tasks"]);
@@ -92,7 +95,7 @@ describe("useDeleteTaskMutation", () => {
         expect(mockToast).toHaveBeenCalledWith({
             variant: "destructive",
             title: "toast.titles.error",
-            description: "Failed to delete task"
+            description: 'Failed to delete task - Task: "Task 1"'
         });
     });
 
@@ -130,7 +133,9 @@ describe("useDeleteTaskMutation", () => {
             wrapper
         });
 
-        await result.current.mutateAsync("task-1").catch(() => {});
+        await result.current
+            .mutateAsync({ id: "task-1", title: "Task 1" })
+            .catch(() => {});
 
         const currentNewTasks: any = queryClient.getQueryData(newTasksQuery);
         const currentCompletedTasks: any =
@@ -141,12 +146,21 @@ describe("useDeleteTaskMutation", () => {
     });
 
     it("should handle empty or undefined query data", async () => {
+        const error = new Error("Failed to delete task");
+        (deleteTask as any).mockRejectedValueOnce(error);
+
         const { result } = renderHook(() => useDeleteTaskMutation(), {
             wrapper
         });
 
-        await result.current.mutateAsync("task-1").catch(() => {});
+        await result.current
+            .mutateAsync({ id: "task-1", title: "Task 1" })
+            .catch(() => {});
 
-        expect(result.current.isError).toBe(true);
+        expect(mockToast).toHaveBeenCalledWith({
+            variant: "destructive",
+            title: "toast.titles.error",
+            description: 'Failed to delete task - Task: "Task 1"'
+        });
     });
 });

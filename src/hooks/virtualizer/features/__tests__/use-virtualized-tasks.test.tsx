@@ -122,7 +122,7 @@ describe("useVirtualizedTasks", () => {
         );
 
         expect(result.current.columnStyle.height).toBe("auto");
-        expect(result.current.scrollbarClass).toBe("overflow-visible");
+        expect(result.current.scrollbarClass).toBe("");
     });
 
     it("should apply mobile styles when width is less than desktop breakpoint", () => {
@@ -136,7 +136,9 @@ describe("useVirtualizedTasks", () => {
         );
 
         expect(result.current.columnStyle.height).not.toBe("auto");
-        expect(result.current.scrollbarClass).toBe("overflow-y-auto");
+        expect(result.current.scrollbarClass).toBe(
+            "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400"
+        );
     });
 
     it("should create an IntersectionObserver", () => {

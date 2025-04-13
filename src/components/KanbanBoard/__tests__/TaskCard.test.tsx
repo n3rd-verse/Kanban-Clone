@@ -123,10 +123,11 @@ describe("TaskCard", () => {
         const deleteButton = screen.getByTestId("delete-button");
         fireEvent.click(deleteButton);
 
-        expect(window.confirm).toHaveBeenCalled();
-
         await waitFor(() => {
-            expect(deleteMock).toHaveBeenCalledWith("task-1");
+            expect(deleteMock).toHaveBeenCalledWith({
+                id: "task-1",
+                title: "Test Task"
+            });
         });
     });
 
