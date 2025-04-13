@@ -194,3 +194,18 @@ export async function deleteTask(taskId: string): Promise<string> {
     tasks = tasks.filter((t) => t.id !== taskId);
     return taskId;
 }
+
+export async function undoDelete(taskId: string): Promise<void> {
+    try {
+        window.OMNative.undoDelete(taskId);
+
+        if (window.refreshTasks) {
+            window.refreshTasks();
+        }
+
+        return;
+    } catch (error) {
+        console.error("Failed to undo delete:", error);
+        throw new Error("Failed to undo delete");
+    }
+}

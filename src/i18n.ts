@@ -34,7 +34,8 @@ const resources = {
                 },
                 descriptions: {
                     taskCompleted: "작업이 완료되었습니다.",
-                    taskDeleted: "작업이 삭제되었습니다."
+                    taskDeleted: "작업이 삭제되었습니다.",
+                    taskRestored: "작업이 복원되었습니다."
                 }
             },
             components: {
@@ -48,7 +49,7 @@ const resources = {
             task: {
                 deleteConfirmation: "이 작업을 삭제하시겠습니까?"
             },
-            event: { 
+            event: {
                 deleteConfirmation: "이 이벤트를 삭제하시겠습니까?"
             }
         }
@@ -85,7 +86,8 @@ const resources = {
                 },
                 descriptions: {
                     taskCompleted: "Task completed",
-                    taskDeleted: "Task deleted"
+                    taskDeleted: "Task deleted",
+                    taskRestored: "Task restored"
                 }
             },
             components: {
@@ -99,8 +101,9 @@ const resources = {
             task: {
                 deleteConfirmation: "Are you sure you want to delete this task?"
             },
-            event: { 
-                deleteConfirmation: "Are you sure you want to delete this event?"
+            event: {
+                deleteConfirmation:
+                    "Are you sure you want to delete this event?"
             }
         }
     }

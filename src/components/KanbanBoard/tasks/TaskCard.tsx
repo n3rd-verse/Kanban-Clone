@@ -13,6 +13,7 @@ import { TaskStatus } from "@/constants/task-status";
 import { useTranslation } from "react-i18next";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { showDeleteToast } from "@/components/ui/undo-toast";
+import { useUndoDeleteMutation } from "@/hooks/api/tasks/use-undo-delete-mutation";
 
 import {
     Popover,
@@ -50,6 +51,7 @@ export function TaskCard({ task, className }: TaskCardProps) {
     const { mutate: toggleTask, isPending: isToggling } =
         useToggleTaskStatusMutation();
     const { mutate: openTask } = useOpenTaskMutation();
+    const { mutate: undoDelete } = useUndoDeleteMutation();
     const { t } = useTranslation();
 
     const handleDelete = useCallback(() => {
@@ -58,10 +60,10 @@ export function TaskCard({ task, className }: TaskCardProps) {
         showDeleteToast({
             title: "1 deleted",
             onAction: () => {
-                console.log("Undo delete for task:", task.id);
+                undoDelete(task.id);
             }
         });
-    }, [deleteTask, task.id]);
+    }, [deleteTask, task.id, undoDelete]);
 
     const handleComplete = useCallback(() => {
         toggleTask(task.id);
