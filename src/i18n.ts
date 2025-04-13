@@ -4,6 +4,13 @@ import { initReactI18next } from "react-i18next";
 const resources = {
     ko: {
         translation: {
+            filter: "필터",
+            categories: {
+                important: "중요",
+                company: "회사",
+                news: "뉴스",
+                other: "기타"
+            },
             navigation: {
                 board: "보드",
                 timeline: "타임라인",
@@ -24,7 +31,8 @@ const resources = {
                 taskNotFound: "작업을 찾을 수 없습니다.",
                 failedToLoadTasks: "작업을 불러오는데 실패했습니다.",
                 failedToUpdateTask: "작업 상태 업데이트에 실패했습니다.",
-                failedToDeleteTask: "작업 삭제에 실패했습니다."
+                failedToDeleteTask: "작업 삭제에 실패했습니다.",
+                failedToRestoreTask: "작업 복원에 실패했습니다."
             },
             toast: {
                 titles: {
@@ -56,6 +64,13 @@ const resources = {
     },
     en: {
         translation: {
+            filter: "Filter",
+            categories: {
+                important: "Important",
+                company: "Company",
+                news: "News",
+                other: "Other"
+            },
             navigation: {
                 board: "Board",
                 timeline: "Timeline",
@@ -76,7 +91,8 @@ const resources = {
                 taskNotFound: "Task not found",
                 failedToLoadTasks: "Failed to load tasks",
                 failedToUpdateTask: "Failed to update task status",
-                failedToDeleteTask: "Failed to delete task"
+                failedToDeleteTask: "Failed to delete task",
+                failedToRestoreTask: "Failed to restore task"
             },
             toast: {
                 titles: {
