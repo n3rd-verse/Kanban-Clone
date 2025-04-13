@@ -14,6 +14,7 @@ const ToastViewport = React.forwardRef<
         ref={ref}
         className={cn(
             "fixed top-0 right-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:max-w-[420px]",
+            "flex-col gap-2",
             className
         )}
         {...props}
@@ -22,7 +23,7 @@ const ToastViewport = React.forwardRef<
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName;
 
 const toastVariants = cva(
-    "group data-[state=closed]:slide-out-to-right-full data-[state=open]:sm:slide-in-from-bottom-full relative flex justify-between items-center space-x-4 data-[state=open]:slide-in-from-top-full shadow-lg p-6 pr-8 border rounded-md w-full overflow-hidden transition-all data-[swipe=move]:transition-none data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out pointer-events-auto data-[state=closed]:fade-out-80",
+    "group data-[state=closed]:slide-out-to-right-full relative flex justify-between items-center space-x-4 data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-top-full shadow-lg p-4 pr-6 border rounded-md w-full overflow-hidden transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[state=closed]:animate-out data-[state=open]:animate-in data-[swipe=end]:animate-out pointer-events-auto data-[state=closed]:fade-out-80",
     {
         variants: {
             variant: {
@@ -46,6 +47,7 @@ const Toast = React.forwardRef<
         <ToastPrimitives.Root
             ref={ref}
             className={cn(toastVariants({ variant }), className)}
+            duration={props.duration}
             {...props}
         />
     );
@@ -74,10 +76,12 @@ const ToastClose = React.forwardRef<
     <ToastPrimitives.Close
         ref={ref}
         className={cn(
-            "absolute right-2 top-2 rounded-md p-1 text-foreground/50 opacity-0 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100 group-[.destructive]:text-red-300 group-[.destructive]:hover:text-red-50 group-[.destructive]:focus:ring-red-400 group-[.destructive]:focus:ring-offset-red-600",
+            "absolute right-2 top-2 rounded-md p-1 text-foreground/50 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100 group-[.destructive]:text-red-300 group-[.destructive]:hover:text-red-50 group-[.destructive]:focus:ring-red-400 group-[.destructive]:focus:ring-offset-red-600",
+            "opacity-100 cursor-pointer",
             className
         )}
         toast-close=""
+        aria-label="Close"
         {...props}
     >
         <X className="w-4 h-4" />

@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { showDeleteToast } from "@/components/ui/undo-toast";
 import { useUndoDeleteMutation } from "@/hooks/api/tasks/use-undo-delete-mutation";
+import { TOAST_CONFIG } from "@/constants/toast-config";
 
 import {
     Popover,
@@ -59,6 +60,8 @@ export function TaskCard({ task, className }: TaskCardProps) {
 
         showDeleteToast({
             title: "1 deleted",
+            actionLabel: "Undo",
+            duration: TOAST_CONFIG.DURATIONS.DEFAULT,
             onAction: () => {
                 undoDelete(task.id);
             }

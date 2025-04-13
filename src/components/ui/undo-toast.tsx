@@ -3,19 +3,17 @@ import { toast as toastFn } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 
 interface UndoToastProps {
-    title?: string;
-    description?: string;
-    actionLabel?: string;
-    onAction?: () => void;
+    title: string;
+    actionLabel: string;
+    onAction: () => void;
+    duration: number;
 }
 
-export function showDeleteToast({
-    title = "1 deleted",
-    actionLabel = "Undo",
-    onAction
-}: UndoToastProps) {
+export function showDeleteToast(props: UndoToastProps) {
+    const { title, actionLabel, onAction, duration } = props;
+
     return toastFn({
-        duration: 5000,
+        duration,
         className: cn(
             "bg-black text-white border-none p-4 flex items-center gap-4 rounded-lg",
             // 화면 아래 중앙에 배치하기 위한 스타일 오버라이드
@@ -50,7 +48,7 @@ export function showDeleteToast({
                 <span>{title}</span>
             </div>
         ),
-        action: onAction ? (
+        action: (
             <button
                 onClick={(e) => {
                     e.preventDefault();
@@ -61,6 +59,6 @@ export function showDeleteToast({
             >
                 {actionLabel}
             </button>
-        ) : undefined
+        )
     });
 }
