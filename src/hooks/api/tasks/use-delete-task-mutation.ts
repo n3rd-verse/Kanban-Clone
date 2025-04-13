@@ -25,7 +25,6 @@ export function useDeleteTaskMutation() {
         queryKey: [...queryKeys.tasks.root] as string[],
 
         optimisticUpdate: (queryClient, variables: DeleteTaskParams) => {
-            console.log("optimisticUpdate", variables);
             // Store the current task for error handling
             currentTaskRef = variables;
 
@@ -62,7 +61,6 @@ export function useDeleteTaskMutation() {
 
         errorTitle: t("toast.titles.error"),
         errorDescription: (error, variables) => {
-            console.log("errorDescription", variables.title);
             return error instanceof Error
                 ? `${error.message} - Task: "${variables.title}"`
                 : `${t("errors.failedToDeleteTask")} - Task: "${variables.title}"`;
