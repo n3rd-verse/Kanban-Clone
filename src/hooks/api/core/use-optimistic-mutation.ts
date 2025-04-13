@@ -19,7 +19,7 @@ export interface OptimisticMutationConfig<TData, TError, TVariables, TContext> {
     ) => void | Promise<void>;
 
     errorTitle?: string;
-    errorDescription?: (error: TError) => string;
+    errorDescription?: (error: TError, variables: TVariables) => string;
     fallbackErrorMessage?: string;
 }
 
@@ -81,7 +81,7 @@ export function useOptimisticMutation<
                 title: errorTitle || t("toast.titles.error"),
                 variant: "destructive",
                 description: errorDescription
-                    ? errorDescription(error)
+                    ? errorDescription(error, variables)
                     : error instanceof Error
                       ? error.message
                       : fallbackErrorMessage
