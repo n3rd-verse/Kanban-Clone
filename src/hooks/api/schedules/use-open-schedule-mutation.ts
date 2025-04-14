@@ -11,7 +11,7 @@ export function useOpenScheduleMutation() {
         },
         // 필요한 경우 성공 후 추가 작업을 처리할 수 있습니다.
         onSuccess: (data, scheduleId, context) => {
-            console.log(`Schedule ${scheduleId} opened successfully.`);
-        },
+            // console.log(`Schedule ${scheduleId} opened successfully.`);
+        }
     });
 }

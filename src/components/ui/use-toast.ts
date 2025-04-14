@@ -1,8 +1,10 @@
 import * as React from "react";
 import type { ToastActionElement, ToastProps } from "@/components/ui/toast";
+import { TOAST_CONFIG } from "@/constants/toast-config";
 
-const TOAST_LIMIT = 1;
-const TOAST_REMOVE_DELAY = 1000000;
+const TOAST_LIMIT = TOAST_CONFIG.LIMIT;
+const TOAST_REMOVE_DELAY = TOAST_CONFIG.REMOVE_DELAY;
+const DEFAULT_TOAST_DURATION = TOAST_CONFIG.DURATIONS.DEFAULT;
 
 type ToasterToast = ToastProps & {
     id: string;
@@ -133,7 +135,7 @@ function dispatch(action: Action) {
 
 type Toast = Omit<ToasterToast, "id">;
 
-function toast({ ...props }: Toast) {
+function toast({ duration = DEFAULT_TOAST_DURATION, ...props }: Toast) {
     const id = genId();
 
     const update = (props: ToasterToast) =>
@@ -141,7 +143,18 @@ function toast({ ...props }: Toast) {
             type: "UPDATE_TOAST",
             toast: { ...props, id }
         });
-    const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id });
+
+    const dismiss = () => {
+        dispatch({ type: "DISMISS_TOAST", toastId: id });
+    };
+
+    let autoCloseTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    if (duration !== Infinity) {
+        autoCloseTimeout = setTimeout(() => {
+            dismiss();
+        }, duration);
+    }
 
     dispatch({
         type: "ADD_TOAST",
@@ -149,8 +162,18 @@ function toast({ ...props }: Toast) {
             ...props,
             id,
             open: true,
+            duration,
             onOpenChange: (open) => {
-                if (!open) dismiss();
+                if (autoCloseTimeout) {
+                    clearTimeout(autoCloseTimeout);
+                    autoCloseTimeout = null;
+                }
+
+                if (!open) {
+                    dismiss();
+                }
+
+                props.onOpenChange?.(open);
             }
         }
     });

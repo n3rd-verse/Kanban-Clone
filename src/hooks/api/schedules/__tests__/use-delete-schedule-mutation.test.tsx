@@ -4,8 +4,8 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useDeleteScheduleMutation } from "../use-delete-schedule-mutation";
 import { deleteSchedule } from "@/services/schedules";
 
-vi.mock("@/services/tasks", () => ({
-    deleteTask: vi.fn()
+vi.mock("@/services/schedules", () => ({
+    deleteSchedule: vi.fn()
 }));
 
 const mockToast = vi.fn();
@@ -43,14 +43,14 @@ describe("useDeleteScheduleMutation", () => {
 
     it("should handle errors and show error toast", async () => {
         const error = new Error("Failed to delete schedule");
-        (deleteSchedule as any).mockRejectedValue(error);
+        (deleteSchedule as any).mockRejectedValueOnce(error);
 
         const { result } = renderHook(() => useDeleteScheduleMutation(), {
             wrapper
         });
 
         await act(async () => {
-            result.current.mutate("schedule-1");
+            await result.current.mutateAsync("schedule-1").catch(() => {});
         });
 
         expect(mockToast).toHaveBeenCalledWith({
@@ -61,5 +61,4 @@ describe("useDeleteScheduleMutation", () => {
 
         expect(deleteSchedule).toHaveBeenCalledWith("schedule-1");
     });
-
 });

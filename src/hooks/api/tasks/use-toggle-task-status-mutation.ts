@@ -1,24 +1,25 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+    useOptimisticMutation,
+    storePreviousStates
+} from "../core/use-optimistic-mutation";
 import { queryKeys } from "@/lib/query-keys";
 import { toggleTaskStatus } from "@/services/tasks";
-import { useToast } from "@/components/ui/use-toast";
 import { useTranslation } from "react-i18next";
 import { Task } from "@/types/task";
 import { TaskStatus } from "@/constants/task-status";
 
 export function useToggleTaskStatusMutation() {
-    const queryClient = useQueryClient();
-    const { toast } = useToast();
     const { t } = useTranslation();
 
-    return useMutation({
+    return useOptimisticMutation({
         mutationFn: toggleTaskStatus,
-        onMutate: async (taskId: string) => {
-            // Cancel any outgoing refetches
-            await queryClient.cancelQueries({ queryKey: queryKeys.tasks.root });
+        queryKey: [...queryKeys.tasks.root] as string[],
 
-            // Store the previous states for both status queries
-            const previousStates = new Map();
+        optimisticUpdate: (queryClient, taskId: string) => {
+            // Store previous states
+            const previousStates = storePreviousStates(queryClient, [
+                ...queryKeys.tasks.root
+            ]);
 
             // Find the task and its current status
             let targetTask: Task | undefined;
@@ -28,7 +29,6 @@ export function useToggleTaskStatusMutation() {
                 queryKey: queryKeys.tasks.root
             });
             queries.forEach(([queryKey, data]: any) => {
-                previousStates.set(queryKey, data);
                 data?.pages?.forEach((page: any) => {
                     const task = page.tasks.find((t: Task) => t.id === taskId);
                     if (task) {
@@ -107,22 +107,11 @@ export function useToggleTaskStatusMutation() {
 
             return { previousStates };
         },
-        onError: (err, taskId, context) => {
-            // Revert all queries to their previous states
-            if (context?.previousStates) {
-                context.previousStates.forEach((data, queryKey) => {
-                    queryClient.setQueryData(queryKey, data);
-                });
-            }
 
-            toast({
-                title: t("tasks.toggleStatus.error"),
-                variant: "destructive",
-                description:
-                    err instanceof Error
-                        ? err.message
-                        : t("errors.failedToDeleteTask")
-            });
-        }
+        errorTitle: t("tasks.toggleStatus.error"),
+        errorDescription: (error) =>
+            error instanceof Error
+                ? error.message
+                : t("errors.failedToDeleteTask")
     });
 }

@@ -12,6 +12,9 @@ import { ContactAddress } from "../common";
 import { TaskStatus } from "@/constants/task-status";
 import { useTranslation } from "react-i18next";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { showDeleteToast } from "@/components/ui/undo-toast";
+import { useUndoDeleteMutation } from "@/hooks/api/tasks/use-undo-delete-mutation";
+import { TOAST_CONFIG } from "@/constants/toast-config";
 
 import {
     Popover,
@@ -49,13 +52,21 @@ export function TaskCard({ task, className }: TaskCardProps) {
     const { mutate: toggleTask, isPending: isToggling } =
         useToggleTaskStatusMutation();
     const { mutate: openTask } = useOpenTaskMutation();
+    const { mutate: undoDelete } = useUndoDeleteMutation();
     const { t } = useTranslation();
 
     const handleDelete = useCallback(() => {
-        if (window.confirm(t("task.deleteConfirmation"))) {
-            deleteTask(task.id);
-        }
-    }, [deleteTask, task.id, t]);
+        deleteTask({ id: task.id, title: task.title });
+
+        showDeleteToast({
+            title: "1 deleted",
+            actionLabel: "Undo",
+            duration: TOAST_CONFIG.DURATIONS.DEFAULT,
+            onAction: () => {
+                undoDelete({ id: task.id, title: task.title, task });
+            }
+        });
+    }, [deleteTask, task, undoDelete]);
 
     const handleComplete = useCallback(() => {
         toggleTask(task.id);
@@ -108,7 +119,7 @@ function TaskHeader({
     isLoading
 }: TaskHeaderProps) {
     return (
-        <div className="flex items-center justify-between">
+        <div className="flex justify-between items-center">
             <h3 className="mb-1 font-medium break-words">{title}</h3>
             <TaskHeaderActions
                 onDelete={onDelete}

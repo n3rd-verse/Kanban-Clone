@@ -2,38 +2,33 @@ import {
     useOptimisticMutation,
     storePreviousStates
 } from "../core/use-optimistic-mutation";
+import { undoDelete } from "@/services/tasks";
 import { queryKeys } from "@/lib/query-keys";
-import { deleteTask } from "@/services/tasks";
 import { useTranslation } from "react-i18next";
-import { Task } from "@/types/task";
 import { useQueryClient } from "@tanstack/react-query";
+import { Task } from "@/types/task";
 
-interface DeleteTaskParams {
+interface UndoDeleteParams {
     id: string;
     title: string;
+    task: Task;
 }
 
-// Keep track of the current task outside of the component
-let currentTaskRef: DeleteTaskParams | null = null;
-
-export function useDeleteTaskMutation() {
+export function useUndoDeleteMutation() {
     const { t } = useTranslation();
     const queryClient = useQueryClient();
 
-    return useOptimisticMutation<string, unknown, DeleteTaskParams>({
-        mutationFn: ({ id }: DeleteTaskParams) => deleteTask(id),
+    return useOptimisticMutation<void, unknown, UndoDeleteParams>({
+        mutationFn: ({ id }: UndoDeleteParams) => undoDelete(id),
         queryKey: [...queryKeys.tasks.root] as string[],
 
-        optimisticUpdate: (queryClient, variables: DeleteTaskParams) => {
-            // Store the current task for error handling
-            currentTaskRef = variables;
-
+        optimisticUpdate: (queryClient, variables: UndoDeleteParams) => {
             // Store previous states
             const previousStates = storePreviousStates(queryClient, [
                 ...queryKeys.tasks.root
             ]);
 
-            // Optimistically remove the task from all queries
+            // Optimistically add the task back to the queries
             queryClient.setQueriesData(
                 { queryKey: queryKeys.tasks.root },
                 (old: any) => {
@@ -42,10 +37,8 @@ export function useDeleteTaskMutation() {
                         ...old,
                         pages: old.pages.map((page: any) => ({
                             ...page,
-                            tasks: page.tasks.filter(
-                                (task: Task) => task.id !== variables.id
-                            ),
-                            total: Math.max(0, page.total - 1)
+                            tasks: [variables.task, ...page.tasks],
+                            total: page.total + 1
                         }))
                     };
                 }
@@ -63,8 +56,8 @@ export function useDeleteTaskMutation() {
         errorDescription: (error, variables) => {
             return error instanceof Error
                 ? `${error.message} - Task: "${variables.title}"`
-                : `${t("errors.failedToDeleteTask")} - Task: "${variables.title}"`;
+                : `${t("errors.failedToRestoreTask")} - Task: "${variables.title}"`;
         },
-        fallbackErrorMessage: t("errors.failedToDeleteTask")
+        fallbackErrorMessage: t("errors.failedToRestoreTask")
     });
 }

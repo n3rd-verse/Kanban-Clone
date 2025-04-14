@@ -9,6 +9,7 @@ import { Check } from "lucide-react";
 import { useTaskFilter } from "@/hooks/filter/use-task-filter";
 import filterIcon from "@/assets/icons/filter.svg";
 import { Icon } from "@/components/common/Icon";
+import { useTranslation } from "react-i18next";
 
 export enum TaskCategory {
     IMPORTANT = "important",
@@ -19,19 +20,20 @@ export enum TaskCategory {
 
 type CategoryOption = {
     id: TaskCategory;
-    label: string;
+    translationKey: string;
 };
 
 const CATEGORY_OPTIONS: CategoryOption[] = [
-    { id: TaskCategory.IMPORTANT, label: "Important" },
-    { id: TaskCategory.COMPANY, label: "Company" },
-    { id: TaskCategory.NEWS, label: "News" },
-    { id: TaskCategory.OTHER, label: "Other" }
+    { id: TaskCategory.IMPORTANT, translationKey: "categories.important" },
+    { id: TaskCategory.COMPANY, translationKey: "categories.company" },
+    { id: TaskCategory.NEWS, translationKey: "categories.news" },
+    { id: TaskCategory.OTHER, translationKey: "categories.other" }
 ];
 
 export function TaskFilter() {
     const { selectedCategories, toggleCategory } = useTaskFilter();
     const hasFilter = selectedCategories.length > 0;
+    const { t } = useTranslation();
 
     return (
         <DropdownMenu>
@@ -46,7 +48,7 @@ export function TaskFilter() {
                 >
                     <Icon
                         src={filterIcon}
-                        alt="Filter"
+                        alt={t("filter")}
                         style={{
                             filter: !hasFilter
                                 ? ""
@@ -88,7 +90,7 @@ export function TaskFilter() {
                                     "xl:text-base"
                                 )}
                             >
-                                {option.label}
+                                {t(option.translationKey)}
                             </span>
                             {selectedCategories.includes(option.id) && (
                                 <Check
