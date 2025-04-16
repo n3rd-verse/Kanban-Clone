@@ -58,12 +58,13 @@ export function TaskCard({ task, className }: TaskCardProps) {
     const handleDelete = useCallback(() => {
         deleteTask({ id: task.id, title: task.title });
 
-        showDeleteToast({
+        const {dismiss, id} = showDeleteToast({
             title: "1 deleted",
             actionLabel: "Undo",
             duration: TOAST_CONFIG.DURATIONS.DEFAULT,
             onAction: () => {
                 undoDelete({ id: task.id, title: task.title, task });
+                dismiss();
             }
         });
     }, [deleteTask, task, undoDelete]);

@@ -199,9 +199,10 @@ export async function undoDelete(taskId: string): Promise<void> {
     try {
         window.OMNative.undoDelete(taskId);
 
-        if (window.refreshTasks) {
-            window.refreshTasks();
-        }
+        // Moved the refreshTask call into undoDelete since it's executed asynchronously.
+        // if (window.refreshTasks) {
+        //     window.refreshTasks();
+        // }
 
         return;
     } catch (error) {
