@@ -1,6 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { openTask } from "@/services/tasks";
 
+/**
+ * Hook to perform a mutation for opening a task via OM Native API.
+ * @returns A React Query mutation object to trigger openTask and handle success or error callbacks.
+ */
 export function useOpenTaskMutation() {
     const queryClient = useQueryClient();
 
@@ -8,10 +12,6 @@ export function useOpenTaskMutation() {
         mutationFn: openTask,
         onError: (error, taskId, context) => {
             console.error("openTask failed :", error);
-        },
-        // 필요한 경우 성공 후 추가 작업을 처리할 수 있습니다.
-        onSuccess: (data, taskId, context) => {
-            // console.log(`Task ${taskId} opened successfully.`);
         }
     });
 }

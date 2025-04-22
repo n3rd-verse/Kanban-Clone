@@ -51,7 +51,28 @@ interface TaskHeaderActionsProps {
     isLoading: boolean;
 }
 
-// Custom hook to manage task card state and interactions
+/**
+ * Custom hook managing the state and interactions for a TaskCard component.
+ * Handles delete, complete, open, and undo actions, as well as AI summary visibility and hover state.
+ * @param task - The Task object to manage and operate on.
+ * @returns An object containing:
+ *   - state: {
+ *       showAiSummary: boolean;
+ *       isMouseOnIcon: boolean;
+ *       isLoading: boolean;
+ *       contentInfo: object;
+ *     } current UI state
+ *   - handlers: {
+ *       handleDelete: () => void;
+ *       handleComplete: () => void;
+ *       handleClick: (e: React.MouseEvent) => void;
+ *       handleIconMouseEnter: () => void;
+ *       handleIconMouseLeave: () => void;
+ *       handleCardMouseEnter: () => void;
+ *       handleCardMouseLeave: () => void;
+ *       handlePopoverOpenChange: (open: boolean) => void;
+ *     } callback functions for user interactions
+ */
 function useTaskCard(task: Task) {
     const { mutate: deleteTask, isPending: isDeleting } =
         useDeleteTaskMutation();

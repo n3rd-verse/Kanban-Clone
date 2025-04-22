@@ -8,6 +8,14 @@ interface UseIntersectionObserverProps {
     threshold?: number;
 }
 
+/**
+ * Custom hook that observes when a target element intersects the viewport.
+ * @param props.target - Ref object pointing to the element to observe.
+ * @param props.onIntersect - Callback function executed when the element intersects.
+ * @param props.enabled - Whether the observer is active (default: true).
+ * @param props.rootMargin - Margin around the root for intersections (default: "200px").
+ * @param props.threshold - Intersection threshold ratio (default: 0.1).
+ */
 export function useIntersectionObserver({
     target,
     onIntersect,

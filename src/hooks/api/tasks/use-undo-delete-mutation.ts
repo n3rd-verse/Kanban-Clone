@@ -14,6 +14,11 @@ interface UndoDeleteParams {
     task: Task;
 }
 
+/**
+ * Hook to undo a previously deleted task via optimistic mutation.
+ * Restores the deleted task back into the React Query cache immediately and invalidates queries on success.
+ * @returns A React Query mutation object for undoDelete supporting optimistic updates and error handling.
+ */
 export function useUndoDeleteMutation() {
     const { t } = useTranslation();
     const queryClient = useQueryClient();

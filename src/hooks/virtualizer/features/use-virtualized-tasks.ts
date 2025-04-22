@@ -16,6 +16,24 @@ interface UseVirtualizedTasksProps {
     width: number;
 }
 
+/**
+ * Hook that provides infinite scrolling, virtualization, responsive styling, and filtering
+ * for tasks in a Kanban column.
+ * @param params.status - The TaskStatus for this column to fetch and display.
+ * @param params.columnRef - Ref to the scrollable column container used by the virtualizer.
+ * @param params.loadMoreRef - Ref to the sentinel element observed to trigger fetching more tasks.
+ * @param params.maxVisibleTasks - Maximum number of tasks to display before imposing a scroll height limit.
+ * @param params.width - Current container width in pixels, used to apply responsive styles.
+ * @returns An object with:
+ *   - tasks: Flattened list of fetched tasks.
+ *   - virtualizer: Virtualizer instance for the column.
+ *   - columnStyle: Inline styles for container height and position.
+ *   - scrollbarClass: CSS classes for scrollbar styling.
+ *   - isFetchingNextPage: Whether the next page of tasks is loading.
+ *   - hasNextPage: Whether there is another page of tasks to fetch.
+ *   - fetchNextPage: Function to manually fetch the next page.
+ *   - error: Any fetch error encountered.
+ */
 export function useVirtualizedTasks({
     status,
     columnRef,

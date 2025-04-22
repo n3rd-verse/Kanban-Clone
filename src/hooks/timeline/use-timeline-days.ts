@@ -14,8 +14,15 @@ interface UseTimelineDaysReturn {
 }
 
 /**
- * 타임라인 날짜 데이터를 생성하는 훅
- * 현재 날짜 또는 지정된 연도/월의 모든 날짜를 생성합니다.
+ * Generates timeline data: days numbers, date objects, month name, and year.
+ * @param options.year - The calendar year (default: current year).
+ * @param options.month - The calendar month (0-11, default: current month).
+ * @param options.startDay - Starting day-of-month (default: 1).
+ * @returns Object containing:
+ *   - days: Array of day numbers in the month.
+ *   - dates: Corresponding Date objects for each day.
+ *   - monthName: Full month name (e.g., "January").
+ *   - year: The year used for calculations.
  */
 export function useTimelineDays({
     year = new Date().getFullYear(),

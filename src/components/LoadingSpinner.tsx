@@ -5,6 +5,11 @@ interface LoadingSpinnerProps {
     overlay?: boolean;
 }
 
+/**
+ * LoadingSpinner component displays a loading indicator.
+ * @param props.className - Optional additional CSS classes for the container.
+ * @param props.overlay - If true, renders the spinner with a full-screen overlay backdrop.
+ */
 export function LoadingSpinner({
     className,
     overlay = false

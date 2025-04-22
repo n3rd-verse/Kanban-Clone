@@ -12,7 +12,11 @@ interface UseTimelineScrollReturn {
 }
 
 /**
- * 타임라인 스크롤 기능을 제공하는 훅
+ * Provides scroll handlers to navigate a timeline view by day columns.
+ * @param scrollContainerRef - Ref to the scrollable container element.
+ * @param dayColumnWidth - Width of each day column in pixels.
+ * @param daysToScroll - Number of day columns to scroll by (default: 7).
+ * @returns Object containing scrollLeft and scrollRight functions.
  */
 export function useTimelineScroll({
     scrollContainerRef,
