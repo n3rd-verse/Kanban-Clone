@@ -3,26 +3,18 @@ import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { format } from "date-fns";
 import { CardDeleteButton } from "../common";
-import { useDeleteTaskMutation } from "@/hooks/api/tasks/use-delete-task-mutation";
-import { useToggleTaskStatusMutation } from "@/hooks/api/tasks/use-toggle-task-status-mutation";
-import React, { useState, useCallback, useMemo, memo } from "react";
+import React, { useState, useCallback, memo } from "react";
 import { cn } from "@/lib/utils";
-import { useOpenTaskMutation } from "@/hooks/api/tasks/use-open-task-mutation";
 import { ContactAddress } from "../common";
 import { TaskStatus } from "@/constants/task-status";
-import { useTranslation } from "react-i18next";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
-import { showDeleteToast } from "@/components/ui/undo-toast";
-import { useUndoDeleteMutation } from "@/hooks/api/tasks/use-undo-delete-mutation";
-import { TOAST_CONFIG } from "@/constants/toast-config";
-import { useUndoStore } from "@/stores/undo-store";
+import { useTaskCard } from "@/hooks/kanban/useTaskCard";
 
 import {
     Popover,
     PopoverContent,
     PopoverTrigger
 } from "@/components/ui/popover";
-
 import { AI_INFO_FIELD, AiInfoValue } from "@/constants/ai-info-fields";
 
 interface TaskCardProps {
@@ -49,133 +41,6 @@ interface TaskHeaderActionsProps {
     isCompleted: boolean;
     allowEdit: boolean;
     isLoading: boolean;
-}
-
-/**
- * Custom hook managing the state and interactions for a TaskCard component.
- * Handles delete, complete, open, and undo actions, as well as AI summary visibility and hover state.
- * @param task - The Task object to manage and operate on.
- * @returns An object containing:
- *   - state: {
- *       showAiSummary: boolean;
- *       isMouseOnIcon: boolean;
- *       isLoading: boolean;
- *       contentInfo: object;
- *     } current UI state
- *   - handlers: {
- *       handleDelete: () => void;
- *       handleComplete: () => void;
- *       handleClick: (e: React.MouseEvent) => void;
- *       handleIconMouseEnter: () => void;
- *       handleIconMouseLeave: () => void;
- *       handleCardMouseEnter: () => void;
- *       handleCardMouseLeave: () => void;
- *       handlePopoverOpenChange: (open: boolean) => void;
- *     } callback functions for user interactions
- */
-function useTaskCard(task: Task) {
-    const { mutate: deleteTask, isPending: isDeleting } =
-        useDeleteTaskMutation();
-    const { mutate: toggleTask, isPending: isToggling } =
-        useToggleTaskStatusMutation();
-    const { mutate: openTask } = useOpenTaskMutation();
-    const { mutate: undoDelete } = useUndoDeleteMutation();
-    const { addDeletedTask } = useUndoStore();
-    const [showAiSummary, setShowAiSummary] = useState(false);
-    const [isMouseOnIcon, setIsMouseOnIcon] = useState(false);
-
-    const isLoading = isDeleting || isToggling;
-
-    const handleDelete = useCallback(() => {
-        deleteTask({ id: task.id, title: task.title });
-
-        const { dismiss, id } = showDeleteToast({
-            title: "1 deleted",
-            actionLabel: "Undo",
-            duration: TOAST_CONFIG.DURATIONS.DEFAULT,
-            onAction: () => {
-                undoDelete({ id: task.id, title: task.title, task });
-                dismiss();
-            }
-        });
-
-        addDeletedTask({
-            id: task.id,
-            title: task.title,
-            task,
-            toastId: id,
-            dismissToast: dismiss
-        });
-    }, [deleteTask, task, undoDelete, addDeletedTask]);
-
-    const handleComplete = useCallback(() => {
-        toggleTask(task.id);
-    }, [toggleTask, task.id]);
-
-    const handleClick = useCallback(
-        (e: React.MouseEvent) => {
-            if (window.getSelection()?.toString()) {
-                return;
-            }
-            openTask(task.id);
-        },
-        [openTask, task.id]
-    );
-
-    const handleIconMouseEnter = useCallback(() => {
-        setIsMouseOnIcon(true);
-    }, []);
-
-    const handleIconMouseLeave = useCallback(() => {
-        setIsMouseOnIcon(false);
-    }, []);
-
-    const handleCardMouseEnter = useCallback(() => {
-        setShowAiSummary(true);
-    }, []);
-
-    const handleCardMouseLeave = useCallback(() => {
-        setShowAiSummary(false);
-    }, []);
-
-    const handlePopoverOpenChange = useCallback((open: boolean) => {
-        setShowAiSummary(open);
-    }, []);
-
-    const contentInfo = useMemo(() => {
-        const hasAssignees = task.assignee && task.assignee.length > 0;
-        const hasDate = task.date && task.status !== TaskStatus.COMPLETED;
-        const hasMiddleRowContent = hasAssignees || hasDate;
-        const hasAiInfo = !!task.ai?.popupInfo;
-        const isCompleted = task.status === TaskStatus.COMPLETED;
-
-        return {
-            hasAssignees,
-            hasDate,
-            hasMiddleRowContent,
-            hasAiInfo,
-            isCompleted
-        };
-    }, [task.assignee, task.date, task.status, task.ai?.popupInfo]);
-
-    return {
-        state: {
-            showAiSummary,
-            isMouseOnIcon,
-            isLoading,
-            contentInfo
-        },
-        handlers: {
-            handleDelete,
-            handleComplete,
-            handleClick,
-            handleIconMouseEnter,
-            handleIconMouseLeave,
-            handleCardMouseEnter,
-            handleCardMouseLeave,
-            handlePopoverOpenChange
-        }
-    };
 }
 
 export function TaskCard({ task, className }: TaskCardProps) {
