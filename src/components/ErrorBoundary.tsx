@@ -16,6 +16,10 @@ interface ErrorBoundaryState {
     error: Error | null;
 }
 
+/**
+ * A React error boundary class component that catches JavaScript errors in its child component tree,
+ * displays a fallback UI, and provides a reset callback when errors occur.
+ */
 export class ErrorBoundary extends React.Component<
     ErrorBoundaryProps,
     ErrorBoundaryState
@@ -70,6 +74,10 @@ function ErrorBoundaryContent({
     );
 }
 
+/**
+ * A wrapper around ErrorBoundary that integrates with React Query's error reset boundary,
+ * ensuring both UI and query errors are reset on retry.
+ */
 export function ErrorBoundaryWithQueryReset(props: ErrorBoundaryProps) {
     const { reset } = useQueryErrorResetBoundary();
     return <ErrorBoundary {...props} onReset={reset} />;
@@ -97,6 +105,10 @@ function ErrorFallback({
     );
 }
 
+/**
+ * A utility component leveraging react-error-boundary to catch query errors,
+ * providing a fallback UI and reset mechanism for React Query errors.
+ */
 export function QueryErrorBoundary({
     children
 }: {

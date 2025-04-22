@@ -26,6 +26,10 @@
 import { ERROR_MESSAGES } from "@/constants/messages";
 import type { ScheduleDay } from "@/types/schedule";
 
+/**
+ * Fetches schedule days from the OM Native API, grouped by date.
+ * @returns A promise resolving to an array of ScheduleDay objects representing daily schedules.
+ */
 export async function fetchSchedules(): Promise<ScheduleDay[]> {
     const json = await new Promise<string>((resolve) => {
         window.OMNative.getSchedules((json) => {
@@ -37,11 +41,22 @@ export async function fetchSchedules(): Promise<ScheduleDay[]> {
     return schedules;
 }
 
-export async function openSchedule(scheduleId:string) : Promise<void> {
+/**
+ * Opens the specified schedule event in the OM Native application.
+ * @param scheduleId - The ID of the schedule event to open.
+ * @returns A promise that resolves when the schedule has been opened.
+ */
+export async function openSchedule(scheduleId: string): Promise<void> {
     return await window.OMNative.openSchedule(scheduleId);
 }
 
-export async function deleteSchedule(eventId:string) : Promise<void> {
+/**
+ * Deletes a schedule event via the OM Native API.
+ * @param eventId - The ID of the schedule event to delete.
+ * @returns A promise that resolves when the event is successfully deleted.
+ * @throws Error if the deletion fails.
+ */
+export async function deleteSchedule(eventId: string): Promise<void> {
     const success = await new Promise<boolean>((resolve) => {
         window.OMNative.deleteSchedule(eventId, (success) => {
             resolve(success);

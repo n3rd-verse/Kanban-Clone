@@ -1,17 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { openSchedule } from "@/services/schedules";
 
+/**
+ * Hook to perform a mutation for opening a schedule event.
+ * @returns A React Query mutation object to trigger openSchedule and handle success or error callbacks.
+ */
 export function useOpenScheduleMutation() {
-    const queryClient = useQueryClient();
-
     return useMutation({
         mutationFn: openSchedule,
         onError: (error, scheduleId, context) => {
             console.error("openSchedule failed :", error);
-        },
-        // 필요한 경우 성공 후 추가 작업을 처리할 수 있습니다.
-        onSuccess: (data, scheduleId, context) => {
-            // console.log(`Schedule ${scheduleId} opened successfully.`);
         }
     });
 }

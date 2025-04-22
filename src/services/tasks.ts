@@ -94,10 +94,20 @@ import { TaskStatus } from "@/constants/task-status";
 
 let tasks: Task[];
 
+/**
+ * Opens the specified task in the OM Native application.
+ * @param taskId - The ID of the task to open.
+ * @returns A promise that resolves when the task has been opened.
+ */
 export async function openTask(taskId: string): Promise<void> {
     return await window.OMNative.openTask(taskId);
 }
 
+/**
+ * Fetches tasks from the OM Native API with optional filtering.
+ * @param filters - Optional filters to apply (status, assignee, date range, categories, pagination).
+ * @returns A promise resolving to the tasks response containing tasks array, total count, and an optional next page.
+ */
 export async function fetchTasks(
     filters?: TaskFilters
 ): Promise<TasksResponse> {
@@ -136,6 +146,12 @@ export async function fetchTasks(
     };
 }
 
+/**
+ * Toggles the status of a task between new and completed via the OM Native API.
+ * @param taskId - The ID of the task to toggle.
+ * @returns A promise that resolves to the updated task object.
+ * @throws Error if the task is not found or update fails.
+ */
 export async function toggleTaskStatus(taskId: string): Promise<Task> {
     // // 에러 테스트용
     // await new Promise((_, reject) =>
@@ -175,6 +191,12 @@ export async function toggleTaskStatus(taskId: string): Promise<Task> {
     return updatedTask;
 }
 
+/**
+ * Deletes a task via the OM Native API and removes it from the local cache.
+ * @param taskId - The ID of the task to delete.
+ * @returns A promise that resolves to the deleted task ID.
+ * @throws Error if the task is not found or deletion fails.
+ */
 export async function deleteTask(taskId: string): Promise<string> {
     // // 에러 테스트용
     // await new Promise((_, reject) =>
@@ -195,6 +217,11 @@ export async function deleteTask(taskId: string): Promise<string> {
     return taskId;
 }
 
+/**
+ * Undoes the deletion of a task in the OM Native application.
+ * @param taskId - The ID of the task to restore.
+ * @returns A promise that resolves when the deletion is undone.
+ */
 export async function undoDelete(taskId: string): Promise<void> {
     try {
         window.OMNative.undoDelete(taskId);

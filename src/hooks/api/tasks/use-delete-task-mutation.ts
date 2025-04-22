@@ -16,6 +16,12 @@ interface DeleteTaskParams {
 // Keep track of the current task outside of the component
 let currentTaskRef: DeleteTaskParams | null = null;
 
+/**
+ * Provides an optimistic mutation to delete a task via the OM Native API.
+ * Immediately removes the task from the React Query cache and rolls back on error,
+ * then invalidates task queries on success.
+ * @returns A React Query mutation object for deleteTask, supporting optimistic updates and error handling.
+ */
 export function useDeleteTaskMutation() {
     const { t } = useTranslation();
     const queryClient = useQueryClient();

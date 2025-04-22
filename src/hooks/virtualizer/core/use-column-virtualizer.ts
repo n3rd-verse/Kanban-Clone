@@ -8,6 +8,12 @@ interface UseColumnVirtualizerProps {
     columnRef: RefObject<HTMLDivElement>;
 }
 
+/**
+ * Custom hook that sets up virtualization for a column of tasks to optimize performance.
+ * @param props.tasks - Array of Task objects to virtualize.
+ * @param props.columnRef - Ref to the scrollable column container element.
+ * @returns The virtualizer instance from @tanstack/react-virtual.
+ */
 export function useColumnVirtualizer({
     tasks,
     columnRef

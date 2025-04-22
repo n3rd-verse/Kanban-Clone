@@ -12,7 +12,13 @@ interface UseTimelineContainerReturn {
 }
 
 /**
- * 타임라인 컨테이너의 너비를 관리하고 칼럼 너비를 계산하는 훅
+ * Manages timeline container width and calculates per-day column width based on container size and target days to show.
+ * @param props.scrollContainerRef - Ref to the scrollable timeline container element.
+ * @param props.targetDaysToShow - Number of days to display within the container width (default: 14).
+ * @param props.minColumnWidth - Minimum width of each day column in pixels (default: 80).
+ * @returns An object containing:
+ *   - containerWidth: current width of the container element in pixels.
+ *   - dayColumnWidth: calculated width for each day column in pixels.
  */
 export function useTimelineContainer({
     scrollContainerRef,

@@ -6,6 +6,11 @@ import { useToast } from "@/components/ui/use-toast";
 import { TASK_PAGE_SIZE } from "@/constants/pagination";
 import { useTranslation } from "react-i18next";
 
+/**
+ * Hook for fetching tasks in an infinite scrolling list with React Query suspense.
+ * @param filters - Optional TaskFilters to apply for fetching.
+ * @returns An infinite query object including pages, fetchNextPage, hasNextPage, and error.
+ */
 export function useInfiniteTasks(filters: TaskFilters = {}) {
     const { toast } = useToast();
     const { t } = useTranslation();

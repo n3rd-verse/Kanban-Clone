@@ -4,6 +4,11 @@ import { deleteSchedule } from "@/services/schedules";
 import { useTranslation } from "react-i18next";
 import { ScheduleDay } from "@/types/schedule";
 
+/**
+ * Provides an optimistic mutation to delete a schedule event.
+ * Removes the schedule from cache immediately and rolls back on error.
+ * @returns A React Query mutation object to perform deleteSchedule with optimistic updates and error handling.
+ */
 export function useDeleteScheduleMutation() {
     const { t } = useTranslation();
 
@@ -42,17 +47,5 @@ export function useDeleteScheduleMutation() {
                 ? error.message
                 : t("errors.failedToDeleteSchedule"),
         fallbackErrorMessage: t("errors.failedToDeleteSchedule")
-
-        // Uncomment if needed
-        // onSuccess: () => {
-        //     queryClient.invalidateQueries({
-        //         queryKey: queryKeys.schedules.all()
-        //     });
-
-        //     toast({
-        //         title: t("toast.titles.success"),
-        //         description: t("toast.descriptions.scheduleDeleted")
-        //     });
-        // }
     });
 }

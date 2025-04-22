@@ -2,6 +2,13 @@
 import { useWindowSize } from "@/hooks/design/use-window-size";
 import { COLUMN_SIZES } from "@/components/KanbanBoard/utils/constants";
 
+/**
+ * Provides responsive layout metrics for the UI,
+ * including current window width and maximum visible task count.
+ * @returns An object containing:
+ *   - width: current window width in pixels.
+ *   - maxVisibleTasks: number of tasks to display based on media queries.
+ */
 export function useResponsiveLayout() {
     const { width } = useWindowSize();
 
