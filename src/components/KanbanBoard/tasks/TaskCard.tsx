@@ -127,13 +127,48 @@ export function TaskCard({ task, className }: TaskCardProps) {
                                 allowEdit={task.allowEdit ?? false}
                                 isLoading={isLoading}
                             />
-                            <TaskAssignees assignees={task.assignee} />
-                            <TaskDate date={task.date} status={task.status} />
-                            <AiInfo
-                                ai={task.ai}
-                                onIconMouseEnter={handleIconMouseEnter}
-                                onIconMouseLeave={handleIconMouseLeave}
-                            />
+
+                            <div className="flex justify-between items-center mt-1">
+                                <div className="flex-1 min-w-0 overflow-hidden">
+                                    {task.assignee &&
+                                    task.assignee.length > 0 ? (
+                                        <TaskAssignees
+                                            assignees={task.assignee}
+                                        />
+                                    ) : (
+                                        task.date &&
+                                        task.status !==
+                                            TaskStatus.COMPLETED && (
+                                            <TaskDate
+                                                date={task.date}
+                                                status={task.status}
+                                            />
+                                        )
+                                    )}
+                                </div>
+
+                                {task.ai?.popupInfo && (
+                                    <div className="flex-shrink-0 ml-2">
+                                        <AiInfo
+                                            ai={task.ai}
+                                            onIconMouseEnter={
+                                                handleIconMouseEnter
+                                            }
+                                            onIconMouseLeave={
+                                                handleIconMouseLeave
+                                            }
+                                        />
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Only render TaskDate here if assignees exist */}
+                            {task.assignee && task.assignee.length > 0 && (
+                                <TaskDate
+                                    date={task.date}
+                                    status={task.status}
+                                />
+                            )}
                         </div>
                     </div>
                 </Card>
@@ -210,7 +245,7 @@ function TaskHeaderActions({
 function TaskAssignees({ assignees }: { assignees: Task["assignee"] }) {
     return (
         <div className="flex items-center gap-2 mt-1 overflow-hidden">
-            <div className="flex flex-shrink-0 items-center gap-1 min-w-0">
+            <div className="flex flex-shrink-0 items-center gap-1 min-w-0 max-w-[calc(100%-30px)] overflow-hidden">
                 {assignees.map((assignee, index) => (
                     <ContactAddress
                         key={assignee.email}
@@ -236,7 +271,7 @@ function TaskDate({
         status === TaskStatus.URGENT ? "text-[#ea384c]" : "text-gray-400";
 
     return (
-        <div className={`text-sm ${dateColorClass} mt-auto pt-2`}>
+        <div className={`text-sm ${dateColorClass} pt-2`}>
             {format(new Date(date), "MMM dd, yyyy")}
         </div>
     );
@@ -264,76 +299,63 @@ function AiInfo({
     }, [onIconMouseLeave]);
 
     return (
-        <div className="flex justify-between items-center mt-3 w-full max-w-full text-sm">
-            <div className="flex-1 min-w-0 max-w-[calc(100%-24px)]">
-                {/* Hide ai topic and summary */}
-                {/* <div className="break-words">
-                    <span className="font-medium text-[#444]">{ai?.topic}</span>
-                    <span className="text-[#666]"> - </span>
-                    <span className="text-[#666]">{ai?.summary}</span>
-                </div> */}
-            </div>
+        <Popover open={showAiInfo} onOpenChange={setShowAiInfo}>
+            <PopoverTrigger asChild>
+                <div
+                    className="flex-shrink-0 cursor-pointer"
+                    onClick={(e: React.MouseEvent) => {
+                        e.stopPropagation();
+                    }}
+                    onMouseEnter={handleIconMouseEnter}
+                    onMouseLeave={handleIconMouseLeave}
+                >
+                    <div className="flex justify-center items-center bg-gray-500 rounded-full w-5 h-5 text-white text-center">
+                        <span className="inline-flex justify-center items-center w-full h-full font-bold text-xs">
+                            i
+                        </span>
+                    </div>
+                </div>
+            </PopoverTrigger>
+            <PopoverContent
+                className="p-3 w-72"
+                side="top"
+                align="center"
+                sideOffset={5}
+                avoidCollisions
+                collisionPadding={10}
+            >
+                <div className="text-sm">
+                    {ai?.popupInfo &&
+                        Array.isArray(ai.popupInfo) &&
+                        ai.popupInfo.length > 0 && (
+                            <div className="space-y-2">
+                                {ai.popupInfo.map((item, index) => {
+                                    const key = Object.keys(item)[0];
+                                    const value = item[key];
 
-            {ai?.popupInfo && (
-                <Popover open={showAiInfo} onOpenChange={setShowAiInfo}>
-                    <PopoverTrigger asChild>
-                        <div
-                            className="flex-shrink-0 self-center ml-1 cursor-pointer"
-                            onClick={(e: React.MouseEvent) => {
-                                e.stopPropagation();
-                            }}
-                            onMouseEnter={handleIconMouseEnter}
-                            onMouseLeave={handleIconMouseLeave}
-                        >
-                            <div className="flex justify-center items-center bg-gray-500 rounded-full w-5 h-5 text-white text-center">
-                                <span className="inline-flex justify-center items-center w-full h-full font-bold text-xs">
-                                    i
-                                </span>
+                                    return (
+                                        <div
+                                            key={index}
+                                            className="flex flex-col gap-1 text-sm"
+                                        >
+                                            <div className="text-gray-700 break-words">
+                                                <span className="font-medium">
+                                                    {key}:
+                                                </span>{" "}
+                                                <span className="break-words">
+                                                    {renderPopupInfoValue(
+                                                        value
+                                                    )}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                             </div>
-                        </div>
-                    </PopoverTrigger>
-                    <PopoverContent
-                        className="p-3 w-72"
-                        side="top"
-                        align="center"
-                        sideOffset={5}
-                        avoidCollisions
-                        collisionPadding={10}
-                    >
-                        <div className="text-sm">
-                            {ai?.popupInfo &&
-                                Array.isArray(ai.popupInfo) &&
-                                ai.popupInfo.length > 0 && (
-                                    <div className="space-y-2">
-                                        {ai.popupInfo.map((item, index) => {
-                                            const key = Object.keys(item)[0];
-                                            const value = item[key];
-
-                                            return (
-                                                <div
-                                                    key={index}
-                                                    className="flex flex-col gap-1 text-sm"
-                                                >
-                                                    <div className="text-gray-700 break-words">
-                                                        <span className="font-medium">
-                                                            {key}:
-                                                        </span>{" "}
-                                                        <span className="break-words">
-                                                            {renderPopupInfoValue(
-                                                                value
-                                                            )}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                )}
-                        </div>
-                    </PopoverContent>
-                </Popover>
-            )}
-        </div>
+                        )}
+                </div>
+            </PopoverContent>
+        </Popover>
     );
 }
 
