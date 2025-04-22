@@ -54,7 +54,8 @@ export function TaskCard({ task, className }: TaskCardProps) {
     const { mutate: openTask } = useOpenTaskMutation();
     const { mutate: undoDelete } = useUndoDeleteMutation();
     const { t } = useTranslation();
-    const [showAiInfo, setShowAiInfo] = useState(false);
+    const [showAiSummary, setShowAiSummary] = useState(false);
+    const [isMouseOnIcon, setIsMouseOnIcon] = useState(false);
 
     const handleDelete = useCallback(() => {
         deleteTask({ id: task.id, title: task.title });
@@ -86,8 +87,19 @@ export function TaskCard({ task, className }: TaskCardProps) {
 
     const isLoading = isToggling || isDeleting;
 
+    const handleIconMouseEnter = useCallback(() => {
+        setIsMouseOnIcon(true);
+    }, []);
+
+    const handleIconMouseLeave = useCallback(() => {
+        setIsMouseOnIcon(false);
+    }, []);
+
     return (
-        <Popover open={showAiInfo} onOpenChange={setShowAiInfo}>
+        <Popover
+            open={!isMouseOnIcon && showAiSummary}
+            onOpenChange={setShowAiSummary}
+        >
             <PopoverTrigger asChild>
                 <Card
                     className={cn(
@@ -99,8 +111,8 @@ export function TaskCard({ task, className }: TaskCardProps) {
                         className
                     )}
                     onClick={handleClick}
-                    onMouseEnter={() => setShowAiInfo(true)}
-                    onMouseLeave={() => setShowAiInfo(false)}
+                    onMouseEnter={() => setShowAiSummary(true)}
+                    onMouseLeave={() => setShowAiSummary(false)}
                 >
                     {isLoading && <LoadingSpinner overlay />}
                     <div className="flex flex-col h-full">
@@ -117,7 +129,11 @@ export function TaskCard({ task, className }: TaskCardProps) {
                             />
                             <TaskAssignees assignees={task.assignee} />
                             <TaskDate date={task.date} status={task.status} />
-                            {/* <AiInfo ai={task.ai} /> */}
+                            <AiInfo
+                                ai={task.ai}
+                                onIconMouseEnter={handleIconMouseEnter}
+                                onIconMouseLeave={handleIconMouseLeave}
+                            />
                         </div>
                     </div>
                 </Card>
@@ -226,16 +242,97 @@ function TaskDate({
     );
 }
 
-function AiInfo({ ai }: { ai: Task["ai"] | undefined }) {
+function AiInfo({
+    ai,
+    onIconMouseEnter,
+    onIconMouseLeave
+}: {
+    ai: Task["ai"] | undefined;
+    onIconMouseEnter: () => void;
+    onIconMouseLeave: () => void;
+}) {
+    const [showAiInfo, setShowAiInfo] = useState(false);
+
+    const handleIconMouseEnter = useCallback(() => {
+        setShowAiInfo(true);
+        onIconMouseEnter();
+    }, [onIconMouseEnter]);
+
+    const handleIconMouseLeave = useCallback(() => {
+        setShowAiInfo(false);
+        onIconMouseLeave();
+    }, [onIconMouseLeave]);
+
     return (
         <div className="flex justify-between items-center mt-3 w-full max-w-full text-sm">
-            <div className="flex-1 min-w-0 max-w-full">
-                <div className="break-words">
+            <div className="flex-1 min-w-0 max-w-[calc(100%-24px)]">
+                {/* Hide ai topic and summary */}
+                {/* <div className="break-words">
                     <span className="font-medium text-[#444]">{ai?.topic}</span>
                     <span className="text-[#666]"> - </span>
                     <span className="text-[#666]">{ai?.summary}</span>
-                </div>
+                </div> */}
             </div>
+
+            {ai?.popupInfo && (
+                <Popover open={showAiInfo} onOpenChange={setShowAiInfo}>
+                    <PopoverTrigger asChild>
+                        <div
+                            className="flex-shrink-0 self-center ml-1 cursor-pointer"
+                            onClick={(e: React.MouseEvent) => {
+                                e.stopPropagation();
+                            }}
+                            onMouseEnter={handleIconMouseEnter}
+                            onMouseLeave={handleIconMouseLeave}
+                        >
+                            <div className="flex justify-center items-center bg-gray-500 rounded-full w-5 h-5 text-white text-center">
+                                <span className="inline-flex justify-center items-center w-full h-full font-bold text-xs">
+                                    i
+                                </span>
+                            </div>
+                        </div>
+                    </PopoverTrigger>
+                    <PopoverContent
+                        className="p-3 w-72"
+                        side="top"
+                        align="center"
+                        sideOffset={5}
+                        avoidCollisions
+                        collisionPadding={10}
+                    >
+                        <div className="text-sm">
+                            {ai?.popupInfo &&
+                                Array.isArray(ai.popupInfo) &&
+                                ai.popupInfo.length > 0 && (
+                                    <div className="space-y-2">
+                                        {ai.popupInfo.map((item, index) => {
+                                            const key = Object.keys(item)[0];
+                                            const value = item[key];
+
+                                            return (
+                                                <div
+                                                    key={index}
+                                                    className="flex flex-col gap-1 text-sm"
+                                                >
+                                                    <div className="text-gray-700 break-words">
+                                                        <span className="font-medium">
+                                                            {key}:
+                                                        </span>{" "}
+                                                        <span className="break-words">
+                                                            {renderPopupInfoValue(
+                                                                value
+                                                            )}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                        </div>
+                    </PopoverContent>
+                </Popover>
+            )}
         </div>
     );
 }
