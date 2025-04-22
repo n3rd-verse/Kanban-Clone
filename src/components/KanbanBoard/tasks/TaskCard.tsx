@@ -5,7 +5,7 @@ import { format } from "date-fns";
 import { CardDeleteButton } from "../common";
 import { useDeleteTaskMutation } from "@/hooks/api/tasks/use-delete-task-mutation";
 import { useToggleTaskStatusMutation } from "@/hooks/api/tasks/use-toggle-task-status-mutation";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo, memo } from "react";
 import { cn } from "@/lib/utils";
 import { useOpenTaskMutation } from "@/hooks/api/tasks/use-open-task-mutation";
 import { ContactAddress } from "../common";
@@ -36,6 +36,10 @@ interface TaskHeaderProps {
     isCompleted: boolean;
     allowEdit: boolean;
     isLoading: boolean;
+    hasMiddleRowContent: boolean;
+    ai: Task["ai"] | undefined;
+    onIconMouseEnter: () => void;
+    onIconMouseLeave: () => void;
 }
 
 interface TaskHeaderActionsProps {
@@ -46,21 +50,23 @@ interface TaskHeaderActionsProps {
     isLoading: boolean;
 }
 
-export function TaskCard({ task, className }: TaskCardProps) {
+// Custom hook to manage task card state and interactions
+function useTaskCard(task: Task) {
     const { mutate: deleteTask, isPending: isDeleting } =
         useDeleteTaskMutation();
     const { mutate: toggleTask, isPending: isToggling } =
         useToggleTaskStatusMutation();
     const { mutate: openTask } = useOpenTaskMutation();
     const { mutate: undoDelete } = useUndoDeleteMutation();
-    const { t } = useTranslation();
     const [showAiSummary, setShowAiSummary] = useState(false);
     const [isMouseOnIcon, setIsMouseOnIcon] = useState(false);
+
+    const isLoading = isDeleting || isToggling;
 
     const handleDelete = useCallback(() => {
         deleteTask({ id: task.id, title: task.title });
 
-        const { dismiss, id } = showDeleteToast({
+        const { dismiss } = showDeleteToast({
             title: "1 deleted",
             actionLabel: "Undo",
             duration: TOAST_CONFIG.DURATIONS.DEFAULT,
@@ -85,8 +91,6 @@ export function TaskCard({ task, className }: TaskCardProps) {
         [openTask, task.id]
     );
 
-    const isLoading = isToggling || isDeleting;
-
     const handleIconMouseEnter = useCallback(() => {
         setIsMouseOnIcon(true);
     }, []);
@@ -95,10 +99,81 @@ export function TaskCard({ task, className }: TaskCardProps) {
         setIsMouseOnIcon(false);
     }, []);
 
+    const handleCardMouseEnter = useCallback(() => {
+        setShowAiSummary(true);
+    }, []);
+
+    const handleCardMouseLeave = useCallback(() => {
+        setShowAiSummary(false);
+    }, []);
+
+    const handlePopoverOpenChange = useCallback((open: boolean) => {
+        setShowAiSummary(open);
+    }, []);
+
+    // Compute derived props
+    const contentInfo = useMemo(() => {
+        const hasAssignees = task.assignee && task.assignee.length > 0;
+        const hasDate = task.date && task.status !== TaskStatus.COMPLETED;
+        const hasMiddleRowContent = hasAssignees || hasDate;
+        const hasAiInfo = !!task.ai?.popupInfo;
+        const isCompleted = task.status === TaskStatus.COMPLETED;
+
+        return {
+            hasAssignees,
+            hasDate,
+            hasMiddleRowContent,
+            hasAiInfo,
+            isCompleted
+        };
+    }, [task.assignee, task.date, task.status, task.ai?.popupInfo]);
+
+    return {
+        state: {
+            showAiSummary,
+            isMouseOnIcon,
+            isLoading,
+            contentInfo
+        },
+        handlers: {
+            handleDelete,
+            handleComplete,
+            handleClick,
+            handleIconMouseEnter,
+            handleIconMouseLeave,
+            handleCardMouseEnter,
+            handleCardMouseLeave,
+            handlePopoverOpenChange
+        }
+    };
+}
+
+export function TaskCard({ task, className }: TaskCardProps) {
+    const { state, handlers } = useTaskCard(task);
+    const { showAiSummary, isMouseOnIcon, isLoading, contentInfo } = state;
+    const {
+        handleDelete,
+        handleComplete,
+        handleClick,
+        handleIconMouseEnter,
+        handleIconMouseLeave,
+        handleCardMouseEnter,
+        handleCardMouseLeave,
+        handlePopoverOpenChange
+    } = handlers;
+
+    const {
+        hasAssignees,
+        hasDate,
+        hasMiddleRowContent,
+        hasAiInfo,
+        isCompleted
+    } = contentInfo;
+
     return (
         <Popover
             open={!isMouseOnIcon && showAiSummary}
-            onOpenChange={setShowAiSummary}
+            onOpenChange={handlePopoverOpenChange}
         >
             <PopoverTrigger asChild>
                 <Card
@@ -111,8 +186,8 @@ export function TaskCard({ task, className }: TaskCardProps) {
                         className
                     )}
                     onClick={handleClick}
-                    onMouseEnter={() => setShowAiSummary(true)}
-                    onMouseLeave={() => setShowAiSummary(false)}
+                    onMouseEnter={handleCardMouseEnter}
+                    onMouseLeave={handleCardMouseLeave}
                 >
                     {isLoading && <LoadingSpinner overlay />}
                     <div className="flex flex-col h-full">
@@ -121,49 +196,32 @@ export function TaskCard({ task, className }: TaskCardProps) {
                                 title={task.title}
                                 onDelete={handleDelete}
                                 onComplete={handleComplete}
-                                isCompleted={
-                                    task.status === TaskStatus.COMPLETED
-                                }
-                                allowEdit={task.allowEdit ?? false}
+                                isCompleted={isCompleted}
+                                allowEdit={!!task.allowEdit}
                                 isLoading={isLoading}
+                                hasMiddleRowContent={Boolean(
+                                    hasMiddleRowContent
+                                )}
+                                ai={task.ai}
+                                onIconMouseEnter={handleIconMouseEnter}
+                                onIconMouseLeave={handleIconMouseLeave}
                             />
 
-                            <div className="flex justify-between items-center mt-1">
-                                <div className="flex-1 min-w-0 overflow-hidden">
-                                    {task.assignee &&
-                                    task.assignee.length > 0 ? (
-                                        <TaskAssignees
-                                            assignees={task.assignee}
-                                        />
-                                    ) : (
-                                        task.date &&
-                                        task.status !==
-                                            TaskStatus.COMPLETED && (
-                                            <TaskDate
-                                                date={task.date}
-                                                status={task.status}
-                                            />
-                                        )
-                                    )}
-                                </div>
+                            {hasMiddleRowContent && (
+                                <MiddleContentRow
+                                    hasAssignees={hasAssignees}
+                                    hasDate={!!hasDate}
+                                    taskAssignees={task.assignee}
+                                    taskDate={task.date}
+                                    taskStatus={task.status}
+                                    hasAiInfo={hasAiInfo}
+                                    ai={task.ai}
+                                    onIconMouseEnter={handleIconMouseEnter}
+                                    onIconMouseLeave={handleIconMouseLeave}
+                                />
+                            )}
 
-                                {task.ai?.popupInfo && (
-                                    <div className="flex-shrink-0 ml-2">
-                                        <AiInfo
-                                            ai={task.ai}
-                                            onIconMouseEnter={
-                                                handleIconMouseEnter
-                                            }
-                                            onIconMouseLeave={
-                                                handleIconMouseLeave
-                                            }
-                                        />
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Only render TaskDate here if assignees exist */}
-                            {task.assignee && task.assignee.length > 0 && (
+                            {hasAssignees && hasDate && (
                                 <TaskDate
                                     date={task.date}
                                     status={task.status}
@@ -193,17 +251,82 @@ export function TaskCard({ task, className }: TaskCardProps) {
     );
 }
 
-function TaskHeader({
+// Extracted middle content row component
+interface MiddleContentRowProps {
+    hasAssignees: boolean;
+    hasDate: boolean;
+    taskAssignees: Task["assignee"];
+    taskDate: Task["date"];
+    taskStatus: TaskStatus;
+    hasAiInfo: boolean;
+    ai: Task["ai"] | undefined;
+    onIconMouseEnter: () => void;
+    onIconMouseLeave: () => void;
+}
+
+const MiddleContentRow = memo(function MiddleContentRow({
+    hasAssignees,
+    hasDate,
+    taskAssignees,
+    taskDate,
+    taskStatus,
+    hasAiInfo,
+    ai,
+    onIconMouseEnter,
+    onIconMouseLeave
+}: MiddleContentRowProps) {
+    return (
+        <div className="flex justify-between items-center mt-1">
+            <div className="flex-1 min-w-0 overflow-hidden">
+                {hasAssignees ? (
+                    <TaskAssignees assignees={taskAssignees} />
+                ) : (
+                    hasDate && <TaskDate date={taskDate} status={taskStatus} />
+                )}
+            </div>
+
+            {hasAiInfo && (
+                <div className="flex-shrink-0 ml-2">
+                    <AiInfo
+                        ai={ai}
+                        onIconMouseEnter={onIconMouseEnter}
+                        onIconMouseLeave={onIconMouseLeave}
+                    />
+                </div>
+            )}
+        </div>
+    );
+});
+
+const TaskHeader = memo(function TaskHeader({
     title,
     onDelete,
     onComplete,
     isCompleted,
     allowEdit,
-    isLoading
+    isLoading,
+    hasMiddleRowContent,
+    ai,
+    onIconMouseEnter,
+    onIconMouseLeave
 }: TaskHeaderProps) {
+    const hasAiInfo = !!ai?.popupInfo;
+
     return (
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-start">
             <h3 className="mb-1 font-medium break-words">{title}</h3>
+
+            {/* Move info icon to title row when no middle row content */}
+            {!hasMiddleRowContent && hasAiInfo && (
+                <div className="flex-shrink-0 mt-0.5 ml-2">
+                    <AiInfo
+                        ai={ai}
+                        onIconMouseEnter={onIconMouseEnter}
+                        onIconMouseLeave={onIconMouseLeave}
+                    />
+                </div>
+            )}
+
             <TaskHeaderActions
                 onDelete={onDelete}
                 onComplete={onComplete}
@@ -213,9 +336,9 @@ function TaskHeader({
             />
         </div>
     );
-}
+});
 
-function TaskHeaderActions({
+const TaskHeaderActions = memo(function TaskHeaderActions({
     onDelete,
     onComplete,
     isCompleted,
@@ -240,7 +363,7 @@ function TaskHeaderActions({
             </div>
         </div>
     );
-}
+});
 
 function TaskAssignees({ assignees }: { assignees: Task["assignee"] }) {
     return (
@@ -277,15 +400,17 @@ function TaskDate({
     );
 }
 
-function AiInfo({
-    ai,
-    onIconMouseEnter,
-    onIconMouseLeave
-}: {
+interface AiInfoProps {
     ai: Task["ai"] | undefined;
     onIconMouseEnter: () => void;
     onIconMouseLeave: () => void;
-}) {
+}
+
+const AiInfo = memo(function AiInfo({
+    ai,
+    onIconMouseEnter,
+    onIconMouseLeave
+}: AiInfoProps) {
     const [showAiInfo, setShowAiInfo] = useState(false);
 
     const handleIconMouseEnter = useCallback(() => {
@@ -329,35 +454,37 @@ function AiInfo({
                         Array.isArray(ai.popupInfo) &&
                         ai.popupInfo.length > 0 && (
                             <div className="space-y-2">
-                                {ai.popupInfo.map((item, index) => {
-                                    const key = Object.keys(item)[0];
-                                    const value = item[key];
-
-                                    return (
-                                        <div
-                                            key={index}
-                                            className="flex flex-col gap-1 text-sm"
-                                        >
-                                            <div className="text-gray-700 break-words">
-                                                <span className="font-medium">
-                                                    {key}:
-                                                </span>{" "}
-                                                <span className="break-words">
-                                                    {renderPopupInfoValue(
-                                                        value
-                                                    )}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
+                                {ai.popupInfo.map((item, index) => (
+                                    <InfoItem key={index} item={item} />
+                                ))}
                             </div>
                         )}
                 </div>
             </PopoverContent>
         </Popover>
     );
+});
+
+// Extracted the info item for better readability
+interface InfoItemProps {
+    item: Record<string, AiInfoValue>;
 }
+
+const InfoItem = memo(function InfoItem({ item }: InfoItemProps) {
+    const key = Object.keys(item)[0];
+    const value = item[key];
+
+    return (
+        <div className="flex flex-col gap-1 text-sm">
+            <div className="text-gray-700 break-words">
+                <span className="font-medium">{key}:</span>{" "}
+                <span className="break-words">
+                    {renderPopupInfoValue(value)}
+                </span>
+            </div>
+        </div>
+    );
+});
 
 const renderPopupInfoValue = (value: AiInfoValue): string => {
     if (typeof value === "string") {
