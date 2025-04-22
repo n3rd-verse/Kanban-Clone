@@ -54,11 +54,12 @@ export function TaskCard({ task, className }: TaskCardProps) {
     const { mutate: openTask } = useOpenTaskMutation();
     const { mutate: undoDelete } = useUndoDeleteMutation();
     const { t } = useTranslation();
+    const [showAiInfo, setShowAiInfo] = useState(false);
 
     const handleDelete = useCallback(() => {
         deleteTask({ id: task.id, title: task.title });
 
-        const {dismiss, id} = showDeleteToast({
+        const { dismiss, id } = showDeleteToast({
             title: "1 deleted",
             actionLabel: "Undo",
             duration: TOAST_CONFIG.DURATIONS.DEFAULT,
@@ -86,34 +87,58 @@ export function TaskCard({ task, className }: TaskCardProps) {
     const isLoading = isToggling || isDeleting;
 
     return (
-        <Card
-            className={cn(
-                "p-4 hover:shadow-md transition-shadow",
-                "break-words h-full",
-                "group relative",
-                "cursor-pointer overflow-hidden",
-                isLoading && "opacity-50",
-                className
+        <Popover open={showAiInfo} onOpenChange={setShowAiInfo}>
+            <PopoverTrigger asChild>
+                <Card
+                    className={cn(
+                        "p-4 hover:shadow-md transition-shadow",
+                        "break-words h-full",
+                        "group relative",
+                        "cursor-pointer overflow-hidden",
+                        isLoading && "opacity-50",
+                        className
+                    )}
+                    onClick={handleClick}
+                    onMouseEnter={() => setShowAiInfo(true)}
+                    onMouseLeave={() => setShowAiInfo(false)}
+                >
+                    {isLoading && <LoadingSpinner overlay />}
+                    <div className="flex flex-col h-full">
+                        <div className="flex-1 min-w-0 max-w-full">
+                            <TaskHeader
+                                title={task.title}
+                                onDelete={handleDelete}
+                                onComplete={handleComplete}
+                                isCompleted={
+                                    task.status === TaskStatus.COMPLETED
+                                }
+                                allowEdit={task.allowEdit ?? false}
+                                isLoading={isLoading}
+                            />
+                            <TaskAssignees assignees={task.assignee} />
+                            <TaskDate date={task.date} status={task.status} />
+                            {/* <AiInfo ai={task.ai} /> */}
+                        </div>
+                    </div>
+                </Card>
+            </PopoverTrigger>
+            {task.ai?.summary && (
+                <PopoverContent
+                    className="p-3 w-72"
+                    side="top"
+                    align="center"
+                    sideOffset={5}
+                    avoidCollisions
+                    collisionPadding={10}
+                >
+                    <div className="text-sm">
+                        <div className="text-gray-700 break-words">
+                            {task.ai.summary}
+                        </div>
+                    </div>
+                </PopoverContent>
             )}
-            onClick={handleClick}
-        >
-            {isLoading && <LoadingSpinner overlay />}
-            <div className="flex flex-col h-full">
-                <div className="flex-1 min-w-0 max-w-full">
-                    <TaskHeader
-                        title={task.title}
-                        onDelete={handleDelete}
-                        onComplete={handleComplete}
-                        isCompleted={task.status === TaskStatus.COMPLETED}
-                        allowEdit={task.allowEdit ?? false}
-                        isLoading={isLoading}
-                    />
-                    <TaskAssignees assignees={task.assignee} />
-                    <TaskDate date={task.date} status={task.status} />
-                    <AiInfo ai={task.ai} />
-                </div>
-            </div>
-        </Card>
+        </Popover>
     );
 }
 
@@ -202,68 +227,15 @@ function TaskDate({
 }
 
 function AiInfo({ ai }: { ai: Task["ai"] | undefined }) {
-    const [showAiInfo, setShowAiInfo] = useState(false);
-
     return (
         <div className="flex justify-between items-center mt-3 w-full max-w-full text-sm">
-            <div className="flex-1 min-w-0 max-w-[calc(100%-24px)]">
+            <div className="flex-1 min-w-0 max-w-full">
                 <div className="break-words">
                     <span className="font-medium text-[#444]">{ai?.topic}</span>
                     <span className="text-[#666]"> - </span>
                     <span className="text-[#666]">{ai?.summary}</span>
                 </div>
             </div>
-
-            {ai?.popupInfo && (
-                <Popover open={showAiInfo} onOpenChange={setShowAiInfo}>
-                    <PopoverTrigger asChild>
-                        <div
-                            className="flex-shrink-0 self-center ml-1 cursor-pointer"
-                            onClick={(e: React.MouseEvent) => {
-                                e.stopPropagation();
-                            }}
-                        >
-                            <div className="flex justify-center items-center bg-gray-500 rounded-full w-5 h-5 text-white text-center">
-                                <span className="inline-flex justify-center items-center w-full h-full font-bold text-xs">
-                                    i
-                                </span>
-                            </div>
-                        </div>
-                    </PopoverTrigger>
-                    <PopoverContent className="p-3 w-72" side="bottom">
-                        <div className="text-sm">
-                            {ai?.popupInfo &&
-                                Array.isArray(ai.popupInfo) &&
-                                ai.popupInfo.length > 0 && (
-                                    <div className="space-y-2">
-                                        {ai.popupInfo.map((item, index) => {
-                                            const key = Object.keys(item)[0];
-                                            const value = item[key];
-
-                                            return (
-                                                <div
-                                                    key={index}
-                                                    className="flex flex-col gap-1 text-sm"
-                                                >
-                                                    <div className="text-gray-700 break-words">
-                                                        <span className="font-medium">
-                                                            {key}:
-                                                        </span>{" "}
-                                                        <span className="break-words">
-                                                            {renderPopupInfoValue(
-                                                                value
-                                                            )}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                )}
-                        </div>
-                    </PopoverContent>
-                </Popover>
-            )}
         </div>
     );
 }
