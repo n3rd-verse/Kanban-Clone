@@ -13,6 +13,7 @@ import { CiCalendar, CiViewTimeline } from "react-icons/ci";
 import { useTranslation } from "react-i18next";
 import { Toaster } from "@/components/ui/toaster";
 import { TaskFilter } from "@/components/KanbanBoard/tasks";
+import { useUndoKeyboardShortcut } from "@/hooks/keyboard/use-undo-keyboard-shortcut";
 
 const TanStackRouterDevtools =
     process.env.NODE_ENV === "production"
@@ -33,6 +34,8 @@ function RootComponent() {
     const { t } = useTranslation();
     const matches = useMatches();
     const isRootRoute = matches.some((match) => match.routeId === "/");
+
+    useUndoKeyboardShortcut();
 
     const views = React.useMemo(
         () => [

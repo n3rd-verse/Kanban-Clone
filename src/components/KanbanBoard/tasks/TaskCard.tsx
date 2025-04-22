@@ -15,6 +15,7 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { showDeleteToast } from "@/components/ui/undo-toast";
 import { useUndoDeleteMutation } from "@/hooks/api/tasks/use-undo-delete-mutation";
 import { TOAST_CONFIG } from "@/constants/toast-config";
+import { useUndoStore } from "@/stores/undo-store";
 
 import {
     Popover,
@@ -54,11 +55,12 @@ export function TaskCard({ task, className }: TaskCardProps) {
     const { mutate: openTask } = useOpenTaskMutation();
     const { mutate: undoDelete } = useUndoDeleteMutation();
     const { t } = useTranslation();
+    const { addDeletedTask } = useUndoStore();
 
     const handleDelete = useCallback(() => {
         deleteTask({ id: task.id, title: task.title });
 
-        const {dismiss, id} = showDeleteToast({
+        const { dismiss, id } = showDeleteToast({
             title: "1 deleted",
             actionLabel: "Undo",
             duration: TOAST_CONFIG.DURATIONS.DEFAULT,
@@ -67,7 +69,15 @@ export function TaskCard({ task, className }: TaskCardProps) {
                 dismiss();
             }
         });
-    }, [deleteTask, task, undoDelete]);
+
+        addDeletedTask({
+            id: task.id,
+            title: task.title,
+            task,
+            toastId: id,
+            dismissToast: dismiss
+        });
+    }, [deleteTask, task, undoDelete, addDeletedTask]);
 
     const handleComplete = useCallback(() => {
         toggleTask(task.id);
