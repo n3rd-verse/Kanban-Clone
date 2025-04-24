@@ -9,6 +9,9 @@ interface OMNative {
     deleteSchedule(scheduleId: string, callback: (success: boolean) => void): boolean;
     getSchedules(filters: string, callback: (json: string) => void): boolean;
     undoDelete(itemId:string);
+    
+    deleteTaskByFilter(filters: string, callback: (success: boolean) => void): boolean;
+    deleteScheduleByIds(ids: string[], callback: (success: boolean) => void): boolean;
 }
 
 declare interface Window {
