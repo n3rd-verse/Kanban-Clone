@@ -31,8 +31,17 @@ import type { ScheduleDay } from "@/types/schedule";
  * @returns A promise resolving to an array of ScheduleDay objects representing daily schedules.
  */
 export async function fetchSchedules(): Promise<ScheduleDay[]> {
+    const filtersJson = JSON.stringify({
+        assignee: [],
+        startDate: "",
+        endDate: "",
+        categories:  [],
+        page: 0,
+        limit: 20
+    });
+
     const json = await new Promise<string>((resolve) => {
-        window.OMNative.getSchedules((json) => {
+        window.OMNative.getSchedules(filtersJson ,(json) => {
             resolve(json);
         });
     });
