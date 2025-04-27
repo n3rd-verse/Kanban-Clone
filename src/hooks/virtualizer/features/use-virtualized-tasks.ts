@@ -1,10 +1,8 @@
-import { RefObject, useEffect, useCallback } from "react";
+import { RefObject } from "react";
 import { useInfiniteTasks } from "@/hooks/api/tasks/use-infinite-tasks";
 import { useColumnVirtualizer } from "@/hooks/virtualizer/core/use-column-virtualizer";
 import { TaskStatus } from "@/constants/task-status";
 import { COLUMN_SIZES } from "@/components/KanbanBoard/utils/constants";
-import { useSearch } from "@tanstack/react-router";
-import { Route } from "@/routes/";
 import { useTaskFilter } from "@/hooks/filter/use-task-filter";
 import { useIntersectionObserver } from "@/hooks/core/use-intersection-observer";
 
