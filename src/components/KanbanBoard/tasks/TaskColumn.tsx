@@ -1,4 +1,11 @@
-import { useRef, RefObject } from "react";
+import {
+    useRef,
+    RefObject,
+    useEffect,
+    memo,
+    useCallback,
+    useMemo
+} from "react";
 import { useTranslation } from "react-i18next";
 import { Task } from "@/types/task";
 import { TaskStatus } from "@/constants/task-status";
@@ -6,6 +13,9 @@ import { useColumnVirtualizer, useVirtualizedTasks } from "@/hooks/virtualizer";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { TaskCard } from "./TaskCard";
 import { STATUS_CONFIG } from "../utils/constants";
+import { useSelectionStore } from "@/stores/selection-store";
+import { Card } from "@/components/ui/card";
+import { useKeyboardNavigation } from "@/hooks/kanban/useKeyboardNavigation";
 // import { useWindowSize } from "@/hooks/design/use-window-size";
 // import { cn } from "@/lib/utils";
 
@@ -21,6 +31,7 @@ interface TaskColumnContentProps {
     tasks: Task[];
     virtualizer: ReturnType<typeof useColumnVirtualizer>;
     isFetchingNextPage: boolean;
+    keyboardProps?: React.HTMLAttributes<HTMLDivElement>;
 }
 
 interface TaskColumnErrorProps {
@@ -42,6 +53,11 @@ export function TaskColumn({
         null
     ) as RefObject<HTMLDivElement>;
 
+    // useCallback으로 래핑하여 함수 안정성 보장
+    const updateTasksByStatus = useSelectionStore(
+        useCallback((state) => state.updateTasksByStatus, [])
+    );
+
     const {
         tasks: allTasks,
         virtualizer,
@@ -60,6 +76,45 @@ export function TaskColumn({
     // Filter tasks based on current column status
     const tasks = allTasks.filter((task) => task.status === status);
 
+    // 태스크 ID 배열을 문자열로 변환하여 의존성 최적화
+    const taskIds = useMemo(() => {
+        return tasks.map((task) => task.id).join(",");
+    }, [tasks]);
+
+    // 업데이트 플래그 사용하여 불필요한 업데이트 방지
+    const didUpdateRef = useRef(false);
+
+    // Enhanced keyboard navigation with React Aria
+    const { keyboardProps } = useKeyboardNavigation({
+        containerRef: columnRef,
+        enableFocus: true,
+        enableScrollIntoView: true
+    });
+
+    // 무한 루프 방지를 위해 useEffect 최적화
+    useEffect(() => {
+        // 빈 태스크 배열이거나 이미 업데이트한 경우 무시
+        if (tasks.length === 0 || didUpdateRef.current) return;
+
+        // 컴포넌트 언마운트 시 플래그 리셋
+        return () => {
+            didUpdateRef.current = false;
+        };
+    }, []);
+
+    // 태스크 변경 시 한 번만 업데이트
+    useEffect(() => {
+        if (tasks.length === 0) return;
+
+        // 상태 업데이트는 딱 한 번만 수행
+        const timeoutId = setTimeout(() => {
+            updateTasksByStatus(status, tasks);
+            didUpdateRef.current = true;
+        }, 0);
+
+        return () => clearTimeout(timeoutId);
+    }, [taskIds, status, updateTasksByStatus]);
+
     if (error) {
         return <TaskColumnError error={error} />;
     }
@@ -73,33 +128,41 @@ export function TaskColumn({
                 tasks={tasks}
                 virtualizer={virtualizer}
                 isFetchingNextPage={isFetchingNextPage}
+                keyboardProps={keyboardProps}
             />
         </div>
     );
 }
 
-function TaskColumnContent({
+// 성능 최적화를 위해 memo 적용
+const TaskColumnContent = memo(function TaskColumnContent({
     columnRef,
     loadMoreRef,
     tasks,
     virtualizer,
-    isFetchingNextPage
+    isFetchingNextPage,
+    keyboardProps
 }: TaskColumnContentProps) {
     return (
         <div
             ref={columnRef}
-            className="px-0 overflow-visible"
+            className="px-0 overflow-visible task-column"
             style={{
                 height: "auto",
                 minHeight: "auto"
             }}
+            // Apply React Aria keyboard props for accessibility
+            {...keyboardProps}
+            tabIndex={0}
+            role="region"
+            aria-label="Task column"
         >
             <VirtualizedTaskList tasks={tasks} virtualizer={virtualizer} />
             <div ref={loadMoreRef} className="h-5" />
             {isFetchingNextPage && <LoadingSpinner className="mt-4" />}
         </div>
     );
-}
+});
 
 function TaskColumnError({ error }: TaskColumnErrorProps) {
     const { t } = useTranslation();
@@ -110,7 +173,10 @@ function TaskColumnError({ error }: TaskColumnErrorProps) {
     );
 }
 
-function ColumnHeader({ status, count }: ColumnHeaderProps) {
+const ColumnHeader = memo(function ColumnHeader({
+    status,
+    count
+}: ColumnHeaderProps) {
     const { t } = useTranslation();
     const statusConfig = STATUS_CONFIG.find((config) => config.id === status);
 
@@ -124,14 +190,18 @@ function ColumnHeader({ status, count }: ColumnHeaderProps) {
             </div>
         </div>
     );
-}
+});
 
 interface VirtualizedTaskListProps {
     tasks: Task[];
     virtualizer: ReturnType<typeof useColumnVirtualizer>;
 }
 
-function VirtualizedTaskList({ tasks, virtualizer }: VirtualizedTaskListProps) {
+// 성능 최적화를 위해 memo 적용
+const VirtualizedTaskList = memo(function VirtualizedTaskList({
+    tasks,
+    virtualizer
+}: VirtualizedTaskListProps) {
     return (
         <div
             className="relative w-full"
@@ -159,4 +229,4 @@ function VirtualizedTaskList({ tasks, virtualizer }: VirtualizedTaskListProps) {
             })}
         </div>
     );
-}
+});
