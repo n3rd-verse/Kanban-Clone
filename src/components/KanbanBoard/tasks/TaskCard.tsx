@@ -29,10 +29,6 @@ interface TaskHeaderProps {
     isCompleted: boolean;
     allowEdit: boolean;
     isLoading: boolean;
-    hasMiddleRowContent: boolean;
-    ai: Task["ai"] | undefined;
-    onIconMouseEnter: () => void;
-    onIconMouseLeave: () => void;
 }
 
 interface TaskHeaderActionsProps {
@@ -45,31 +41,27 @@ interface TaskHeaderActionsProps {
 
 export function TaskCard({ task, className }: TaskCardProps) {
     const { state, handlers } = useTaskCard(task);
-    const { showAiSummary, isMouseOnIcon, isLoading, contentInfo } = state;
+    const { showAiSummary, isLoading, contentInfo } = state;
     const {
         handleDelete,
         handleComplete,
         handleClick,
-        handleIconMouseEnter,
-        handleIconMouseLeave,
         handleCardMouseEnter,
         handleCardMouseLeave,
         handlePopoverOpenChange
     } = handlers;
 
-    const {
-        hasAssignees,
-        hasDate,
-        hasMiddleRowContent,
-        hasAiInfo,
-        isCompleted
-    } = contentInfo;
+    const { hasAssignees, hasDate, hasMiddleRowContent, isCompleted } =
+        contentInfo;
+
+    const hasAiContent =
+        !!task.ai?.summary ||
+        (!!task.ai?.popupInfo &&
+            Array.isArray(task.ai.popupInfo) &&
+            task.ai.popupInfo.length > 0);
 
     return (
-        <Popover
-            open={!isMouseOnIcon && showAiSummary}
-            onOpenChange={handlePopoverOpenChange}
-        >
+        <Popover open={showAiSummary} onOpenChange={handlePopoverOpenChange}>
             <PopoverTrigger asChild>
                 <Card
                     className={cn(
@@ -94,12 +86,6 @@ export function TaskCard({ task, className }: TaskCardProps) {
                                 isCompleted={isCompleted}
                                 allowEdit={!!task.allowEdit}
                                 isLoading={isLoading}
-                                hasMiddleRowContent={Boolean(
-                                    hasMiddleRowContent
-                                )}
-                                ai={task.ai}
-                                onIconMouseEnter={handleIconMouseEnter}
-                                onIconMouseLeave={handleIconMouseLeave}
                             />
 
                             {hasMiddleRowContent && (
@@ -109,10 +95,6 @@ export function TaskCard({ task, className }: TaskCardProps) {
                                     taskAssignees={task.assignee}
                                     taskDate={task.date}
                                     taskStatus={task.status}
-                                    hasAiInfo={hasAiInfo}
-                                    ai={task.ai}
-                                    onIconMouseEnter={handleIconMouseEnter}
-                                    onIconMouseLeave={handleIconMouseLeave}
                                 />
                             )}
 
@@ -126,7 +108,7 @@ export function TaskCard({ task, className }: TaskCardProps) {
                     </div>
                 </Card>
             </PopoverTrigger>
-            {task.ai?.summary && (
+            {hasAiContent && (
                 <PopoverContent
                     className="p-3 w-72"
                     side="top"
@@ -135,10 +117,22 @@ export function TaskCard({ task, className }: TaskCardProps) {
                     avoidCollisions
                     collisionPadding={10}
                 >
-                    <div className="text-sm">
-                        <div className="text-gray-700 break-words">
-                            {task.ai.summary}
-                        </div>
+                    <div className="space-y-3 text-sm">
+                        {task.ai?.summary && (
+                            <div className="text-gray-700 break-words">
+                                {task.ai.summary}
+                            </div>
+                        )}
+
+                        {task.ai?.popupInfo &&
+                            Array.isArray(task.ai.popupInfo) &&
+                            task.ai.popupInfo.length > 0 && (
+                                <div className="space-y-2 pt-2 border-gray-200 border-t">
+                                    {task.ai.popupInfo.map((item, index) => (
+                                        <InfoItem key={index} item={item} />
+                                    ))}
+                                </div>
+                            )}
                     </div>
                 </PopoverContent>
             )}
@@ -152,10 +146,6 @@ interface MiddleContentRowProps {
     taskAssignees: Task["assignee"];
     taskDate: Task["date"];
     taskStatus: TaskStatus;
-    hasAiInfo: boolean;
-    ai: Task["ai"] | undefined;
-    onIconMouseEnter: () => void;
-    onIconMouseLeave: () => void;
 }
 
 const MiddleContentRow = memo(function MiddleContentRow({
@@ -163,11 +153,7 @@ const MiddleContentRow = memo(function MiddleContentRow({
     hasDate,
     taskAssignees,
     taskDate,
-    taskStatus,
-    hasAiInfo,
-    ai,
-    onIconMouseEnter,
-    onIconMouseLeave
+    taskStatus
 }: MiddleContentRowProps) {
     return (
         <div className="flex justify-between items-center mt-1">
@@ -178,16 +164,6 @@ const MiddleContentRow = memo(function MiddleContentRow({
                     hasDate && <TaskDate date={taskDate} status={taskStatus} />
                 )}
             </div>
-
-            {hasAiInfo && (
-                <div className="flex-shrink-0 ml-2">
-                    <AiInfo
-                        ai={ai}
-                        onIconMouseEnter={onIconMouseEnter}
-                        onIconMouseLeave={onIconMouseLeave}
-                    />
-                </div>
-            )}
         </div>
     );
 });
@@ -198,28 +174,11 @@ const TaskHeader = memo(function TaskHeader({
     onComplete,
     isCompleted,
     allowEdit,
-    isLoading,
-    hasMiddleRowContent,
-    ai,
-    onIconMouseEnter,
-    onIconMouseLeave
+    isLoading
 }: TaskHeaderProps) {
-    const hasAiInfo = !!ai?.popupInfo;
-
     return (
         <div className="flex justify-between items-start">
             <h3 className="mb-1 font-medium break-words">{title}</h3>
-
-            {/* Move info icon to title row when no middle row content */}
-            {!hasMiddleRowContent && hasAiInfo && (
-                <div className="flex-shrink-0 mt-0.5 ml-2">
-                    <AiInfo
-                        ai={ai}
-                        onIconMouseEnter={onIconMouseEnter}
-                        onIconMouseLeave={onIconMouseLeave}
-                    />
-                </div>
-            )}
 
             <TaskHeaderActions
                 onDelete={onDelete}
@@ -293,71 +252,6 @@ function TaskDate({
         </div>
     );
 }
-
-interface AiInfoProps {
-    ai: Task["ai"] | undefined;
-    onIconMouseEnter: () => void;
-    onIconMouseLeave: () => void;
-}
-
-const AiInfo = memo(function AiInfo({
-    ai,
-    onIconMouseEnter,
-    onIconMouseLeave
-}: AiInfoProps) {
-    const [showAiInfo, setShowAiInfo] = useState(false);
-
-    const handleIconMouseEnter = useCallback(() => {
-        setShowAiInfo(true);
-        onIconMouseEnter();
-    }, [onIconMouseEnter]);
-
-    const handleIconMouseLeave = useCallback(() => {
-        setShowAiInfo(false);
-        onIconMouseLeave();
-    }, [onIconMouseLeave]);
-
-    return (
-        <Popover open={showAiInfo} onOpenChange={setShowAiInfo}>
-            <PopoverTrigger asChild>
-                <div
-                    className="flex-shrink-0 cursor-pointer"
-                    onClick={(e: React.MouseEvent) => {
-                        e.stopPropagation();
-                    }}
-                    onMouseEnter={handleIconMouseEnter}
-                    onMouseLeave={handleIconMouseLeave}
-                >
-                    <div className="flex justify-center items-center bg-gray-500 rounded-full w-5 h-5 text-white text-center">
-                        <span className="inline-flex justify-center items-center w-full h-full font-bold text-xs">
-                            i
-                        </span>
-                    </div>
-                </div>
-            </PopoverTrigger>
-            <PopoverContent
-                className="p-3 w-72"
-                side="top"
-                align="center"
-                sideOffset={5}
-                avoidCollisions
-                collisionPadding={10}
-            >
-                <div className="text-sm">
-                    {ai?.popupInfo &&
-                        Array.isArray(ai.popupInfo) &&
-                        ai.popupInfo.length > 0 && (
-                            <div className="space-y-2">
-                                {ai.popupInfo.map((item, index) => (
-                                    <InfoItem key={index} item={item} />
-                                ))}
-                            </div>
-                        )}
-                </div>
-            </PopoverContent>
-        </Popover>
-    );
-});
 
 // Extracted the info item for better readability
 interface InfoItemProps {
