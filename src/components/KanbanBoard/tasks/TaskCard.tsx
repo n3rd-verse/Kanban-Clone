@@ -123,6 +123,14 @@ export const TaskCard = memo(function TaskCard({
                 return;
             }
 
+            // Check for Backspace key to delete the task
+            if (e.key === "Backspace") {
+                e.preventDefault();
+                e.stopPropagation();
+                handleDelete();
+                return;
+            }
+
             // Enter or Space key to interact with the card
             if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
@@ -138,7 +146,14 @@ export const TaskCard = memo(function TaskCard({
                 }
             }
         },
-        [selectTask, task.id, isSelected, hasAiContent, handleThreadOpen]
+        [
+            selectTask,
+            task.id,
+            isSelected,
+            hasAiContent,
+            handleThreadOpen,
+            handleDelete
+        ]
     );
 
     return (

@@ -5,6 +5,7 @@ import { useResponsiveLayout } from "@/hooks/design/use-responsive-layout";
 import { QueryErrorBoundary } from "@/components/ErrorBoundary";
 import { ScheduleColumnSkeleton } from "./KanbanBoardSkeleton";
 import { useKeyboardNavigation } from "@/hooks/kanban/useKeyboardNavigation";
+import { useDeleteKeyboardShortcut } from "@/hooks/keyboard/use-delete-keyboard-shortcut";
 
 export function KanbanBoard() {
     const { width, maxVisibleTasks } = useResponsiveLayout();
@@ -12,6 +13,9 @@ export function KanbanBoard() {
 
     // 키보드 네비게이션 훅 호출 (Zustand 스토어에 직접 접근)
     useKeyboardNavigation();
+
+    // Backspace 키로 선택된 카드 삭제 기능 활성화
+    useDeleteKeyboardShortcut();
 
     // 보드에 포커스
     useEffect(() => {
