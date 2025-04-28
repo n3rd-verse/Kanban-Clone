@@ -37,6 +37,8 @@ export function useTaskCard(task: Task) {
     const { mutate: undoDelete } = useUndoDeleteMutation();
     const { addDeletedTask } = useUndoStore();
     const [showAiSummary, setShowAiSummary] = useState(false);
+    const [isHoveringCard, setIsHoveringCard] = useState(false);
+    const [isHoveringPopover, setIsHoveringPopover] = useState(false);
 
     const isLoading = isDeleting || isToggling;
 
@@ -77,16 +79,42 @@ export function useTaskCard(task: Task) {
     );
 
     const handleCardMouseEnter = useCallback(() => {
+        setIsHoveringCard(true);
         setShowAiSummary(true);
     }, []);
 
     const handleCardMouseLeave = useCallback(() => {
-        setShowAiSummary(false);
+        setIsHoveringCard(false);
+        // Only hide popover if not hovering over the popover itself
+        if (!isHoveringPopover) {
+            setShowAiSummary(false);
+        }
+    }, [isHoveringPopover]);
+
+    const handlePopoverMouseEnter = useCallback(() => {
+        setIsHoveringPopover(true);
+        setShowAiSummary(true);
     }, []);
 
-    const handlePopoverOpenChange = useCallback((open: boolean) => {
-        setShowAiSummary(open);
-    }, []);
+    const handlePopoverMouseLeave = useCallback(() => {
+        setIsHoveringPopover(false);
+        // Only hide popover if not hovering over the card
+        if (!isHoveringCard) {
+            setShowAiSummary(false);
+        }
+    }, [isHoveringCard]);
+
+    const handlePopoverOpenChange = useCallback(
+        (open: boolean) => {
+            // Only allow external changes to close the popover if we're not hovering either element
+            if (!open && !isHoveringCard && !isHoveringPopover) {
+                setShowAiSummary(open);
+            } else if (open) {
+                setShowAiSummary(open);
+            }
+        },
+        [isHoveringCard, isHoveringPopover]
+    );
 
     const contentInfo = useMemo(() => {
         const hasAssignees = task.assignee && task.assignee.length > 0;
@@ -114,7 +142,9 @@ export function useTaskCard(task: Task) {
             handleClick,
             handleCardMouseEnter,
             handleCardMouseLeave,
-            handlePopoverOpenChange
+            handlePopoverOpenChange,
+            handlePopoverMouseEnter,
+            handlePopoverMouseLeave
         }
     };
 }

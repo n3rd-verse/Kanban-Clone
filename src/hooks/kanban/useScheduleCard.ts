@@ -15,6 +15,8 @@ export function useScheduleCard(schedule: Schedule) {
     const { mutate: openSchedule } = useOpenScheduleMutation();
     const [showAiSummary, setShowAiSummary] = useState(false);
     const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+    const [isHoveringCard, setIsHoveringCard] = useState(false);
+    const [isHoveringPopover, setIsHoveringPopover] = useState(false);
 
     const handleDelete = useCallback(
         (e?: React.MouseEvent) => {
@@ -51,16 +53,42 @@ export function useScheduleCard(schedule: Schedule) {
     );
 
     const handleCardMouseEnter = useCallback(() => {
+        setIsHoveringCard(true);
         setShowAiSummary(true);
     }, []);
 
     const handleCardMouseLeave = useCallback(() => {
-        setShowAiSummary(false);
+        setIsHoveringCard(false);
+        // Only hide popover if not hovering over the popover itself
+        if (!isHoveringPopover) {
+            setShowAiSummary(false);
+        }
+    }, [isHoveringPopover]);
+
+    const handlePopoverMouseEnter = useCallback(() => {
+        setIsHoveringPopover(true);
+        setShowAiSummary(true);
     }, []);
 
-    const handlePopoverOpenChange = useCallback((open: boolean) => {
-        setShowAiSummary(open);
-    }, []);
+    const handlePopoverMouseLeave = useCallback(() => {
+        setIsHoveringPopover(false);
+        // Only hide popover if not hovering over the card
+        if (!isHoveringCard) {
+            setShowAiSummary(false);
+        }
+    }, [isHoveringCard]);
+
+    const handlePopoverOpenChange = useCallback(
+        (open: boolean) => {
+            // Only allow external changes to close the popover if we're not hovering either element
+            if (!open && !isHoveringCard && !isHoveringPopover) {
+                setShowAiSummary(open);
+            } else if (open) {
+                setShowAiSummary(open);
+            }
+        },
+        [isHoveringCard, isHoveringPopover]
+    );
 
     const contentInfo = useMemo(() => {
         const hasAttendees =
@@ -99,7 +127,9 @@ export function useScheduleCard(schedule: Schedule) {
             handleMouseDown,
             handleCardMouseEnter,
             handleCardMouseLeave,
-            handlePopoverOpenChange
+            handlePopoverOpenChange,
+            handlePopoverMouseEnter,
+            handlePopoverMouseLeave
         }
     };
 }

@@ -59,7 +59,9 @@ export const TaskCard = memo(function TaskCard({
         handleClick: handleThreadOpen,
         handleCardMouseEnter,
         handleCardMouseLeave,
-        handlePopoverOpenChange
+        handlePopoverOpenChange,
+        handlePopoverMouseEnter,
+        handlePopoverMouseLeave
     } = handlers;
 
     // Zustand 스토어에서 선택적으로 필요한 값만 구독하여 불필요한 리렌더링 방지
@@ -231,14 +233,34 @@ export const TaskCard = memo(function TaskCard({
                 </Card>
             </PopoverTrigger>
             {hasAiContent && (
-                <TaskInfoPopover
-                    summary={task.ai?.summary}
-                    popupInfo={
-                        Array.isArray(task.ai?.popupInfo)
-                            ? task.ai?.popupInfo
-                            : []
-                    }
-                />
+                <PopoverContent
+                    className="p-3 w-72"
+                    side="top"
+                    align="center"
+                    sideOffset={5}
+                    avoidCollisions
+                    collisionPadding={10}
+                    onMouseEnter={handlePopoverMouseEnter}
+                    onMouseLeave={handlePopoverMouseLeave}
+                >
+                    <div className="space-y-3 max-h-[300px] overflow-y-auto text-sm custom-scrollbar">
+                        {task.ai?.summary && (
+                            <div className="text-gray-700 break-words">
+                                {task.ai.summary}
+                            </div>
+                        )}
+
+                        {task.ai?.popupInfo &&
+                            Array.isArray(task.ai.popupInfo) &&
+                            task.ai.popupInfo.length > 0 && (
+                                <div className="space-y-2 pt-2 border-gray-200 border-t">
+                                    {task.ai.popupInfo.map((item, index) => (
+                                        <InfoItem key={index} item={item} />
+                                    ))}
+                                </div>
+                            )}
+                    </div>
+                </PopoverContent>
             )}
         </Popover>
     );
@@ -282,42 +304,6 @@ const ThreadButton = memo(function ThreadButton({
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg>
         </div>
-    );
-});
-
-// Extracted Task Info Popover content
-interface TaskInfoPopoverProps {
-    summary?: string;
-    popupInfo: Record<string, AiInfoValue>[];
-}
-
-const TaskInfoPopover = memo(function TaskInfoPopover({
-    summary,
-    popupInfo
-}: TaskInfoPopoverProps) {
-    return (
-        <PopoverContent
-            className="p-3 w-72"
-            side="top"
-            align="center"
-            sideOffset={5}
-            avoidCollisions
-            collisionPadding={10}
-        >
-            <div className="space-y-3 text-sm">
-                {summary && (
-                    <div className="text-gray-700 break-words">{summary}</div>
-                )}
-
-                {popupInfo.length > 0 && (
-                    <div className="space-y-2 pt-2 border-gray-200 border-t">
-                        {popupInfo.map((item, index) => (
-                            <InfoItem key={index} item={item} />
-                        ))}
-                    </div>
-                )}
-            </div>
-        </PopoverContent>
     );
 });
 

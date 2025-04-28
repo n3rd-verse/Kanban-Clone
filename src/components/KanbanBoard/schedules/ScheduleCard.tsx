@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import type { Schedule } from "@/types/schedule";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
-import React, { memo } from "react";
+import React, { memo, useRef } from "react";
 import { CardDeleteButton, ContactAddress } from "../common";
 import { useScheduleCard } from "@/hooks/kanban/useScheduleCard";
 import {
@@ -21,6 +21,7 @@ export const ScheduleCard = memo(function ScheduleCard({
 }: ScheduleCardProps) {
     const { t } = useTranslation();
     const { state, handlers } = useScheduleCard(schedule);
+    const popoverRef = useRef<HTMLDivElement>(null);
 
     const { showAiSummary, isLoading, contentInfo, hasAiContent } = state;
 
@@ -30,7 +31,9 @@ export const ScheduleCard = memo(function ScheduleCard({
         handleMouseDown,
         handleCardMouseEnter,
         handleCardMouseLeave,
-        handlePopoverOpenChange
+        handlePopoverOpenChange,
+        handlePopoverMouseEnter,
+        handlePopoverMouseLeave
     } = handlers;
 
     const { hasAttendees, hasLocation, hasTimeInfo, isPast } = contentInfo;
@@ -107,46 +110,22 @@ export const ScheduleCard = memo(function ScheduleCard({
                             {schedule.location}
                         </div>
                     )}
-
-                    {/* Thread button for AI content */}
-                    {hasAiContent && (
-                        <div
-                            className="right-2 bottom-2 absolute bg-gray-100 hover:bg-gray-200 p-1 rounded-full cursor-pointer"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                // Add thread open functionality here if needed
-                            }}
-                            role="button"
-                            aria-label="View AI insights"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            >
-                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                            </svg>
-                        </div>
-                    )}
                 </Card>
             </PopoverTrigger>
 
             {hasAiContent && (
                 <PopoverContent
+                    ref={popoverRef}
                     className="p-3 w-72"
                     side="top"
                     align="center"
                     sideOffset={5}
                     avoidCollisions
                     collisionPadding={10}
+                    onMouseEnter={handlePopoverMouseEnter}
+                    onMouseLeave={handlePopoverMouseLeave}
                 >
-                    <div className="space-y-3 text-sm">
+                    <div className="space-y-3 max-h-[300px] overflow-y-auto text-sm custom-scrollbar">
                         {schedule.ai?.summary && (
                             <div className="text-gray-700 break-words">
                                 {schedule.ai.summary}
