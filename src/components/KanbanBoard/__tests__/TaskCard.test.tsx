@@ -179,4 +179,18 @@ describe("TaskCard", () => {
         expect(screen.getByText("Meeting")).toBeInTheDocument();
         expect(screen.getByText("Team standup")).toBeInTheDocument();
     });
+
+    it("calls delete mutation when Backspace key is pressed", async () => {
+        render(<TaskCard task={mockTask} />, { wrapper: createWrapper() });
+
+        const card = screen.getByText("Test Task").closest(".p-4");
+        fireEvent.keyDown(card as HTMLElement, { key: "Backspace" });
+
+        await waitFor(() => {
+            expect(deleteMock).toHaveBeenCalledWith({
+                id: "task-1",
+                title: "Test Task"
+            });
+        });
+    });
 });

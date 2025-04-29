@@ -8,6 +8,11 @@ export interface Schedule {
     attendees: Address[];
     type: "past" | "future";
     location?: string;
+    ai?: {
+        topic?: string;
+        summary?: string;
+        popupInfo?: object;
+    };
 }
 
 export interface ScheduleDay {

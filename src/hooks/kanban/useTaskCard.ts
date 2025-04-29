@@ -16,7 +16,6 @@ import { TaskStatus } from "@/constants/task-status";
  * @returns An object containing:
  *   - state: {
  *       showAiSummary: boolean;
- *       isMouseOnIcon: boolean;
  *       isLoading: boolean;
  *       contentInfo: object;
  *     } current UI state
@@ -24,8 +23,6 @@ import { TaskStatus } from "@/constants/task-status";
  *       handleDelete: () => void;
  *       handleComplete: () => void;
  *       handleClick: (e: React.MouseEvent) => void;
- *       handleIconMouseEnter: () => void;
- *       handleIconMouseLeave: () => void;
  *       handleCardMouseEnter: () => void;
  *       handleCardMouseLeave: () => void;
  *       handlePopoverOpenChange: (open: boolean) => void;
@@ -40,7 +37,8 @@ export function useTaskCard(task: Task) {
     const { mutate: undoDelete } = useUndoDeleteMutation();
     const { addDeletedTask } = useUndoStore();
     const [showAiSummary, setShowAiSummary] = useState(false);
-    const [isMouseOnIcon, setIsMouseOnIcon] = useState(false);
+    const [isHoveringCard, setIsHoveringCard] = useState(false);
+    const [isHoveringPopover, setIsHoveringPopover] = useState(false);
 
     const isLoading = isDeleting || isToggling;
 
@@ -80,46 +78,61 @@ export function useTaskCard(task: Task) {
         [openTask, task.id]
     );
 
-    const handleIconMouseEnter = useCallback(() => {
-        setIsMouseOnIcon(true);
-    }, []);
-
-    const handleIconMouseLeave = useCallback(() => {
-        setIsMouseOnIcon(false);
-    }, []);
-
     const handleCardMouseEnter = useCallback(() => {
+        setIsHoveringCard(true);
         setShowAiSummary(true);
     }, []);
 
     const handleCardMouseLeave = useCallback(() => {
-        setShowAiSummary(false);
+        setIsHoveringCard(false);
+        // Only hide popover if not hovering over the popover itself
+        if (!isHoveringPopover) {
+            setShowAiSummary(false);
+        }
+    }, [isHoveringPopover]);
+
+    const handlePopoverMouseEnter = useCallback(() => {
+        setIsHoveringPopover(true);
+        setShowAiSummary(true);
     }, []);
 
-    const handlePopoverOpenChange = useCallback((open: boolean) => {
-        setShowAiSummary(open);
-    }, []);
+    const handlePopoverMouseLeave = useCallback(() => {
+        setIsHoveringPopover(false);
+        // Only hide popover if not hovering over the card
+        if (!isHoveringCard) {
+            setShowAiSummary(false);
+        }
+    }, [isHoveringCard]);
+
+    const handlePopoverOpenChange = useCallback(
+        (open: boolean) => {
+            // Only allow external changes to close the popover if we're not hovering either element
+            if (!open && !isHoveringCard && !isHoveringPopover) {
+                setShowAiSummary(open);
+            } else if (open) {
+                setShowAiSummary(open);
+            }
+        },
+        [isHoveringCard, isHoveringPopover]
+    );
 
     const contentInfo = useMemo(() => {
         const hasAssignees = task.assignee && task.assignee.length > 0;
         const hasDate = task.date && task.status !== TaskStatus.COMPLETED;
         const hasMiddleRowContent = hasAssignees || hasDate;
-        const hasAiInfo = !!task.ai?.popupInfo;
         const isCompleted = task.status === TaskStatus.COMPLETED;
 
         return {
             hasAssignees,
             hasDate,
             hasMiddleRowContent,
-            hasAiInfo,
             isCompleted
         };
-    }, [task.assignee, task.date, task.status, task.ai?.popupInfo]);
+    }, [task.assignee, task.date, task.status]);
 
     return {
         state: {
             showAiSummary,
-            isMouseOnIcon,
             isLoading,
             contentInfo
         },
@@ -127,11 +140,11 @@ export function useTaskCard(task: Task) {
             handleDelete,
             handleComplete,
             handleClick,
-            handleIconMouseEnter,
-            handleIconMouseLeave,
             handleCardMouseEnter,
             handleCardMouseLeave,
-            handlePopoverOpenChange
+            handlePopoverOpenChange,
+            handlePopoverMouseEnter,
+            handlePopoverMouseLeave
         }
     };
 }
