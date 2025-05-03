@@ -3,7 +3,7 @@ import type { Task } from "@/types/task";
 import { useDeleteTaskMutation } from "@/hooks/api/tasks/use-delete-task-mutation";
 import { useToggleTaskStatusMutation } from "@/hooks/api/tasks/use-toggle-task-status-mutation";
 import { useOpenTaskMutation } from "@/hooks/api/tasks/use-open-task-mutation";
-import { useUndoDeleteMutation } from "@/hooks/api/tasks/use-undo-delete-mutation";
+import { useUndoDeleteTaskMutation } from "@/hooks/api/tasks/use-undo-delete-task-mutation";
 import { useUndoStore } from "@/stores/undo-store";
 import { showDeleteToast } from "@/components/ui/undo-toast";
 import { TOAST_CONFIG } from "@/constants/toast-config";
@@ -34,7 +34,7 @@ export function useTaskCard(task: Task) {
     const { mutate: toggleTask, isPending: isToggling } =
         useToggleTaskStatusMutation();
     const { mutate: openTask } = useOpenTaskMutation();
-    const { mutate: undoDelete } = useUndoDeleteMutation();
+    const { mutate: undoDelete } = useUndoDeleteTaskMutation();
     const { addDeletedTask } = useUndoStore();
     const [showAiSummary, setShowAiSummary] = useState(false);
     const [isHoveringCard, setIsHoveringCard] = useState(false);
@@ -50,7 +50,11 @@ export function useTaskCard(task: Task) {
             actionLabel: "Undo",
             duration: TOAST_CONFIG.DURATIONS.DEFAULT,
             onAction: () => {
-                undoDelete({ id: task.id, title: task.title, task });
+                undoDelete({
+                    id: task.id,
+                    title: task.title,
+                    task
+                });
                 dismiss();
             }
         });

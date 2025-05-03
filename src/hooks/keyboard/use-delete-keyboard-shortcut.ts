@@ -4,7 +4,7 @@ import { useDeleteTaskMutation } from "@/hooks/api/tasks/use-delete-task-mutatio
 import { useUndoStore } from "@/stores/undo-store";
 import { showDeleteToast } from "@/components/ui/undo-toast";
 import { TOAST_CONFIG } from "@/constants/toast-config";
-import { useUndoDeleteMutation } from "@/hooks/api/tasks/use-undo-delete-mutation";
+import { useUndoDeleteTaskMutation } from "@/hooks/api/tasks/use-undo-delete-task-mutation";
 import { useKeyboardShortcuts } from "../api/core/use-keyboard-shortcuts";
 
 // Type definitions for keyboard shortcuts
@@ -30,7 +30,7 @@ export const useDeleteKeyboardShortcut = () => {
     const { selectedTaskId, clearSelection, tasksByStatus } =
         useSelectionStore();
     const { mutate: deleteTask } = useDeleteTaskMutation();
-    const { mutate: undoDelete } = useUndoDeleteMutation();
+    const { mutate: undoDelete } = useUndoDeleteTaskMutation();
     const { addDeletedTask } = useUndoStore();
 
     // Find the selected task in tasksByStatus

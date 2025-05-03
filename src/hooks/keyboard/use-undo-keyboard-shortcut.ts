@@ -4,12 +4,13 @@ import {
     DeletedTask,
     DeletedSchedule
 } from "@/stores/undo-store";
-import { useUndoDeleteMutation } from "@/hooks/api/tasks/use-undo-delete-mutation";
+import { useUndoDeleteTaskMutation } from "@/hooks/api/tasks/use-undo-delete-task-mutation";
 import { useUndoDeleteScheduleMutation } from "@/hooks/api/schedules/use-undo-delete-schedule-mutation";
 import {
     useKeyboardShortcuts,
     createUndoShortcut
 } from "../api/core/use-keyboard-shortcuts";
+import { TaskUndoDeleteParams } from "../api/core/use-undo-delete-mutation";
 
 /**
  * Hook to handle undo functionality with keyboard shortcuts
@@ -22,7 +23,7 @@ export const useUndoKeyboardShortcut = () => {
         hasUndoableActions
     } = useUndoStore();
 
-    const { mutate: undoDeleteTask } = useUndoDeleteMutation();
+    const { mutate: undoDeleteTask } = useUndoDeleteTaskMutation();
     const { mutate: undoDeleteSchedule } = useUndoDeleteScheduleMutation();
 
     const executeUndo = useCallback(() => {
@@ -51,7 +52,7 @@ export const useUndoKeyboardShortcut = () => {
             undoDeleteSchedule({
                 id: schedule.id,
                 title: schedule.title,
-                schedule: schedule.schedule
+                item: schedule.schedule
             });
 
             // Dismiss toast if exists
@@ -70,12 +71,16 @@ export const useUndoKeyboardShortcut = () => {
         undoDeleteSchedule
     ]);
 
+    // Get the current undo state
+    const canUndo = hasUndoableActions();
+
     // Register the keyboard shortcut using our new core hook
     useKeyboardShortcuts(
         [createUndoShortcut(executeUndo)],
         // Only enable if there are actions that can be undone
-        hasUndoableActions()
+        // Pass the value instead of the function call to ensure reactivity
+        canUndo
     );
 
-    return { executeUndo, canUndo: hasUndoableActions };
+    return { executeUndo, canUndo };
 };

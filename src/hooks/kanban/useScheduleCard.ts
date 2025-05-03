@@ -39,16 +39,17 @@ export function useScheduleCard(schedule: Schedule) {
                 actionLabel: "Undo",
                 duration: TOAST_CONFIG.DURATIONS.DEFAULT,
                 onAction: () => {
+                    // UndoDeleteScheduleMutation은 item 필드를 사용하므로 그에 맞게 전달
                     undoDelete({
                         id: schedule.id,
                         title: schedule.title,
-                        schedule: schedule
+                        item: schedule
                     });
                     dismiss();
                 }
             });
 
-            // Add to undo store
+            // UndoStore는 여전히 schedule 필드를 사용하므로 그에 맞게 전달
             addDeletedSchedule({
                 id: schedule.id,
                 title: schedule.title,
