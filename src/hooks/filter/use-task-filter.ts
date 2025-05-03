@@ -29,7 +29,7 @@ export function useTaskFilter() {
         });
     };
 
-    const clearCategories = () => {
+    const deleteAllTasksAndSchedules = () => {
         navigate({
             to: Route.fullPath,
             search: {
@@ -41,6 +41,6 @@ export function useTaskFilter() {
     return {
         selectedCategories: search.categories || [],
         toggleCategory,
-        clearCategories
+        deleteAllTasksAndSchedules
     } as const;
 }

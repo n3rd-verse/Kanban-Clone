@@ -18,8 +18,12 @@ export enum TaskCategory {
     OTHER = "other"
 }
 
+export enum DeleteAll {
+    DELETE_ALL = "delete_all"
+}
+
 type CategoryOption = {
-    id: TaskCategory;
+    id: TaskCategory | DeleteAll;
     translationKey: string;
 };
 
@@ -28,10 +32,12 @@ const CATEGORY_OPTIONS: CategoryOption[] = [
     { id: TaskCategory.COMPANY, translationKey: "categories.company" },
     { id: TaskCategory.NEWS, translationKey: "categories.news" },
     { id: TaskCategory.OTHER, translationKey: "categories.other" }
+    // { id: DeleteAll.DELETE_ALL, translationKey: "categories.delete_all" }
 ];
 
 export function TaskFilter() {
-    const { selectedCategories, toggleCategory } = useTaskFilter();
+    const { selectedCategories, toggleCategory, deleteAllTasksAndSchedules } =
+        useTaskFilter();
     const hasFilter = selectedCategories.length > 0;
     const { t } = useTranslation();
 
@@ -74,7 +80,13 @@ export function TaskFilter() {
                     {CATEGORY_OPTIONS.map((option) => (
                         <button
                             key={option.id}
-                            onClick={() => toggleCategory(option.id)}
+                            onClick={() => {
+                                if (option.id === DeleteAll.DELETE_ALL) {
+                                    deleteAllTasksAndSchedules();
+                                    return;
+                                }
+                                toggleCategory(option.id);
+                            }}
                             className={cn(
                                 "flex items-center justify-between w-full px-3 py-2",
                                 "md:px-4 md:py-2.5",
@@ -92,15 +104,16 @@ export function TaskFilter() {
                             >
                                 {t(option.translationKey)}
                             </span>
-                            {selectedCategories.includes(option.id) && (
-                                <Check
-                                    className={cn(
-                                        "ml-1 w-[14px] h-[14px] text-blue-500",
-                                        "md:ml-2 md:w-[16px] md:h-[16px]",
-                                        "lg:w-[18px] lg:h-[18px]"
-                                    )}
-                                />
-                            )}
+                            {option.id !== DeleteAll.DELETE_ALL &&
+                                selectedCategories.includes(option.id) && (
+                                    <Check
+                                        className={cn(
+                                            "ml-1 w-[14px] h-[14px] text-blue-500",
+                                            "md:ml-2 md:w-[16px] md:h-[16px]",
+                                            "lg:w-[18px] lg:h-[18px]"
+                                        )}
+                                    />
+                                )}
                         </button>
                     ))}
                 </div>
