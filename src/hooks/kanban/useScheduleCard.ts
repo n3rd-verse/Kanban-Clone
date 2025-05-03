@@ -2,6 +2,10 @@ import { useState, useCallback, useMemo } from "react";
 import type { Schedule } from "@/types/schedule";
 import { useDeleteScheduleMutation } from "@/hooks/api/schedules/use-delete-schedule-mutation";
 import { useOpenScheduleMutation } from "@/hooks/api/schedules/use-open-schedule-mutation";
+import { useUndoDeleteScheduleMutation } from "@/hooks/api/schedules/use-undo-delete-schedule-mutation";
+import { useUndoStore } from "@/stores/undo-store";
+import { showDeleteToast } from "@/components/ui/undo-toast";
+import { TOAST_CONFIG } from "@/constants/toast-config";
 
 /**
  * Custom hook managing the state and interactions for a ScheduleCard component.
@@ -12,6 +16,8 @@ import { useOpenScheduleMutation } from "@/hooks/api/schedules/use-open-schedule
 export function useScheduleCard(schedule: Schedule) {
     const { mutate: deleteSchedule, isPending: isDeleting } =
         useDeleteScheduleMutation();
+    const { mutate: undoDelete } = useUndoDeleteScheduleMutation();
+    const { addDeletedSchedule } = useUndoStore();
     const { mutate: openSchedule } = useOpenScheduleMutation();
     const [showAiSummary, setShowAiSummary] = useState(false);
     const [startPos, setStartPos] = useState({ x: 0, y: 0 });
@@ -24,13 +30,34 @@ export function useScheduleCard(schedule: Schedule) {
                 e.stopPropagation();
             }
 
-            if (
-                window.confirm("Are you sure you want to delete this schedule?")
-            ) {
-                deleteSchedule(schedule.id);
-            }
+            // Delete the schedule
+            deleteSchedule(schedule.id);
+
+            // Show toast with undo functionality
+            const { dismiss, id } = showDeleteToast({
+                title: "1 deleted",
+                actionLabel: "Undo",
+                duration: TOAST_CONFIG.DURATIONS.DEFAULT,
+                onAction: () => {
+                    undoDelete({
+                        id: schedule.id,
+                        title: schedule.title,
+                        schedule: schedule
+                    });
+                    dismiss();
+                }
+            });
+
+            // Add to undo store
+            addDeletedSchedule({
+                id: schedule.id,
+                title: schedule.title,
+                schedule: schedule,
+                toastId: id,
+                dismissToast: dismiss
+            });
         },
-        [deleteSchedule, schedule.id]
+        [deleteSchedule, schedule, undoDelete, addDeletedSchedule]
     );
 
     const handleMouseDown = useCallback((e: React.MouseEvent) => {

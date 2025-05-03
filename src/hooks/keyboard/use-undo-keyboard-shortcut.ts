@@ -1,6 +1,11 @@
 import { useCallback } from "react";
-import { useUndoStore } from "@/stores/undo-store";
+import {
+    useUndoStore,
+    DeletedTask,
+    DeletedSchedule
+} from "@/stores/undo-store";
 import { useUndoDeleteMutation } from "@/hooks/api/tasks/use-undo-delete-mutation";
+import { useUndoDeleteScheduleMutation } from "@/hooks/api/schedules/use-undo-delete-schedule-mutation";
 import {
     useKeyboardShortcuts,
     createUndoShortcut
@@ -10,30 +15,60 @@ import {
  * Hook to handle undo functionality with keyboard shortcuts
  */
 export const useUndoKeyboardShortcut = () => {
-    const { getLastDeletedTask, removeDeletedTask, hasUndoableActions } =
-        useUndoStore();
-    const { mutate: undoDelete } = useUndoDeleteMutation();
+    const {
+        getLastDeletedItem,
+        removeDeletedTask,
+        removeDeletedSchedule,
+        hasUndoableActions
+    } = useUndoStore();
+
+    const { mutate: undoDeleteTask } = useUndoDeleteMutation();
+    const { mutate: undoDeleteSchedule } = useUndoDeleteScheduleMutation();
 
     const executeUndo = useCallback(() => {
-        const lastDeletedTask = getLastDeletedTask();
+        const lastDeletedItem = getLastDeletedItem();
 
-        if (!lastDeletedTask) return false;
+        if (!lastDeletedItem) return false;
 
-        // Execute undo operation
-        undoDelete({
-            id: lastDeletedTask.id,
-            title: lastDeletedTask.title,
-            task: lastDeletedTask.task
-        });
+        if (lastDeletedItem.type === "task") {
+            const task = lastDeletedItem.item as DeletedTask;
+            // Execute undo operation for task
+            undoDeleteTask({
+                id: task.id,
+                title: task.title,
+                task: task.task
+            });
 
-        // Dismiss toast if exists
-        lastDeletedTask.dismissToast?.();
+            // Dismiss toast if exists
+            task.dismissToast?.();
 
-        // Clean up store
-        removeDeletedTask(lastDeletedTask.id);
+            // Clean up store
+            removeDeletedTask(task.id);
+        } else {
+            // schedule
+            const schedule = lastDeletedItem.item as DeletedSchedule;
+            // Execute undo operation for schedule
+            undoDeleteSchedule({
+                id: schedule.id,
+                title: schedule.title,
+                schedule: schedule.schedule
+            });
+
+            // Dismiss toast if exists
+            schedule.dismissToast?.();
+
+            // Clean up store
+            removeDeletedSchedule(schedule.id);
+        }
 
         return true;
-    }, [getLastDeletedTask, removeDeletedTask, undoDelete]);
+    }, [
+        getLastDeletedItem,
+        removeDeletedTask,
+        removeDeletedSchedule,
+        undoDeleteTask,
+        undoDeleteSchedule
+    ]);
 
     // Register the keyboard shortcut using our new core hook
     useKeyboardShortcuts(
