@@ -3,6 +3,18 @@ import { TaskStatus } from "@/constants/task-status";
 import { STATUS_CONFIG } from "@/components/KanbanBoard/utils/constants";
 import { useSelectionStore, findTaskPosition } from "@/stores/selection-store";
 import { useKeyboard } from "@react-aria/interactions";
+import { extractIdPrefix } from "@/components/KanbanBoard/utils/helpers";
+import { TaskFolderRef } from "@/components/KanbanBoard/tasks/TaskFolder";
+
+// Add debug flag - can be set to false in production
+const DEBUG_KEYBOARD_NAVIGATION = true;
+
+// Debug logging function
+const logNavigationDebug = (message: string, ...data: any[]) => {
+    if (DEBUG_KEYBOARD_NAVIGATION) {
+        console.log(`[KeyboardNav] ${message}`, ...data);
+    }
+};
 
 type KeyboardNavOptions = {
     containerRef?: RefObject<HTMLElement>;
@@ -23,9 +35,11 @@ export function useKeyboardNavigation(options: KeyboardNavOptions = {}) {
         enableScrollIntoView = true
     } = options;
 
-    const { selectedTaskId, tasksByStatus, selectTask } = useSelectionStore();
+    const { selectedTaskId, tasksByStatus, selectTask, isAnimating } =
+        useSelectionStore();
     const lastKeyPressRef = useRef<string | null>(null);
     const isNavigatingRef = useRef<boolean>(false);
+    const previousTaskIdRef = useRef<string | undefined>(selectedTaskId);
 
     // Focus and scroll the selected task card into view
     const focusTaskCard = useCallback(
@@ -55,6 +69,51 @@ export function useKeyboardNavigation(options: KeyboardNavOptions = {}) {
         [enableFocus, enableScrollIntoView]
     );
 
+    // Check if a task is in a folder and handle folder opening
+    const handleTaskInFolder = useCallback(
+        (taskId: string, callback: () => void) => {
+            // Extract the prefix from the task ID
+            const prefix = extractIdPrefix(taskId);
+            if (!prefix) {
+                // Task is not in a folder, proceed with normal navigation
+                callback();
+                return;
+            }
+
+            // Find the folder element for this prefix
+            const folderHeader = document.querySelector(
+                `[data-folder-header="${prefix}"]`
+            );
+            const folderContent = document.querySelector(
+                `[data-folder-content="${prefix}"]`
+            );
+
+            // Check if folder exists and is currently closed (content not visible)
+            if (folderHeader && !folderContent) {
+                // Folder is closed, need to open it first
+                const folderElement = document.querySelector(
+                    `[data-folder-id="${prefix}"]`
+                );
+                if (folderElement) {
+                    // Simulate a click to open the folder
+                    (folderHeader as HTMLElement).click();
+
+                    // Wait for the animation to complete before focusing the task
+                    setTimeout(() => {
+                        callback();
+                        // Focus the specific task
+                        focusTaskCard(taskId);
+                    }, 350); // Slightly longer than the animation duration (0.3s)
+                    return;
+                }
+            }
+
+            // If folder is already open or task is not in a folder, just proceed
+            callback();
+        },
+        [focusTaskCard]
+    );
+
     // React Aria keyboard handler
     const { keyboardProps } = useKeyboard({
         onKeyDown: (e: React.KeyboardEvent) => {
@@ -67,6 +126,13 @@ export function useKeyboardNavigation(options: KeyboardNavOptions = {}) {
                 )
             ) {
                 return;
+            }
+
+            // Check if animation is in progress
+            if (isAnimating) {
+                e.preventDefault();
+                e.stopPropagation();
+                return; // Don't process keyboard events during animations
             }
 
             // Prevent default behavior like scrolling
@@ -134,6 +200,19 @@ export function useKeyboardNavigation(options: KeyboardNavOptions = {}) {
     // Function to handle navigation based on arrow key direction - memoized for stability
     const handleArrowNavigation = useCallback(
         (key: string) => {
+            // Log the navigation attempt with current state
+            logNavigationDebug(
+                `Navigation with ${key}, isAnimating: ${isAnimating}, current selection: ${selectedTaskId}`
+            );
+
+            // If animation is in progress, don't proceed with navigation
+            if (isAnimating) {
+                logNavigationDebug(
+                    `Navigation blocked due to animation in progress`
+                );
+                return;
+            }
+
             // If no task is selected, select the first available task
             if (!selectedTaskId) {
                 for (const status of Object.values(TaskStatus)) {
@@ -160,6 +239,11 @@ export function useKeyboardNavigation(options: KeyboardNavOptions = {}) {
                     if (index > 0) {
                         const tasks = tasksByStatus[status] || [];
                         nextTaskId = tasks[index - 1].id;
+
+                        handleTaskInFolder(nextTaskId, () => {
+                            selectTask(nextTaskId!);
+                            focusTaskCard(nextTaskId!);
+                        });
                     }
                     break;
 
@@ -167,6 +251,11 @@ export function useKeyboardNavigation(options: KeyboardNavOptions = {}) {
                     const tasks = tasksByStatus[status] || [];
                     if (index < tasks.length - 1) {
                         nextTaskId = tasks[index + 1].id;
+
+                        handleTaskInFolder(nextTaskId, () => {
+                            selectTask(nextTaskId!);
+                            focusTaskCard(nextTaskId!);
+                        });
                     }
                     break;
 
@@ -189,6 +278,11 @@ export function useKeyboardNavigation(options: KeyboardNavOptions = {}) {
                                 nextColumn.tasks.length - 1
                             );
                             nextTaskId = nextColumn.tasks[targetIndex].id;
+
+                            handleTaskInFolder(nextTaskId, () => {
+                                selectTask(nextTaskId!);
+                                focusTaskCard(nextTaskId!);
+                            });
                         }
                     }
                     break;
@@ -213,17 +307,15 @@ export function useKeyboardNavigation(options: KeyboardNavOptions = {}) {
                                 nextColumn.tasks.length - 1
                             );
                             nextTaskId = nextColumn.tasks[targetIndex].id;
+
+                            handleTaskInFolder(nextTaskId, () => {
+                                selectTask(nextTaskId!);
+                                focusTaskCard(nextTaskId!);
+                            });
                         }
                     }
                     break;
                 }
-            }
-
-            // Update selection if we found a next task
-            if (nextTaskId) {
-                selectTask(nextTaskId);
-                // Explicitly focus and scroll the task into view
-                focusTaskCard(nextTaskId);
             }
         },
         [
@@ -231,9 +323,51 @@ export function useKeyboardNavigation(options: KeyboardNavOptions = {}) {
             tasksByStatus,
             selectTask,
             focusTaskCard,
-            findNextNonEmptyColumn
+            findNextNonEmptyColumn,
+            handleTaskInFolder,
+            isAnimating
         ]
     );
+
+    // Check if we need to close a folder when leaving it
+    const checkFolderCloseNeeded = useCallback(
+        (oldTaskId: string, newTaskId: string) => {
+            const oldPrefix = extractIdPrefix(oldTaskId);
+            const newPrefix = extractIdPrefix(newTaskId);
+
+            // If we're moving from one folder to a different context (different folder or not in folder)
+            if (oldPrefix && oldPrefix !== newPrefix) {
+                // Find the folder element and simulate a click to close it
+                const folderHeader = document.querySelector(
+                    `[data-folder-header="${oldPrefix}"]`
+                );
+                if (
+                    folderHeader &&
+                    (folderHeader as HTMLElement).getAttribute(
+                        "aria-expanded"
+                    ) === "true"
+                ) {
+                    // Wait a bit to ensure the new task is focused first
+                    setTimeout(() => {
+                        (folderHeader as HTMLElement).click();
+                    }, 500);
+                }
+            }
+        },
+        []
+    );
+
+    // Track task selection changes to handle folder closing
+    useEffect(() => {
+        if (
+            previousTaskIdRef.current &&
+            selectedTaskId &&
+            previousTaskIdRef.current !== selectedTaskId
+        ) {
+            checkFolderCloseNeeded(previousTaskIdRef.current, selectedTaskId);
+        }
+        previousTaskIdRef.current = selectedTaskId;
+    }, [selectedTaskId, checkFolderCloseNeeded]);
 
     // Add keyboard event listener to container or window
     useEffect(() => {
@@ -254,6 +388,13 @@ export function useKeyboardNavigation(options: KeyboardNavOptions = {}) {
                 )
             ) {
                 return;
+            }
+
+            // Check if animation is in progress
+            if (isAnimating) {
+                event.preventDefault();
+                event.stopPropagation();
+                return; // Don't process keyboard events during animations
             }
 
             // Prevent default behavior like scrolling
@@ -283,7 +424,7 @@ export function useKeyboardNavigation(options: KeyboardNavOptions = {}) {
                 capture: true
             });
         };
-    }, [containerRef, handleArrowNavigation]);
+    }, [containerRef, handleArrowNavigation, isAnimating]);
 
     return {
         selectedTaskId,

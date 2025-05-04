@@ -1,5 +1,4 @@
 import {
-    TaskUndoDeleteParams,
     UndoDeleteParams,
     AnyUndoDeleteParams
 } from "../core/use-undo-delete-mutation";
@@ -17,13 +16,13 @@ import { useTranslation } from "react-i18next";
  * Task 데이터 항목 추출 헬퍼 함수
  */
 function extractTaskData(params: AnyUndoDeleteParams<Task>): Task {
-    // task 필드 확인 (기존 방식)
-    if ("task" in params && params.task) {
-        return params.task;
-    }
+    // // task 필드 확인 (기존 방식)
+    // if ("task" in params && params.task) {
+    //     return params.task as Task;
+    // }
     // item 필드 확인 (새 방식)
     if ("item" in params && params.item) {
-        return params.item;
+        return params.item as Task;
     }
 
     throw new Error("No task data found in undo parameters");

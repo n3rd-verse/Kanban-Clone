@@ -42,7 +42,7 @@ export function useVirtualizedTasks({
     const { selectedCategories } = useTaskFilter();
     const { data, isFetchingNextPage, hasNextPage, fetchNextPage, error } =
         useInfiniteTasks({
-            status: [status], // 각 column의 status에 맞는 데이터만 fetch
+            status: [status],
             categories: selectedCategories
         });
 

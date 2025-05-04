@@ -18,7 +18,6 @@ export function useColumnVirtualizer({
     tasks,
     columnRef
 }: UseColumnVirtualizerProps) {
-    // 요소 측정을 최적화하기 위해 콜백으로 분리
     const measureElement = useCallback((element: Element | null) => {
         if (!element) return 0;
         return element.getBoundingClientRect().height;
