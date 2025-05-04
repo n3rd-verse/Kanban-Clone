@@ -3,13 +3,14 @@ import { TaskStatus } from "@/constants/task-status";
 import { Task } from "@/types/task";
 
 interface SelectionState {
-    selectedTaskId: string | undefined;
+    selectedTaskId: string | null;
+    isAnimating: boolean;
     tasksByStatus: Record<TaskStatus, Task[]>;
 
-    // 액션
-    selectTask: (taskId: string) => void;
+    selectTask: (taskId: string | null) => void;
     clearSelection: () => void;
     updateTasksByStatus: (status: TaskStatus, tasks: Task[]) => void;
+    setAnimating: (isAnimating: boolean) => void;
 }
 
 /**
@@ -23,17 +24,22 @@ interface SelectionState {
  * updateTasksByStatus: 특정 상태의 태스크 목록 업데이트
  */
 export const useSelectionStore = create<SelectionState>((set) => ({
-    selectedTaskId: undefined,
+    selectedTaskId: null,
+    isAnimating: false,
     tasksByStatus: {} as Record<TaskStatus, Task[]>,
 
-    selectTask: (taskId: string) =>
-        set((state) => ({
-            selectedTaskId: state.selectedTaskId === taskId ? undefined : taskId
-        })),
+    selectTask: (taskId) => {
+        set((state) => {
+            if (state.isAnimating) {
+                return state;
+            }
+            return { selectedTaskId: taskId };
+        });
+    },
 
     clearSelection: () =>
         set(() => ({
-            selectedTaskId: undefined
+            selectedTaskId: null
         })),
 
     updateTasksByStatus: (status: TaskStatus, tasks: Task[]) =>
@@ -42,7 +48,9 @@ export const useSelectionStore = create<SelectionState>((set) => ({
                 ...state.tasksByStatus,
                 [status]: tasks
             }
-        }))
+        })),
+
+    setAnimating: (isAnimating) => set({ isAnimating })
 }));
 
 /**

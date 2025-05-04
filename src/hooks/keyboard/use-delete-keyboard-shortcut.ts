@@ -7,7 +7,6 @@ import { TOAST_CONFIG } from "@/constants/toast-config";
 import { useUndoDeleteTaskMutation } from "@/hooks/api/tasks/use-undo-delete-task-mutation";
 import { useKeyboardShortcuts } from "../api/core/use-keyboard-shortcuts";
 
-// Type definitions for keyboard shortcuts
 type KeyCombo = {
     key: string;
     ctrlKey?: boolean;
@@ -44,15 +43,12 @@ export const useDeleteKeyboardShortcut = () => {
         return null;
     }, [selectedTaskId, tasksByStatus]);
 
-    // Execute delete operation
     const executeDelete = useCallback(() => {
         const selectedTask = findSelectedTask();
         if (!selectedTask) return false;
 
-        // Call delete mutation
         deleteTask({ id: selectedTask.id, title: selectedTask.title });
 
-        // Show toast with undo functionality
         const { dismiss, id } = showDeleteToast({
             title: "1 deleted",
             actionLabel: "Undo",
@@ -61,7 +57,7 @@ export const useDeleteKeyboardShortcut = () => {
                 undoDelete({
                     id: selectedTask.id,
                     title: selectedTask.title,
-                    task: selectedTask
+                    item: selectedTask
                 });
                 dismiss();
             }

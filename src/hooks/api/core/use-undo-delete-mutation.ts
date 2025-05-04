@@ -16,15 +16,6 @@ export interface UndoDeleteParams<T> {
 }
 
 /**
- * 레거시 Task 삭제 취소를 위한 파라미터 인터페이스
- */
-export interface TaskUndoDeleteParams<T> {
-    id: string;
-    title: string;
-    task: T;
-}
-
-/**
  * 레거시 Schedule 삭제 취소를 위한 파라미터 인터페이스
  */
 export interface ScheduleUndoDeleteParams<T> {
@@ -38,7 +29,6 @@ export interface ScheduleUndoDeleteParams<T> {
  */
 export type AnyUndoDeleteParams<T> =
     | UndoDeleteParams<T>
-    | TaskUndoDeleteParams<T>
     | ScheduleUndoDeleteParams<T>;
 
 /**

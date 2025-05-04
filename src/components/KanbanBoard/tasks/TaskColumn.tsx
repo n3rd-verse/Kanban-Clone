@@ -12,6 +12,7 @@ import { TaskStatus } from "@/constants/task-status";
 import { useColumnVirtualizer, useVirtualizedTasks } from "@/hooks/virtualizer";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { TaskCard } from "./TaskCard";
+import { VirtualizedTaskList } from "./VirtualizedTaskList";
 import { STATUS_CONFIG } from "../utils/constants";
 import { useSelectionStore } from "@/stores/selection-store";
 import { Card } from "@/components/ui/card";
@@ -41,6 +42,11 @@ interface TaskColumnErrorProps {
 interface ColumnHeaderProps {
     status: TaskStatus;
     count: number;
+}
+
+interface VirtualizedTaskListProps {
+    tasks: Task[];
+    virtualizer: ReturnType<typeof useColumnVirtualizer>;
 }
 
 export function TaskColumn({
@@ -157,7 +163,15 @@ const TaskColumnContent = memo(function TaskColumnContent({
             role="region"
             aria-label="Task column"
         >
-            <VirtualizedTaskList tasks={tasks} virtualizer={virtualizer} />
+            <VirtualizedTaskList
+                tasks={tasks}
+                virtualizer={virtualizer}
+                isDesktop={true}
+                loadMoreRef={loadMoreRef}
+                hasNextPage={false}
+                isFetchingNextPage={isFetchingNextPage}
+                fetchNextPage={() => {}}
+            />
             <div ref={loadMoreRef} className="h-5" />
             {isFetchingNextPage && <LoadingSpinner className="mt-4" />}
         </div>
@@ -188,45 +202,6 @@ const ColumnHeader = memo(function ColumnHeader({
                 <h3 className="font-medium">{t(`status.${status}`)}</h3>
                 <span className="text-sm">({count})</span>
             </div>
-        </div>
-    );
-});
-
-interface VirtualizedTaskListProps {
-    tasks: Task[];
-    virtualizer: ReturnType<typeof useColumnVirtualizer>;
-}
-
-// 성능 최적화를 위해 memo 적용
-const VirtualizedTaskList = memo(function VirtualizedTaskList({
-    tasks,
-    virtualizer
-}: VirtualizedTaskListProps) {
-    return (
-        <div
-            className="relative w-full"
-            style={{
-                height: "auto",
-                position: "static"
-            }}
-        >
-            {virtualizer.getVirtualItems().map((virtualItem) => {
-                const task = tasks[virtualItem.index];
-                if (!task) return null;
-
-                return (
-                    <div
-                        key={task.id}
-                        data-index={virtualItem.index}
-                        className="relative mb-2 w-full"
-                        style={{
-                            height: "auto"
-                        }}
-                    >
-                        <TaskCard task={task} className="h-full break-words" />
-                    </div>
-                );
-            })}
         </div>
     );
 });
