@@ -53,7 +53,7 @@ export function useTaskCard(task: Task) {
                 undoDelete({
                     id: task.id,
                     title: task.title,
-                    task
+                    item: task
                 });
                 dismiss();
             }
