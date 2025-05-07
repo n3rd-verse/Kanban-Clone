@@ -28,7 +28,6 @@ export function useTaskSelection(tasks: Record<TaskStatus, Task[]>) {
         return result;
     }, [tasks]);
 
-    // Handle task selection
     const handleTaskSelect = useCallback((taskId: string) => {
         setSelectedTaskId((prevId) => (prevId === taskId ? undefined : taskId));
     }, []);

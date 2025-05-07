@@ -35,13 +35,13 @@ export async function fetchSchedules(): Promise<ScheduleDay[]> {
         assignee: [],
         startDate: "",
         endDate: "",
-        categories:  [],
+        categories: [],
         page: 0,
         limit: 20
     });
 
     const json = await new Promise<string>((resolve) => {
-        window.OMNative.getSchedules(filtersJson ,(json) => {
+        window.OMNative.getSchedules(filtersJson, (json) => {
             resolve(json);
         });
     });
@@ -74,5 +74,20 @@ export async function deleteSchedule(eventId: string): Promise<void> {
 
     if (!success) {
         throw new Error(ERROR_MESSAGES.FAILED_TO_DELETE_EVENT);
+    }
+}
+
+/**
+ * Undoes the deletion of a schedule in the OM Native application.
+ * @param scheduleId - The ID of the schedule to restore.
+ * @returns A promise that resolves when the deletion is undone.
+ */
+export async function undoDeleteSchedule(scheduleId: string): Promise<void> {
+    try {
+        window.OMNative.undoDelete(scheduleId);
+        return;
+    } catch (error) {
+        console.error("Failed to undo schedule delete:", error);
+        throw new Error("Failed to undo schedule delete");
     }
 }

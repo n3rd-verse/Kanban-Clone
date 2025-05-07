@@ -77,24 +77,18 @@ const generateTasksForStatus = (
     ];
 
     return Array.from({ length: count }, (_, index) => {
-        // 다양한 날짜 생성 (1~30일 사이의 날짜)
         const day = Math.floor(Math.random() * 30) + 1;
         const month = Math.floor(Math.random() * 3) + 1; // 1~3월
         const date = new Date(2025, month - 1, day);
 
-        // 랜덤으로 제목 선택
         const titleIndex = Math.floor(Math.random() * titles.length);
 
-        // 랜덤으로 담당자 선택
         const assigneeIndex = Math.floor(Math.random() * assignees.length);
 
-        // 랜덤으로 카테고리 선택
         const categoryIndex = Math.floor(Math.random() * categories.length);
 
-        // 랜덤으로 assignedMe 선택
         const assignedMe = Math.random() < 0.5;
 
-        // 약 20%의 확률로 AI 관련 정보 추가
         const hasAi = Math.random() < 0.2;
         const aiIndex = hasAi
             ? Math.floor(Math.random() * aiContent.length)

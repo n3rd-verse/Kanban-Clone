@@ -2,7 +2,7 @@ import { renderHook, act } from "@testing-library/react";
 import { useDeleteKeyboardShortcut } from "../use-delete-keyboard-shortcut";
 import { useSelectionStore } from "@/stores/selection-store";
 import { useDeleteTaskMutation } from "@/hooks/api/tasks/use-delete-task-mutation";
-import { useUndoDeleteMutation } from "@/hooks/api/tasks/use-undo-delete-mutation";
+import { useUndoDeleteTaskMutation } from "@/hooks/api/tasks/use-undo-delete-task-mutation";
 import { useUndoStore } from "@/stores/undo-store";
 import { showDeleteToast } from "@/components/ui/undo-toast";
 import { TOAST_CONFIG } from "@/constants/toast-config";
@@ -12,7 +12,7 @@ import { vi, describe, it, expect, beforeEach } from "vitest";
 // Mock dependencies
 vi.mock("@/stores/selection-store");
 vi.mock("@/hooks/api/tasks/use-delete-task-mutation");
-vi.mock("@/hooks/api/tasks/use-undo-delete-mutation");
+vi.mock("@/hooks/api/tasks/use-undo-delete-task-mutation");
 vi.mock("@/stores/undo-store");
 vi.mock("@/components/ui/undo-toast");
 vi.mock("../api/core/use-keyboard-shortcuts", () => ({
@@ -53,7 +53,7 @@ describe("useDeleteKeyboardShortcut", () => {
             mutate: mockDeleteTask
         });
 
-        (useUndoDeleteMutation as any).mockReturnValue({
+        (useUndoDeleteTaskMutation as any).mockReturnValue({
             mutate: mockUndoDelete
         });
 

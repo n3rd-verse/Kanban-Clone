@@ -23,7 +23,6 @@ export function useTimelineScroll({
     dayColumnWidth,
     daysToScroll = 7
 }: UseTimelineScrollProps): UseTimelineScrollReturn {
-    // 왼쪽으로 스크롤
     const scrollLeft = useCallback(() => {
         if (scrollContainerRef.current) {
             const scrollAmount = dayColumnWidth * daysToScroll;
@@ -34,7 +33,6 @@ export function useTimelineScroll({
         }
     }, [scrollContainerRef, dayColumnWidth, daysToScroll]);
 
-    // 오른쪽으로 스크롤
     const scrollRight = useCallback(() => {
         if (scrollContainerRef.current) {
             const scrollAmount = dayColumnWidth * daysToScroll;

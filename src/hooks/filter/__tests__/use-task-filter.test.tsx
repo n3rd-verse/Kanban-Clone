@@ -94,9 +94,8 @@ describe("useTaskFilter", () => {
         });
 
         const { result } = renderHook(() => useTaskFilter());
-
         act(() => {
-            result.current.clearCategories();
+            result.current.deleteAllTasksAndSchedules();
         });
 
         expect(mockNavigate).toHaveBeenCalledWith({

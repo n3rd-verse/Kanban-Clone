@@ -9,7 +9,8 @@ const resources = {
                 important: "중요",
                 company: "회사",
                 news: "뉴스",
-                other: "기타"
+                other: "기타",
+                delete_all: "모두 삭제"
             },
             navigation: {
                 board: "보드",
@@ -69,7 +70,8 @@ const resources = {
                 important: "Important",
                 company: "Company",
                 news: "News",
-                other: "Other"
+                other: "Other",
+                delete_all: "Delete All"
             },
             navigation: {
                 board: "Board",
