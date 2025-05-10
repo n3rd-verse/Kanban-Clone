@@ -11,7 +11,7 @@ import filterIcon from "@/assets/icons/filter.svg";
 import { Icon } from "@/components/common/Icon";
 import { useTranslation } from "react-i18next";
 
-export enum TaskCategory {
+export enum TaskScheduleCategory {
     IMPORTANT = "important",
     COMPANY = "company",
     NEWS = "news",
@@ -23,19 +23,22 @@ export enum DeleteAll {
 }
 
 type CategoryOption = {
-    id: TaskCategory | DeleteAll;
+    id: TaskScheduleCategory | DeleteAll;
     translationKey: string;
 };
 
 const CATEGORY_OPTIONS: CategoryOption[] = [
-    { id: TaskCategory.IMPORTANT, translationKey: "categories.important" },
-    { id: TaskCategory.COMPANY, translationKey: "categories.company" },
-    { id: TaskCategory.NEWS, translationKey: "categories.news" },
-    { id: TaskCategory.OTHER, translationKey: "categories.other" }
+    {
+        id: TaskScheduleCategory.IMPORTANT,
+        translationKey: "categories.important"
+    },
+    { id: TaskScheduleCategory.COMPANY, translationKey: "categories.company" },
+    { id: TaskScheduleCategory.NEWS, translationKey: "categories.news" },
+    { id: TaskScheduleCategory.OTHER, translationKey: "categories.other" }
     // { id: DeleteAll.DELETE_ALL, translationKey: "categories.delete_all" }
 ];
 
-export function TaskFilter() {
+export function TaskScheduleFilter() {
     const { selectedCategories, toggleCategory, deleteAllTasksAndSchedules } =
         useTaskFilter();
     const hasFilter = selectedCategories.length > 0;

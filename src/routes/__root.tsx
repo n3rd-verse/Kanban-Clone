@@ -12,7 +12,7 @@ import { CgBoard } from "react-icons/cg";
 import { CiCalendar, CiViewTimeline } from "react-icons/ci";
 import { useTranslation } from "react-i18next";
 import { Toaster } from "@/components/ui/toaster";
-import { TaskFilter } from "@/components/KanbanBoard/tasks";
+import { TaskScheduleFilter } from "@/components/KanbanBoard/task-schedule/TaskScheduleFilter";
 import { useUndoKeyboardShortcut } from "@/hooks/keyboard/use-undo-keyboard-shortcut";
 
 const TanStackRouterDevtools =
@@ -85,7 +85,7 @@ function RootComponent() {
                                 );
                             })}
                         </div>
-                        {isRootRoute && <TaskFilter />}
+                        {isRootRoute && <TaskScheduleFilter />}
                     </div>
                 </div>
                 <div className="group">

@@ -1,3 +1,4 @@
+import { ScheduleFilters } from "@/types/schedule";
 import { TaskFilters } from "@/types/task";
 
 export const queryKeys = {
@@ -18,6 +19,8 @@ export const queryKeys = {
     },
     schedules: {
         all: () => ["schedules"] as const,
-        detail: (id: string) => ["schedules", id] as const
+        detail: (id: string) => ["schedules", id] as const,
+        list: (filters: ScheduleFilters) =>
+            ["schedules", "list", filters] as const
     }
 } as const;

@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useTaskFilter } from "../use-task-filter";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { TaskCategory } from "@/components/KanbanBoard/tasks";
+import { TaskScheduleCategory } from "@/components/KanbanBoard/task-schedule/TaskScheduleFilter";
 
 vi.mock("@/routes", () => ({
     Route: {
@@ -15,8 +15,8 @@ vi.mock("@tanstack/react-router", () => ({
     useSearch: vi.fn()
 }));
 
-vi.mock("@/components/KanbanBoard/TaskFilter", () => ({
-    TaskCategory: {
+vi.mock("@/components/KanbanBoard/task-schedule/TaskScheduleFilter", () => ({
+    TaskScheduleCategory: {
         IMPORTANT: "important",
         COMPANY: "company",
         NEWS: "news",
@@ -35,14 +35,17 @@ describe("useTaskFilter", () => {
 
     it("should return selected categories from search params", () => {
         (useSearch as any).mockReturnValue({
-            categories: [TaskCategory.IMPORTANT, TaskCategory.COMPANY]
+            categories: [
+                TaskScheduleCategory.IMPORTANT,
+                TaskScheduleCategory.COMPANY
+            ]
         });
 
         const { result } = renderHook(() => useTaskFilter());
 
         expect(result.current.selectedCategories).toEqual([
-            TaskCategory.IMPORTANT,
-            TaskCategory.COMPANY
+            TaskScheduleCategory.IMPORTANT,
+            TaskScheduleCategory.COMPANY
         ]);
     });
 
@@ -54,32 +57,35 @@ describe("useTaskFilter", () => {
         const { result } = renderHook(() => useTaskFilter());
 
         act(() => {
-            result.current.toggleCategory(TaskCategory.IMPORTANT);
+            result.current.toggleCategory(TaskScheduleCategory.IMPORTANT);
         });
 
         expect(mockNavigate).toHaveBeenCalledWith({
             to: "/",
             search: {
-                categories: [TaskCategory.IMPORTANT]
+                categories: [TaskScheduleCategory.IMPORTANT]
             }
         });
     });
 
     it("should toggle category off when already selected", () => {
         (useSearch as any).mockReturnValue({
-            categories: [TaskCategory.IMPORTANT, TaskCategory.COMPANY]
+            categories: [
+                TaskScheduleCategory.IMPORTANT,
+                TaskScheduleCategory.COMPANY
+            ]
         });
 
         const { result } = renderHook(() => useTaskFilter());
 
         act(() => {
-            result.current.toggleCategory(TaskCategory.IMPORTANT);
+            result.current.toggleCategory(TaskScheduleCategory.IMPORTANT);
         });
 
         expect(mockNavigate).toHaveBeenCalledWith({
             to: "/",
             search: {
-                categories: [TaskCategory.COMPANY]
+                categories: [TaskScheduleCategory.COMPANY]
             }
         });
     });
@@ -87,9 +93,9 @@ describe("useTaskFilter", () => {
     it("should clear all categories when clearCategories is called", () => {
         (useSearch as any).mockReturnValue({
             categories: [
-                TaskCategory.IMPORTANT,
-                TaskCategory.COMPANY,
-                TaskCategory.NEWS
+                TaskScheduleCategory.IMPORTANT,
+                TaskScheduleCategory.COMPANY,
+                TaskScheduleCategory.NEWS
             ]
         });
 

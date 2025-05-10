@@ -1,6 +1,6 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { Route } from "@/routes";
-import { TaskCategory } from "@/components/KanbanBoard/tasks/TaskFilter";
+import { TaskScheduleCategory } from "@/components/KanbanBoard/task-schedule/TaskScheduleFilter";
 
 /**
  * Manages task category filters stored in the URL query parameters.
@@ -11,14 +11,16 @@ import { TaskCategory } from "@/components/KanbanBoard/tasks/TaskFilter";
  */
 export function useTaskFilter() {
     const search = useSearch({ from: Route.fullPath }) as {
-        categories?: TaskCategory[];
+        categories?: TaskScheduleCategory[];
     };
     const navigate = useNavigate();
 
-    const toggleCategory = (categoryId: TaskCategory) => {
+    const toggleCategory = (categoryId: TaskScheduleCategory) => {
         const currentCategories = search.categories || [];
         const newCategories = currentCategories.includes(categoryId)
-            ? currentCategories.filter((id: TaskCategory) => id !== categoryId)
+            ? currentCategories.filter(
+                  (id: TaskScheduleCategory) => id !== categoryId
+              )
             : [...currentCategories, categoryId];
 
         navigate({
