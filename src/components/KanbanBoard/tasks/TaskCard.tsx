@@ -113,7 +113,9 @@ const TaskHeader = memo(function TaskHeader({
 }: TaskHeaderProps) {
     return (
         <div className="flex justify-between items-start">
-            <h3 className="mb-1 font-medium break-words">{title}</h3>
+            <h3 className="flex-1 mb-1 min-w-0 font-medium break-words">
+                {title}
+            </h3>
             <TaskHeaderActions
                 onDelete={onDelete}
                 onComplete={onComplete}
@@ -396,43 +398,55 @@ export const TaskCard = memo(function TaskCard({
         ]
     );
 
-    const renderCardContent = () => (
-        <div className="flex flex-col h-full">
-            <div className="flex-1 min-w-0 max-w-full">
-                <TaskHeader
-                    title={task.title}
-                    onDelete={handleDelete}
-                    onComplete={handleComplete}
-                    isCompleted={isCompleted}
-                    allowEdit={!!task.allowEdit}
-                    isLoading={isLoading}
-                />
+    const renderCardContent = () => {
+        // Determine if minimum height is needed for the content area to prevent layout shift
+        const needsMinHeight =
+            !contentInfo.hasMiddleRowContent &&
+            !(contentInfo.hasAssignees && contentInfo.hasDate);
 
-                {hasMiddleRowContent && (
-                    <MiddleContentRow
-                        hasAssignees={hasAssignees}
-                        hasDate={!!hasDate}
-                        taskAssignees={task.assignee}
-                        taskDate={task.date}
-                        taskStatus={task.status}
+        return (
+            <div className="flex flex-col h-full">
+                <div
+                    className={cn(
+                        "flex-1 min-w-0 max-w-full",
+                        needsMinHeight && "min-h-16"
+                    )}
+                >
+                    <TaskHeader
+                        title={task.title}
+                        onDelete={handleDelete}
+                        onComplete={handleComplete}
+                        isCompleted={isCompleted}
+                        allowEdit={!!task.allowEdit}
+                        isLoading={isLoading}
                     />
-                )}
 
-                {hasAssignees && hasDate && (
-                    <TaskDate date={task.date} status={task.status} />
-                )}
+                    {hasMiddleRowContent && (
+                        <MiddleContentRow
+                            hasAssignees={hasAssignees}
+                            hasDate={!!hasDate}
+                            taskAssignees={task.assignee}
+                            taskDate={task.date}
+                            taskStatus={task.status}
+                        />
+                    )}
 
-                {hasAiContent && (
-                    <ThreadButton
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            handleThreadOpen(e);
-                        }}
-                    />
-                )}
+                    {hasAssignees && hasDate && (
+                        <TaskDate date={task.date} status={task.status} />
+                    )}
+
+                    {hasAiContent && (
+                        <ThreadButton
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleThreadOpen(e);
+                            }}
+                        />
+                    )}
+                </div>
             </div>
-        </div>
-    );
+        );
+    };
 
     const renderPopoverContent = () => (
         <PopoverContent
