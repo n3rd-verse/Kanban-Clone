@@ -2,6 +2,7 @@ import { useScheduleGroups } from "@/hooks/schedule/use-schedule-groups";
 import { ScheduleCard } from "./ScheduleCard";
 import { DateHeader } from "./DateHeader";
 import type { ScheduleDay } from "@/types/schedule";
+import { useTaskFilter } from "@/hooks/filter/use-task-filter";
 
 interface ScheduleGroupProps {
     dayInfo: ScheduleDay;
@@ -21,7 +22,10 @@ function ScheduleGroup({ dayInfo }: ScheduleGroupProps) {
 }
 
 export function ScheduleColumn() {
-    const scheduleGroups = useScheduleGroups();
+    const { selectedCategories } = useTaskFilter();
+    const scheduleGroups = useScheduleGroups({
+        categories: selectedCategories
+    });
 
     return (
         <div

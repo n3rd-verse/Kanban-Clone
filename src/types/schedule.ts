@@ -1,4 +1,6 @@
+import { TaskScheduleCategory } from "@/components/KanbanBoard/task-schedule/TaskScheduleFilter";
 import { Address } from "./contact";
+import { ScheduleStatus } from "@/constants/schedule-status";
 
 export interface Schedule {
     id: string;
@@ -13,6 +15,19 @@ export interface Schedule {
         summary?: string;
         popupInfo?: object;
     };
+}
+
+export interface ScheduleFilters {
+    status?: ScheduleStatus[];
+    assignee?: string[];
+    dateRange?: {
+        start?: Date;
+        end?: Date;
+    };
+    categories?: TaskScheduleCategory[];
+    search?: string;
+    limit?: number;
+    page?: number;
 }
 
 export interface ScheduleDay {
