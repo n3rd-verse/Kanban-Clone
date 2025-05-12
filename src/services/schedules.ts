@@ -24,20 +24,23 @@
  * OM Native
  */
 import { ERROR_MESSAGES } from "@/constants/messages";
-import type { ScheduleDay } from "@/types/schedule";
+import type { ScheduleDay, ScheduleFilters } from "@/types/schedule";
 
 /**
  * Fetches schedule days from the OM Native API, grouped by date.
  * @returns A promise resolving to an array of ScheduleDay objects representing daily schedules.
  */
-export async function fetchSchedules(): Promise<ScheduleDay[]> {
+export async function fetchSchedules(
+    filters?: ScheduleFilters
+): Promise<ScheduleDay[]> {
     const filtersJson = JSON.stringify({
-        assignee: [],
-        startDate: "",
-        endDate: "",
-        categories: [],
-        page: 0,
-        limit: 20
+        status: filters?.status || [],
+        assignee: filters?.assignee || [],
+        startDate: filters?.dateRange?.start?.toISOString(),
+        endDate: filters?.dateRange?.end?.toISOString(),
+        categories: filters?.categories || [],
+        page: filters?.page || 0,
+        limit: filters?.limit || 20
     });
 
     const json = await new Promise<string>((resolve) => {

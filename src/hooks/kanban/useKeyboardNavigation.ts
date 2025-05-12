@@ -4,7 +4,6 @@ import { STATUS_CONFIG } from "@/components/KanbanBoard/utils/constants";
 import { useSelectionStore, findTaskPosition } from "@/stores/selection-store";
 import { useKeyboard } from "@react-aria/interactions";
 import { extractIdPrefix } from "@/components/KanbanBoard/utils/helpers";
-import { TaskFolderRef } from "@/components/KanbanBoard/tasks/TaskFolder";
 
 // Add debug flag - can be set to false in production
 const DEBUG_KEYBOARD_NAVIGATION = true;
