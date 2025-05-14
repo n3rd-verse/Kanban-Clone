@@ -12,5 +12,14 @@
         "paths": {
             "@/*": ["./src/*"]
         }
-    }
+    },
+    "exclude": [
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/*.spec.ts",
+        "**/*.spec.tsx",
+        "__tests__",
+        "coverage",
+        "node_modules"
+    ]
 }
