@@ -121,13 +121,10 @@ export const ScheduleCard = memo(function ScheduleCard({
                                 startTime={schedule.startTime}
                                 endTime={schedule.endTime}
                             />
-                            <div className="flex justify-between items-center">
+                            <div className="flex justify-between items-start">
                                 <h3
                                     className={cn(
-                                        "font-medium",
-                                        !hasAttendees && !hasLocation
-                                            ? "mb-0"
-                                            : "mb-2"
+                                        "flex-1 font-medium break-words min-w-0 mb-0"
                                     )}
                                 >
                                     {schedule.title}
