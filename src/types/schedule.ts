@@ -7,6 +7,7 @@ export interface Schedule {
     title: string;
     startTime: string;
     endTime: string;
+    emailId:string;
     attendees: Address[];
     type: "past" | "future";
     location?: string;
