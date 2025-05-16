@@ -16,6 +16,56 @@ interface ScheduleCardProps {
     schedule: Schedule;
 }
 
+// 참석자 렌더링 컴포넌트
+const ScheduleAttendees = memo(function ScheduleAttendees({
+    attendees
+}: {
+    attendees: Schedule["attendees"];
+}) {
+    if (!attendees || attendees.length === 0) return null;
+    return (
+        <div className="flex items-center gap-2 mb-1 overflow-hidden">
+            <div className="flex flex-shrink-0 items-center gap-1 min-w-0">
+                {attendees.map((address, index) => (
+                    <ContactAddress
+                        key={`${address.email || address.name}-${index}`}
+                        address={address}
+                        showSeparator={index < attendees.length - 1}
+                    />
+                ))}
+            </div>
+        </div>
+    );
+});
+
+// 시간 정보 렌더링 컴포넌트
+const ScheduleTime = memo(function ScheduleTime({
+    startTime,
+    endTime
+}: {
+    startTime: string;
+    endTime: string;
+}) {
+    if (!startTime && !endTime) return null;
+    return (
+        <div className="flex items-center gap-2 mb-1 text-gray-600 text-sm">
+            <span>
+                {startTime} → {endTime}
+            </span>
+        </div>
+    );
+});
+
+// 장소 정보 렌더링 컴포넌트
+const ScheduleLocation = memo(function ScheduleLocation({
+    location
+}: {
+    location?: string;
+}) {
+    if (!location) return null;
+    return <div className="mb-2 text-gray-500 text-sm">{location}</div>;
+});
+
 export const ScheduleCard = memo(function ScheduleCard({
     schedule
 }: ScheduleCardProps) {
@@ -40,19 +90,19 @@ export const ScheduleCard = memo(function ScheduleCard({
     const borderColor = isPast ? "" : "border-blue-200";
     const opacity = isPast ? "opacity-50" : "";
 
+    // TaskCard와 동일한 패턴: needsMinHeight 변수로 분리
+    const needsMinHeight = !hasAttendees && !hasLocation && !hasTimeInfo;
+
     return (
         <Popover open={showAiSummary} onOpenChange={handlePopoverOpenChange}>
             <PopoverTrigger asChild>
                 <Card
                     className={cn(
-                        "hover:shadow-md",
-                        `break-words ${borderColor}`,
-                        "group relative",
+                        "p-4",
+                        "break-words h-full",
+                        `group relative ${borderColor}`,
                         opacity,
-                        "cursor-pointer",
-                        !hasAttendees && !hasLocation
-                            ? "h-[73px] py-3 px-4"
-                            : "p-4"
+                        "cursor-pointer"
                     )}
                     onClick={handleClick}
                     onMouseDown={handleMouseDown}
@@ -60,56 +110,38 @@ export const ScheduleCard = memo(function ScheduleCard({
                     onMouseLeave={handleCardMouseLeave}
                 >
                     {isLoading && <LoadingSpinner overlay />}
-
-                    {hasTimeInfo && (
-                        <div className="flex items-center gap-2 mb-1 text-gray-600 text-sm">
-                            <span>
-                                {schedule.startTime} → {schedule.endTime}
-                            </span>
-                        </div>
-                    )}
-
-                    <div className="flex justify-between items-center">
-                        <h3
+                    <div className="flex flex-col h-full">
+                        <div
                             className={cn(
-                                "font-medium",
-                                !hasAttendees && !hasLocation ? "mb-0" : "mb-2"
+                                "flex-1 min-w-0 max-w-full",
+                                needsMinHeight && "min-h-16"
                             )}
                         >
-                            {schedule.title}
-                        </h3>
-                        <div className="flex items-center gap-2 ml-2 shrink-0">
-                            <div className="flex items-center">
-                                <CardDeleteButton
-                                    onClick={handleDelete}
-                                    disabled={isLoading}
-                                />
+                            <ScheduleTime
+                                startTime={schedule.startTime}
+                                endTime={schedule.endTime}
+                            />
+                            <div className="flex justify-between items-start">
+                                <h3
+                                    className={cn(
+                                        "flex-1 font-medium break-words min-w-0 mb-0"
+                                    )}
+                                >
+                                    {schedule.title}
+                                </h3>
+                                <div className="flex items-center gap-2 ml-2 shrink-0">
+                                    <div className="flex items-center">
+                                        <CardDeleteButton
+                                            onClick={handleDelete}
+                                            disabled={isLoading}
+                                        />
+                                    </div>
+                                </div>
                             </div>
+                            <ScheduleAttendees attendees={schedule.attendees} />
+                            <ScheduleLocation location={schedule.location} />
                         </div>
                     </div>
-
-                    {hasAttendees && (
-                        <div className="flex items-center gap-2 mb-1 overflow-hidden">
-                            <div className="flex flex-shrink-0 items-center gap-1 min-w-0">
-                                {schedule.attendees.map((address, index) => (
-                                    <ContactAddress
-                                        key={`${address.email || address.name}-${index}`}
-                                        address={address}
-                                        showSeparator={
-                                            index <
-                                            schedule.attendees.length - 1
-                                        }
-                                    />
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {hasLocation && (
-                        <div className="mb-2 text-gray-500 text-sm">
-                            {schedule.location}
-                        </div>
-                    )}
                 </Card>
             </PopoverTrigger>
 

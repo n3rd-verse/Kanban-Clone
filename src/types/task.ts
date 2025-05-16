@@ -11,6 +11,7 @@ export interface Task {
     allowEdit?: boolean;
     categories?: string;
     assignedMe: boolean;
+    emailId:string;
     ai?: {
         topic?: string;
         summary?: string;
