@@ -59,31 +59,33 @@ function RootComponent() {
             <main>
                 <div className="pt-4">
                     <div className="flex justify-between items-center mr-8 ml-8 border-gray-200 border-b h-10">
-                        <div className="flex items-center">
-                            {views.map((view, index) => {
-                                const Icon = view.icon;
-                                return (
-                                    <Link
-                                        key={view.id}
-                                        to={view.id}
-                                        className={cn(
-                                            "flex items-center gap-2 text-gray-500 relative transition-colors font-medium h-10 px-4",
-                                            "hover:text-gray-700",
-                                            index > 0 && "ml-4"
-                                        )}
-                                        activeProps={{
-                                            className:
-                                                "!text-[#3b82f6] after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-[#3b82f6]"
-                                        }}
-                                        activeOptions={{
-                                            includeSearch: false
-                                        }}
-                                    >
-                                        <Icon size={20} />
-                                        {view.label}
-                                    </Link>
-                                );
-                            })}
+                        <div className="flex-1">
+                            {/* <div className="flex items-center">
+                                {views.map((view, index) => {
+                                    const Icon = view.icon;
+                                    return (
+                                        <Link
+                                            key={view.id}
+                                            to={view.id}
+                                            className={cn(
+                                                "flex items-center gap-2 text-gray-500 relative transition-colors font-medium h-10 px-4",
+                                                "hover:text-gray-700",
+                                                index > 0 && "ml-4"
+                                            )}
+                                            activeProps={{
+                                                className:
+                                                    "!text-[#3b82f6] after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-[#3b82f6]"
+                                            }}
+                                            activeOptions={{
+                                                includeSearch: false
+                                            }}
+                                        >
+                                            <Icon size={20} />
+                                            {view.label}
+                                        </Link>
+                                    );
+                                })}
+                            </div> */}
                         </div>
                         {isRootRoute && <TaskScheduleFilter />}
                     </div>
