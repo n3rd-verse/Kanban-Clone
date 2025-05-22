@@ -450,7 +450,7 @@ export const TaskCard = memo(function TaskCard({
 
     const renderPopoverContent = () => (
         <PopoverContent
-            className="p-3 w-72"
+            className="p-3 w-96"
             side="top"
             align="center"
             sideOffset={5}
@@ -461,8 +461,16 @@ export const TaskCard = memo(function TaskCard({
         >
             <div className="space-y-3 max-h-[300px] overflow-y-auto text-sm custom-scrollbar">
                 {task.ai?.summary && (
-                    <div className="text-gray-700 break-words">
-                        {task.ai.summary}
+                    <div className="w-full">
+                        <span className="inline font-semibold text-black">
+                            {task.ai?.topic}
+                        </span>
+                        {task.ai?.topic && task.ai?.summary && (
+                            <span className="inline mx-1 text-gray-400">-</span>
+                        )}
+                        <span className="inline text-gray-700 break-words whitespace-pre-line">
+                            {task.ai.summary}
+                        </span>
                     </div>
                 )}
 
