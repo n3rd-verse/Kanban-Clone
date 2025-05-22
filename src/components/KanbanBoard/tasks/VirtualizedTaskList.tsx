@@ -5,6 +5,7 @@ import type { Task } from "@/types/task";
 import type { useColumnVirtualizer } from "@/hooks/virtualizer";
 import { useIntersectionObserver } from "@/hooks/core/use-intersection-observer";
 import { extractIdPrefix } from "../utils/helpers";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface VirtualizedTaskListProps {
     tasks: Task[];
@@ -14,6 +15,7 @@ interface VirtualizedTaskListProps {
     hasNextPage: boolean;
     isFetchingNextPage: boolean;
     fetchNextPage: () => void;
+    isCollapsed?: boolean;
 }
 
 export const VirtualizedTaskList = memo(function VirtualizedTaskList({
@@ -23,7 +25,8 @@ export const VirtualizedTaskList = memo(function VirtualizedTaskList({
     loadMoreRef,
     hasNextPage,
     isFetchingNextPage,
-    fetchNextPage
+    fetchNextPage,
+    isCollapsed
 }: VirtualizedTaskListProps) {
     useIntersectionObserver({
         target: loadMoreRef,
@@ -63,31 +66,47 @@ export const VirtualizedTaskList = memo(function VirtualizedTaskList({
 
     return (
         <div className="relative w-full" style={containerStyle}>
-            {groupedTasks.map((group, groupIdx) =>
-                group.tasks.map((task, idx) => {
-                    const isGrouped = group.prefix && group.tasks.length > 1;
-                    // 그룹의 첫 번째 카드에만 마진 적용 (첫 그룹은 마진 없음)
-                    const groupMargin = groupIdx > 0 && idx === 0 ? "mt-6" : "";
-                    const className = cn(
-                        "w-full",
-                        isDesktop ? "relative" : "relative",
-                        isGrouped && "border-l-4 border-blue-400 bg-blue-50/30",
-                        groupMargin
-                    );
-                    return (
-                        <div
-                            key={task.id}
-                            className={className}
-                            style={isGrouped ? { marginBottom: 0 } : {}}
-                        >
-                            <TaskCard
-                                task={task}
-                                className="h-full break-words"
-                            />
-                        </div>
-                    );
-                })
-            )}
+            <AnimatePresence initial={false}>
+                {!isCollapsed &&
+                    groupedTasks.map((group, groupIdx) =>
+                        group.tasks.map((task, idx) => {
+                            const isGrouped =
+                                group.prefix && group.tasks.length > 1;
+                            const groupMargin =
+                                groupIdx > 0 && idx === 0 ? "mt-6" : "";
+                            const className = cn(
+                                "w-full",
+                                isDesktop ? "relative" : "relative",
+                                isGrouped &&
+                                    "border-l-4 border-blue-400 bg-blue-50/30",
+                                groupMargin
+                            );
+                            return (
+                                <motion.div
+                                    key={task.id}
+                                    className={className}
+                                    style={isGrouped ? { marginBottom: 0 } : {}}
+                                    initial={{ height: 0, opacity: 0, y: -20 }}
+                                    animate={{
+                                        height: "auto",
+                                        opacity: 1,
+                                        y: 0
+                                    }}
+                                    exit={{ height: 0, opacity: 0, y: -20 }}
+                                    transition={{
+                                        duration: 0.3,
+                                        ease: "easeInOut"
+                                    }}
+                                >
+                                    <TaskCard
+                                        task={task}
+                                        className="h-full break-words"
+                                    />
+                                </motion.div>
+                            );
+                        })
+                    )}
+            </AnimatePresence>
         </div>
     );
 });
