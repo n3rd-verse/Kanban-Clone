@@ -102,6 +102,7 @@ const generateTasksForStatus = (
             category: categories[categoryIndex],
             date: date.toISOString(),
             status: status,
+            emailId: "hahahoho@gmail.com",
             ...(hasAi && { ai: aiContent[aiIndex] })
         };
     });
@@ -155,7 +156,8 @@ export const mockScheduleDays: ScheduleDay[] = [
                 startTime: "9:00 AM",
                 endTime: "9:30 PM",
                 type: "past",
-                attendees: []
+                attendees: [],
+                emailId: "hahahoho@gmail.com"
             }
         ]
     },
@@ -170,7 +172,8 @@ export const mockScheduleDays: ScheduleDay[] = [
                 startTime: "9:00 AM",
                 endTime: "9:30 PM",
                 type: "past",
-                attendees: []
+                attendees: [],
+                emailId: "hahahoho2@gmail.com"
             },
             {
                 id: "3",
@@ -179,7 +182,8 @@ export const mockScheduleDays: ScheduleDay[] = [
                 endTime: "11:00 AM",
                 type: "past",
                 attendees: [],
-                location: "Jiran 37"
+                location: "Jiran 37",
+                emailId: "hahahoho3@gmail.com"
             }
         ]
     },
@@ -196,7 +200,8 @@ export const mockScheduleDays: ScheduleDay[] = [
                 type: "future",
                 attendees: [],
                 location:
-                    "FASTFIVE 7F 704, Hakdong-ro 45-gil 3, Gangam-gu Seoul"
+                    "FASTFIVE 7F 704, Hakdong-ro 45-gil 3, Gangam-gu Seoul",
+                emailId: "hahahoho4@gmail.com"
             }
         ]
     }

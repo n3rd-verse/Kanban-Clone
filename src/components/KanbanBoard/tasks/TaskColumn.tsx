@@ -4,7 +4,8 @@ import {
     useEffect,
     memo,
     useCallback,
-    useMemo
+    useMemo,
+    useState
 } from "react";
 import { useTranslation } from "react-i18next";
 import { Task } from "@/types/task";
@@ -17,6 +18,7 @@ import { STATUS_CONFIG } from "../utils/constants";
 import { useSelectionStore } from "@/stores/selection-store";
 import { Card } from "@/components/ui/card";
 import { useKeyboardNavigation } from "@/hooks/kanban/useKeyboardNavigation";
+import { AnimatePresence, motion } from "framer-motion";
 // import { useWindowSize } from "@/hooks/design/use-window-size";
 // import { cn } from "@/lib/utils";
 
@@ -33,6 +35,7 @@ interface TaskColumnContentProps {
     virtualizer: ReturnType<typeof useColumnVirtualizer>;
     isFetchingNextPage: boolean;
     keyboardProps?: React.HTMLAttributes<HTMLDivElement>;
+    isCollapsed?: boolean;
 }
 
 interface TaskColumnErrorProps {
@@ -42,6 +45,9 @@ interface TaskColumnErrorProps {
 interface ColumnHeaderProps {
     status: TaskStatus;
     count: number;
+    isCompletedColumn?: boolean;
+    isCollapsed?: boolean;
+    onToggleCollapse?: () => void;
 }
 
 interface VirtualizedTaskListProps {
@@ -58,6 +64,9 @@ export function TaskColumn({
     const loadMoreRef = useRef<HTMLDivElement>(
         null
     ) as RefObject<HTMLDivElement>;
+
+    // 완료 컬럼 접기/펼치기 상태
+    const [isCollapsed, setIsCollapsed] = useState(false);
 
     // useCallback으로 래핑하여 함수 안정성 보장
     const updateTasksByStatus = useSelectionStore(
@@ -125,9 +134,18 @@ export function TaskColumn({
         return <TaskColumnError error={error} />;
     }
 
+    // 완료컬럼만 접기/펼치기 가능
+    const isCompletedColumn = status === TaskStatus.COMPLETED;
+
     return (
         <div className="flex flex-col gap-2.5">
-            <ColumnHeader status={status} count={tasks.length} />
+            <ColumnHeader
+                status={status}
+                count={tasks.length}
+                isCompletedColumn={isCompletedColumn}
+                isCollapsed={isCollapsed}
+                onToggleCollapse={() => setIsCollapsed((prev) => !prev)}
+            />
             <TaskColumnContent
                 columnRef={columnRef}
                 loadMoreRef={loadMoreRef}
@@ -135,20 +153,21 @@ export function TaskColumn({
                 virtualizer={virtualizer}
                 isFetchingNextPage={isFetchingNextPage}
                 keyboardProps={keyboardProps}
+                isCollapsed={isCollapsed}
             />
         </div>
     );
 }
 
-// 성능 최적화를 위해 memo 적용
 const TaskColumnContent = memo(function TaskColumnContent({
     columnRef,
     loadMoreRef,
     tasks,
     virtualizer,
     isFetchingNextPage,
-    keyboardProps
-}: TaskColumnContentProps) {
+    keyboardProps,
+    isCollapsed
+}: TaskColumnContentProps & { isCollapsed?: boolean }) {
     return (
         <div
             ref={columnRef}
@@ -171,6 +190,7 @@ const TaskColumnContent = memo(function TaskColumnContent({
                 hasNextPage={false}
                 isFetchingNextPage={isFetchingNextPage}
                 fetchNextPage={() => {}}
+                isCollapsed={isCollapsed}
             />
             <div ref={loadMoreRef} className="h-5" />
             {isFetchingNextPage && <LoadingSpinner className="mt-4" />}
@@ -189,18 +209,34 @@ function TaskColumnError({ error }: TaskColumnErrorProps) {
 
 const ColumnHeader = memo(function ColumnHeader({
     status,
-    count
-}: ColumnHeaderProps) {
+    count,
+    isCompletedColumn,
+    isCollapsed,
+    onToggleCollapse
+}: ColumnHeaderProps & {
+    isCompletedColumn?: boolean;
+    isCollapsed?: boolean;
+    onToggleCollapse?: () => void;
+}) {
     const { t } = useTranslation();
     const statusConfig = STATUS_CONFIG.find((config) => config.id === status);
 
     return (
         <div className="flex justify-between items-center">
             <div
-                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg ${statusConfig?.color}`}
+                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg ${statusConfig?.color} ${isCompletedColumn ? "cursor-pointer select-none" : ""}`}
+                onClick={isCompletedColumn ? onToggleCollapse : undefined}
+                aria-pressed={isCompletedColumn ? isCollapsed : undefined}
+                tabIndex={isCompletedColumn ? 0 : -1}
+                role={isCompletedColumn ? "button" : undefined}
             >
                 <h3 className="font-medium">{t(`status.${status}`)}</h3>
                 <span className="text-sm">({count})</span>
+                {isCompletedColumn && (
+                    <span className="ml-1 text-gray-400">
+                        {isCollapsed ? "▲" : "▼"}
+                    </span>
+                )}
             </div>
         </div>
     );
