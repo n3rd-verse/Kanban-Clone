@@ -20,7 +20,7 @@ export function KanbanBoard() {
     // 보드에 포커스
     useEffect(() => {
         if (boardRef.current) {
-            boardRef.current.focus();
+            boardRef.current.focus({ preventScroll: true });
         }
     }, []);
 
