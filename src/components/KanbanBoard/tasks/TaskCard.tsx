@@ -435,14 +435,12 @@ export const TaskCard = memo(function TaskCard({
                         <TaskDate date={task.date} status={task.status} />
                     )}
 
-                    {hasAiContent && (
-                        <ThreadButton
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleThreadOpen(e);
-                            }}
-                        />
-                    )}
+                    <ThreadButton
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleThreadOpen(e);
+                        }}
+                    />
                 </div>
             </div>
         );
