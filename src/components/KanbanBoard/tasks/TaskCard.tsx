@@ -35,7 +35,7 @@ interface TaskHeaderProps {
     onDelete: () => void;
     onComplete: () => void;
     isCompleted: boolean;
-    allowEdit: boolean;
+    allowEdit?: boolean;
     isLoading: boolean;
 }
 
@@ -43,7 +43,7 @@ interface TaskHeaderActionsProps {
     onDelete: () => void;
     onComplete: () => void;
     isCompleted: boolean;
-    allowEdit: boolean;
+    allowEdit?: boolean;
     isLoading: boolean;
 }
 
@@ -150,7 +150,7 @@ const TaskHeaderActions = memo(function TaskHeaderActions({
                     checked={isCompleted}
                     onCheckedChange={onComplete}
                     className="w-5 h-5"
-                    disabled={!!allowEdit || isLoading}
+                    disabled={!allowEdit || isLoading}
                 />
             </div>
         </div>
@@ -417,7 +417,7 @@ export const TaskCard = memo(function TaskCard({
                         onDelete={handleDelete}
                         onComplete={handleComplete}
                         isCompleted={isCompleted}
-                        allowEdit={!!task.allowEdit}
+                        allowEdit={task.allowEdit}
                         isLoading={isLoading}
                     />
 
